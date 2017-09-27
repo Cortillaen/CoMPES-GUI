@@ -1,7 +1,7 @@
 {
-  "name": "electron-quick-start",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "name": "CoMPES-GUI",
+  "version": "0.1.0",
+  "description": "Electron-based GUI app for CoMPES",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
@@ -9,12 +9,16 @@
   "repository": "https://github.com/dmlause/CoMPES-GUI",
   "keywords": [
     "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "CoMPES",
+    "GUI",
+    "Graphical User Interface",
+    "Graphical",
+    "User",
+    "Interface",
+    "IoT",
+    "Internet of Things"
   ],
-  "author": "Carey James, Trenton Nale, Derek Lause, Josue Porti",
+  "author": "Carey James, Derek Lause, Trenton Nale, Josue Portillo, Kyle Roberts",
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "~1.6.2"
