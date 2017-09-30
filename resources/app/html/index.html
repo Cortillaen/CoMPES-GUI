@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="author" content="Carey James, Derek Lause, Trenton Nale, Josue Portillo, Kyle Roberts">
+    <meta name="discription" content="GUI for creating, viewing, and interacting with IoT networks managed by CoMPES">
+
+    <script src="../js/knockout-3.4.2.js" type="text/javascript" ></script>
+    <script src="../js/index.js" type="text/javascript" ></script>
+
+    <title>CoMPES GUI</title>
+  </head>
+  <body>
+
+    <div id="screen_holder" data-bind="template: {name: current_screen}">
+      <!-- This div is where each "screen" slots in when selected to display to the user.
+      -->
+    </div>
+
+  </body>
+
+  <!-- ===========================================Screen Templates=============================================================
+    Each screen should be built inside its own script tag so that the resources are loaded but not displayed until needed -->
+
+  <!-- Login Screen -->
+  <script type="text/html" id="login_screen">
+
+    <!--placeholder content-->
+    <h1>Login</h1>
+    <button data-bind="click: gotoSelection">Go to Selection screen</button>
+
+  </script>
+
+  <!-- Network Selection Screen -->
+  <script type="text/html" id="selection_screen">
+
+    <!--placeholder content-->
+    <h1>Network Selection</h1>
+    <button data-bind="click: gotoLogin">Go to Login screen</button>
+    <button data-bind="click: gotoMap">Go to Map screen</button>
+    <button data-bind="click: gotoInformational">Go to Informational screen</button>
+    <button data-bind="click: gotoDefinition">Go to Definition screen</button>
+
+  </script>
+
+  <!-- Map Screen -->
+  <script type="text/html" id="map_screen">
+
+    <!--placeholder content-->
+    <h1>Map View</h1>
+    <button data-bind="click: gotoLogin">Go to Login screen</button>
+    <button data-bind="click: gotoSelection">Go to Selection screen</button>
+    <button data-bind="click: gotoInformational">Go to Informational screen</button>
+    <button data-bind="click: gotoDefinition">Go to Definition screen</button>
+
+  </script>
+
+  <!-- Informational Screen -->
+  <script type="text/html" id="informational_screen">
+
+    <!--placeholder content-->
+    <h1>Informational View</h1>
+    <button data-bind="click: gotoLogin">Go to Login screen</button>
+    <button data-bind="click: gotoSelection">Go to Selection screen</button>
+    <button data-bind="click: gotoMap">Go to Map screen</button>
+    <button data-bind="click: gotoDefinition">Go to Definition screen</button>
+
+  </script>
+
+  <!-- Network Definition Screen -->
+  <script type="text/html" id="definition_screen">
+
+    <!--placeholder content-->
+    <h1>Network Definition</h1>
+    <button data-bind="click: gotoLogin">Go to Login screen</button>
+    <button data-bind="click: gotoSelection">Go to Selection screen</button>
+    <button data-bind="click: gotoMap">Go to Map screen</button>
+    <button data-bind="click: gotoInformational">Go to Informational screen</button>
+
+  </script>
+
+  <script>
+    // You can also require other files to run in this process
+    require('../js/renderer.js')
+  </script>
+</html>
