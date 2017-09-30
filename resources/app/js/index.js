@@ -35,8 +35,8 @@ var checkDOMReady = setInterval(function() {
 //document.getElementById("login").addEventListener("click", login, true);
 
 function logButton() {
-	let pass = document.getElementById("loginForm").elements.item(1).value;
 	let user = document.getElementById("loginForm").elements.item(0).value; 
+	let pass = document.getElementById("loginForm").elements.item(1).value;
 	//alert(user);
 
 	if (pass == "test" && user == "admin1") {
