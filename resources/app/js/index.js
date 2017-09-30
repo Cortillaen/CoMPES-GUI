@@ -1,9 +1,13 @@
 "use strict"
 
-function viewModel() {
+//=============================================== VIEWMODEL ================================================
+
+function viewmodel() {
 	//Variables
 	this.current_screen = ko.observable("login_screen");
 }
+
+//================================================= MODEL ==================================================
 
 function gotoLogin() {
 	this.current_screen("login_screen")
@@ -28,7 +32,7 @@ function gotoDefinition() {
 var checkDOMReady = setInterval(function() {
     if (document.readyState != "loading") {
         clearInterval(checkDOMReady);
-        ko.applyBindings(new viewModel());
+        ko.applyBindings(new viewmodel());
     }
 }, 10);
 
@@ -41,6 +45,8 @@ function logButton() {
 
 	if (pass == "test" && user == "admin1") {
 		alert("LOGIN SUCCESS");
+		// gotoSelection();  I haven't figured out why this doesn't work yet
+		this.current_screen("selection_screen");
 	}
 	else {
 		alert("Login failed. Try again.");
