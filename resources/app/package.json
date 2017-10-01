@@ -1,8 +1,8 @@
 {
   "name": "CoMPES-GUI",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Electron-based GUI app for CoMPES",
-  "main": "main.js",
+  "main": "js/main.js",
   "scripts": {
     "start": "electron ."
   },
@@ -18,8 +18,16 @@
     "IoT",
     "Internet of Things"
   ],
-  "author": "Carey James, Derek Lause, Trenton Nale, Josue Portillo, Kyle Roberts",
-  "license": "CC0-1.0",
+  "bugs": {
+  	"url": "https://github.com/dmlause/CoMPES-GUI/issues",
+  	"email": "senkairyu@gmail.com"
+  },
+  "contributors": [
+  	"Carey James",
+  	"Derek Lause",
+  	"Trenton Nale <trentonnale@gmail.com> (http://github.com/Cortillaen)",
+  	"Josue Portillo",
+  	"Kyle Roberts"],
   "devDependencies": {
     "electron": "~1.6.2"
   }
