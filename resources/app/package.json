@@ -2,7 +2,7 @@
   "name": "CoMPES-GUI",
   "version": "0.1.1",
   "description": "Electron-based GUI app for CoMPES",
-  "main": "js/main.js",
+  "main": "main.js",
   "scripts": {
     "start": "electron ."
   },

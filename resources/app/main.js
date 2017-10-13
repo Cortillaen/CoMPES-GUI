@@ -11,10 +11,11 @@ function createWindow () {
   mainWindow = new BrowserWindow({width: 800, height: 600})
 
   mainWindow.loadURL(url.format({
-    pathname: path.join(path.join(path.dirname(__dirname), 'html'), 'index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
+  pathname: path.join(path.join(path.dirname(__dirname), 'templates'), 'index.html'),
+  protocol: 'file:',
+  slashes: true
+}))
+
 
   mainWindow.on('closed', function () {
     mainWindow = null
