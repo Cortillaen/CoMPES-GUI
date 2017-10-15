@@ -70,6 +70,17 @@ function viewmodel() {
 		this.getNetworkList(); //for testing purposes
 	}
 
+	this.loadNetwork = function() {
+		/*
+		Author: Derek Lause
+		Description: Transitions to the Network Selection screen
+		Input: N/A
+		Output: The desired network will be loaded into the networkObject variable
+			and then will load the desired network into the Map View
+		Notes: Parse the JSON object
+		*/
+	}
+
 	this.selectionFillList = function(networkList) {
 		/*
 		Author: Trenton Nale
@@ -122,6 +133,61 @@ function viewmodel() {
 			   create a new network.
 		*/
 		this.current_screen("definition_screen");
+	}
+
+	this.buildNDF = function() {
+		/*
+		Author: Derek Lause
+		Description: This function will take in the data from the HTML form fields and
+			create a JSON object. This JSON object will then be written to a file.
+		Input: HTML form fields for the defined network
+		Output: Network Definition File
+		Notes: If networkObject is not null, load the network onto the screen displayed into the correct areas for editing
+			Otherwise, the HTML fields will be blank and the filled out information will be sent to CoMPES
+			We need to figure out how to access the dynamic form fields that will be added to the screen (addACU and addHub)
+			https://knockoutjs.com/documentation/unobtrusive-event-handling.html is a good starting point
+		*/
+		var definedNetwork = {
+			"NetworkConfig" : { "PES_Mode" : /* Enforce or build */ "PE_Algorithm" : /* Algorithm choice */}
+			"Hubs" : [
+				"Hub-ID" : [
+					"Hub-Config" : { /* Hub Configuration TBD */}
+					"ACUs" : {
+						"ACU-ID" : [
+							"ID" : /* <User-ID>/<Hub-ID>/<ACU-ID> */
+							"Location_STR" : /* Country-Code/State/County/City/<Location Specific sub-categories> #Country Specific Format - i.e. USA */
+							"Location_GPS" : /* <GPS-Location String> #GPS format TBD with 450 team */
+							"Classification" : /* <Object-Type>/<Type-Specific Categorization Schema> */
+							"GUID" : /* "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" */
+							"States" : [/* ["<Initial State>", "<State>", ...] */ ]
+							"Actions" : [/* ["<Initial Action>", "<Action>", ...]*/]
+							"Semantic_Links" : [/* ["Hub-ID:ACU-ID", ...]*/]
+							// Associative Rules - optional, add later, not a high priority
+						]
+					}
+				]
+			]
+		}
+	}
+
+	this.addACU = function() {
+		/*
+		Author: Derek Lause
+		Description: Adds a template form field for an ACU to be added on the network wanting to be defined
+		Input: N/A
+		Output: HTML form fields for a new ACU to be added
+		Notes: Dynamic form fields need to be accessed properly to define the network correctly
+		*/
+	}
+
+	this.addHub = function() {
+		/*
+		Author: Derek Lause
+		Description: Adds a template form field for a hub to be added on the network wanting to be defined
+		Input: N/A
+		Output: HTML form fields for a new hub to be added
+		Notes: Dynamic form fields need to be accessed properly to define the network correctly
+		*/
 	}
 
 	//============================Backend============================================
@@ -347,7 +413,7 @@ $(document).ready(function(){
 
 	//Get path for twisted client
 	var file_path = path.join(path.join(path.join(path.dirname(__dirname),'static' ), 'py'), 'TwistedClient.py');
-	
+
 	//Spawn twisted subprocess
 	twistedClient = child_process.spawn("python",  [file_path]);
 
