@@ -17,9 +17,9 @@ function viewmodel() {
 	*/
 	//============================= Data Bindings & Variables ===============================
 	this.current_screen = ko.observable("login_screen");
-	
+
 	var networkObject = null; //object containing current network details in dictionary format
-	
+
 	//==================================== Front-End ========================================
 	//-------------------------------------- Login -------------------------------
 	this.gotoLogin = function() {
@@ -45,7 +45,7 @@ function viewmodel() {
 		Notes: Gets the username and password from their fields on the page and compares
 			   them against dummy values for now.
 		*/
-		let user = document.getElementById("loginForm").elements.item(0).value; 
+		let user = document.getElementById("loginForm").elements.item(0).value;
 		let pass = document.getElementById("loginForm").elements.item(1).value;
 
 		if (pass == "test" && user == "admin1") {
@@ -56,7 +56,7 @@ function viewmodel() {
 			alert("Login failed. Try again.");
 		}
 	}
-	
+
 	//-------------------------------- Network Selection -------------------------
 	this.gotoSelection = function() {
 		/*
@@ -69,7 +69,7 @@ function viewmodel() {
 		this.current_screen("selection_screen");
 		this.getNetworkList(); //for testing purposes
 	}
-	
+
 	this.selectionFillList = function(networkList) {
 		/*
 		Author: Trenton Nale
@@ -81,7 +81,7 @@ function viewmodel() {
 		*/
 		alert("Trying to fill the network list that doesn't exist.");
 	}
-	
+
 	//------------------------------------ Map View ------------------------------
 	this.gotoMap = function() {
 		/*
@@ -142,7 +142,7 @@ function viewmodel() {
 				error: "<function for handeling errors>"
 			   });
 	};*/
-	
+
 	this.sendLogin = function(name, pass) {
 		/*
 		Author: Trenton Nale
@@ -159,7 +159,7 @@ function viewmodel() {
 							alert("Username and/or password not recognized.\nPlease try again.");
 						 });
 	};
-	
+
 	this.sendRegister = function(name, pass) {
 		/*
 		Author: Trenton Nale
@@ -174,7 +174,7 @@ function viewmodel() {
 						 function() {},
 						 function() {});
 	};
-	
+
 	this.getNetworkList = function() {
 		/*
 		Author: Trenton Nale
@@ -182,9 +182,9 @@ function viewmodel() {
 		Input: N/A
 		Output: N/A
 		Notes: If the request fails, logs the error information to the console
-		
+
 		var jsonParam = JSON.stringify({'rest-method':'get', 'path':paths['allNetworks'], 'data':[]});
-		this.sendMessage(jsonParam, 
+		this.sendMessage(jsonParam,
 						 function(response) { alert(response); },
 						 function(response, stat, description) {
 							console.log("Requesting network list failed because: " + response +
@@ -197,7 +197,7 @@ function viewmodel() {
 				error: function(response, stat, disc) {alert(disc);}
 		});
 	};
-	
+
 	this.connectToNetwork = function(selectedNetwork) {
 		/*
 		Author: Trenton Nale
@@ -211,7 +211,7 @@ function viewmodel() {
 						 function() {},
 						 function() {});
 	};
-	
+
 	this.submitNetwork = function(networkDefinitionFile) {
 		/*
 		Author: Trenton Nale
@@ -226,7 +226,7 @@ function viewmodel() {
 						 function() {},
 						 function() {});
 	};
-	
+
 	this.updateNetwork = function(networkDefinitionFile) {
 		/*
 		Author: Trenton Nale
@@ -241,7 +241,7 @@ function viewmodel() {
 						 function() {},
 						 function() {});
 	};
-	
+
 	this.removeNetwork = function(networkID) {
 		/*
 		Author: Trenton Nale
@@ -255,7 +255,7 @@ function viewmodel() {
 						 function() {},
 						 function() {});
 	};
-	
+
 	this.startNodeTracking = function(nodeID) {
 		/*
 		Author: Trenton Nale
@@ -269,7 +269,7 @@ function viewmodel() {
 						 function() {},
 						 function() {});
 	};
-	
+
 	this.stopNodeTracking = function(nodeID) {
 		/*
 		Author: Trenton Nale
@@ -283,7 +283,7 @@ function viewmodel() {
 						 function() {},
 						 function() {});
 	};
-	
+
 	this.startNetworkTracking = function(networkID) {
 		/*
 		Author: Trenton Nale
@@ -297,7 +297,7 @@ function viewmodel() {
 						 function() {},
 						 function() {});
 	};
-	
+
 	this.stopNetworkTracking = function() {
 		/*
 		Author: Trenton Nale
@@ -311,7 +311,7 @@ function viewmodel() {
 						 function() {},
 						 function() {});
 	};
-	
+
 	this.sendMessage = function(message, successFunc, errorFunc) {
 		/*
 		Author: Trenton Nale
@@ -344,20 +344,20 @@ $(document).ready(function(){
 	*/
 	//Apply knockout data-bindings
 	ko.applyBindings(new viewmodel());
-	
+
 	//Get path for twisted client
-	var file_path = path.join(path.join(path.dirname(__dirname), 'py'), 'TwistedClient.py')
+	var file_path = path.join(path.join(path.join(path.dirname(__dirname),'static' ), 'py'), 'TwistedClient.py');
 	
 	//Spawn twisted subprocess
 	twistedClient = child_process.spawn("python",  [file_path]);
-	
+
 	//Register handelers for input/output streams
 	//This is the handeler for when the client exits
 	twistedClient.on('exit', function (code, signal) {
 	  console.log('The Twisted Client exited with ' +
 				  `code ${code} and signal ${signal}`);
 	});
-	
+
 	//This handeler reads error data from the Client
 	twistedClient.stderr.on('data', function(data) {console.log(data.toString()); alert("Error:" + data.toString());});
 });
