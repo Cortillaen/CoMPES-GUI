@@ -1,14 +1,15 @@
 
-		html {
+		/*html {
 	    	text-align:center;
 	    	background-blend-mode: multiply;
 			background-color: rgba(0, 188, 212, 0);
 	    	background-image: url("../images/background3.png");
 	    	background-size: 100em 80em;
 			background-repeat: no-repeat;
-		}
+		}*/
 		body {
 			font-family: 'Effra', "Helvetica Neue",Arial,sans-serif;
+			background-image: url("../images/background3.png");
 			font-size: 1.2em;
 		}
 		h1 {
@@ -49,7 +50,7 @@
 		}
 		button:hover {
 			background-color: rgb(47, 45, 45)!important;
-		}	
+		}
 		p {
 			font-family: "Helvetica Neue", Arial, sans-serif;
 			color:#5e5e5e;
@@ -84,11 +85,11 @@
 
 		}
 		.usernameCont {
-		
+
 			border-radius: 2em;
 			display: flex;
 		    justify-content: center;
-		    padding: .5em; 
+		    padding: .5em;
 		    font-size: 2.5em;
 
 		}
@@ -96,10 +97,10 @@
 			border-radius: 2em;
 			display: flex;
 		    justify-content: center;
-		    padding: .5em; 
+		    padding: .5em;
 		    font-size: 2.5em;
 		}
-		
+
 		input {
 			font-size: .5em;
 			padding-left: .5em;
@@ -116,4 +117,35 @@
 			display: inline-block;
 			border: 2px solid #0a2f4e;
 			border-radius: 12px;
+			margin-top: 15px;
+		}
+		/* Remove the navbar's default margin-bottom and rounded borders */
+		.navbar.navbar-default {
+			margin-bottom: 0;
+			border-radius: 0;
+		}
+
+		/* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+		.row.content {height: 440px}
+
+		.sidenav {
+			padding-top: 20px;
+			background-color: yellow;
+			height: 100%;
+		}
+
+		footer {
+			background-color: #f1f1f1;
+			color: white;
+			padding: 15px;
+			margin-top: 15px;
+		}
+
+		/* On small screens, set height to 'auto' for sidenav and grid */
+		@media screen and (max-width: 767px) {
+			.sidenav {
+				height: auto;
+				padding: 15px;
+			}
+			.row.content {height:auto;}
 		}
