@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Network Definition</title>
+
+		<meta charset="utf-8" />
+		<link href="netconfig.css" type="text/css" rel="stylesheet" />
+
+
+	</head>
+	<body>
+<form action="signup-submit.php" method="post">
+<fieldset>
+<legend>Network Configurations:</legend><br>
+
+<label>Network ID:</label> 
+<input type="text" name="netID" size="16" />
+</fieldset>
+
+
+<div>
+<br>
+<fieldset>
+<legend>Policy Control:</legend><br>
+<label> PES MODE: </label>
+<input type="radio" name="mode" value="manual" checked> Manual
+<input type="radio" name="mode" value="autonomous"> Autonomous<br>
+
+<label> PE Algorithm: </label> 
+<select required>
+	<option value="">None</option>
+  <option value="alg1">Algorithm 1</option>
+  <option value="alg2">Algorithm 2</option>
+</select>
+</fieldset>
+</div>
+<div>
+<br>
+<button type="button">Save</button>
+<button type="button">Add Hubs</button>
+</div>
+</form>
+
+
+
+	</body>
+</html>
