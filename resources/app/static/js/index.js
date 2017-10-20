@@ -148,25 +148,25 @@ function viewmodel() {
 			https://knockoutjs.com/documentation/unobtrusive-event-handling.html is a good starting point
 		*/
 		var definedNetwork = {
-			"NetworkConfig" : { "PES_Mode" : /* Enforce or build */ "PE_Algorithm" : /* Algorithm choice */}
-			"Hubs" : [
-				"Hub-ID" : [
-					"Hub-Config" : { /* Hub Configuration TBD */}
+			"NetworkConfig" : { "PES_Mode" : "", "PE_Algorithm" : ""},
+			"Hubs" : {
+				"Hub-ID" : {
+					"Hub-Config" : { "" : ""},
 					"ACUs" : {
-						"ACU-ID" : [
-							"ID" : /* <User-ID>/<Hub-ID>/<ACU-ID> */
-							"Location_STR" : /* Country-Code/State/County/City/<Location Specific sub-categories> #Country Specific Format - i.e. USA */
-							"Location_GPS" : /* <GPS-Location String> #GPS format TBD with 450 team */
-							"Classification" : /* <Object-Type>/<Type-Specific Categorization Schema> */
-							"GUID" : /* "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" */
-							"States" : [/* ["<Initial State>", "<State>", ...] */ ]
-							"Actions" : [/* ["<Initial Action>", "<Action>", ...]*/]
-							"Semantic_Links" : [/* ["Hub-ID:ACU-ID", ...]*/]
+						"ACU-ID" : {
+							"ID" : {"" : ""},
+							"Location_STR" : {"" : ""},
+							"Location_GPS" : {"" : ""},
+							"Classification" : {"" : ""},
+							"GUID" : {"" : ""},
+							"States" : {"" : ""},
+							"Actions" : {"" : ""},
+							"Semantic_Links" : {"" : ""}
 							// Associative Rules - optional, add later, not a high priority
-						]
-					}
-				]
-			]
+						},
+					},
+				},
+			},
 		}
 	}
 
