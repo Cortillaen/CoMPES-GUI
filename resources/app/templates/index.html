@@ -157,10 +157,24 @@
         </fieldset>
       </div>
 
+      <div data-bind="foreach: hubs">
+        <div class="well">
+          <label>Hub ID: </label>
+          <input data-bind="value: id"></input>
+          <div data-bind="foreach: $data.acus">
+            <div class="well">
+              <label>ACU ID: </label>
+              <input data-bind="value: id"></input>
+            </div>
+          </div>
+          <button data-bind="click: function() { $root.addACU($data); }">Add ACU</button>
+        </div>
+      </div>
+
       <div>
       <br>
         <button type="submit">Save</button>
-        <button type="button">Add Hubs</button>
+        <button data-bind="click: addHub">Add Hub</button>
       </div>
 
       </form>
