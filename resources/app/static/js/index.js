@@ -156,9 +156,9 @@ function viewmodel() {
 		networkObject = {
 			"network_config" :
 				{
-					"network_ID" : "",
+				  "network_ID" : "",
 					"pes_mode" : "",
-				  "pe_algorithm" : ""
+				 	"pe_algorithm" : ""
 				},
 			"Hubs" :
 			{
