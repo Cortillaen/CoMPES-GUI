@@ -18,6 +18,12 @@ function viewmodel() {
 	//============================= Data Bindings & Variables ===============================
 	this.current_screen = ko.observable("login_screen");
 
+	//============================= Network Definition Page Variables =======================
+	this.network_ID = ko.observable("");
+	this.pes_mode = ko.observable("");
+	this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+	this.chosen_algorithm = ko.observable(this.pe_algorithms()[0]);
+
 	var networkObject = null; //object containing current network details in dictionary format
 
 	//==================================== Front-End ========================================
@@ -147,13 +153,25 @@ function viewmodel() {
 			We need to figure out how to access the dynamic form fields that will be added to the screen (addACU and addHub)
 			https://knockoutjs.com/documentation/unobtrusive-event-handling.html is a good starting point
 		*/
-		var definedNetwork = {
-			"NetworkConfig" : { "PES_Mode" : "", "PE_Algorithm" : ""},
-			"Hubs" : {
-				"Hub-ID" : {
-					"Hub-Config" : { "" : ""},
-					"ACUs" : {
-						"ACU-ID" : {
+		networkObject = {
+			"network_config" :
+				{
+					"network_ID" : "",
+					"pes_mode" : "",
+				  "pe_algorithm" : ""
+				},
+			"Hubs" :
+			{
+				"hub_ID" :
+				{
+					"Hub-Config" :
+					{
+						"" : ""
+					},
+					"ACUs" :
+					{
+						"ACU-ID" :
+						{
 							"ID" : {"" : ""},
 							"Location_STR" : {"" : ""},
 							"Location_GPS" : {"" : ""},
@@ -168,7 +186,16 @@ function viewmodel() {
 				},
 			},
 		}
-	}
+
+		networkObject.network_config.network_ID = this.network_ID();
+		networkObject.network_config.pes_mode = this.pes_mode();
+		networkObject.network_config.pe_algorithm = this.chosen_algorithm();
+
+		alert(networkObject.network_config.network_ID);
+		alert(networkObject.network_config.pes_mode);
+		alert(networkObject.network_config.pe_algorithm);
+
+	};
 
 	this.addACU = function() {
 		/*
@@ -178,7 +205,7 @@ function viewmodel() {
 		Output: HTML form fields for a new ACU to be added
 		Notes: Dynamic form fields need to be accessed properly to define the network correctly
 		*/
-	}
+	};
 
 	this.addHub = function() {
 		/*
@@ -188,7 +215,7 @@ function viewmodel() {
 		Output: HTML form fields for a new hub to be added
 		Notes: Dynamic form fields need to be accessed properly to define the network correctly
 		*/
-	}
+	};
 
 	//============================Backend============================================
 	/* Template of a communication function using ajax
@@ -398,7 +425,7 @@ function viewmodel() {
 				error: errorFunc
 		});
 	}
-}
+};
 //############################################### Document-Level js ######################################
 $(document).ready(function(){
 	/*
