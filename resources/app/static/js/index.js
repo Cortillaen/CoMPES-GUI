@@ -5,8 +5,24 @@ var path = require('path');
 
 const paths = {login:"/login", allNetworks:"/networks/all"}
 
+//###################################test stuff##############################
+
+function ACU() {
+	this.id = ko.observable("");
+}
+
+function Hub() {
+	this.id = ko.observable("");
+	this.config = ko.observable({"":""});
+	this.acus = ko.observableArray([]);
+
+	this.addACU = function() {
+		this.acus.push(new ACU())
+	};
+}
+
 //######################################## VIEWMODEL ########################################
-function viewmodel() {
+function Viewmodel() {
 	/*
 	Author: Trenton Nale
 	Description: Implements Knockout.js data bindings.  This includes all functions needed to operate
@@ -16,19 +32,22 @@ function viewmodel() {
 	Notes: Calling one of these functions must be done with `this.<functionName>(<params>);`
 	*/
 	//============================= Data Bindings & Variables ===============================
-	this.current_screen = ko.observable("login_screen");
+	var self = this;
+	self.current_screen = ko.observable("login_screen");
 
 	//============================= Network Definition Page Variables =======================
-	this.network_ID = ko.observable("");
-	this.pes_mode = ko.observable("");
-	this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
-	this.chosen_algorithm = ko.observable(this.pe_algorithms()[0]);
+	self.network_ID = ko.observable("");
+	self.pes_mode = ko.observable("");
+	self.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+	self.chosen_algorithm = ko.observable(self.pe_algorithms()[0]);
+
+	self.hubs = ko.observableArray([]);
 
 	var networkObject = null; //object containing current network details in dictionary format
 
 	//==================================== Front-End ========================================
 	//-------------------------------------- Login -------------------------------
-	this.gotoLogin = function() {
+	self.gotoLogin = function() {
 		/*
 		Author: Trenton Nale
 		Description: Transitions to the Login screen and closes any active communication
@@ -37,11 +56,11 @@ function viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		this.current_screen("login_screen");
+		self.current_screen("login_screen");
 		twistedClient.stdout.end();
 	}
 
-	this.signIn = function() {
+	self.signIn = function() {
 		/*
 		Author: Carey James, Trenton Nale
 		Description: Validates the user and uses gotoSelection to transition to the
@@ -56,7 +75,7 @@ function viewmodel() {
 
 		if (pass == "test" && user == "admin1") {
 			//alert("LOGIN SUCCESS");
-			this.gotoSelection();
+			self.gotoSelection();
 		}
 		else {
 			alert("Login failed. Try again.");
@@ -64,7 +83,7 @@ function viewmodel() {
 	}
 
 	//-------------------------------- Network Selection -------------------------
-	this.gotoSelection = function() {
+	self.gotoSelection = function() {
 		/*
 		Author: Trenton Nale
 		Description: Transitions to the Network Selection screen
@@ -72,11 +91,11 @@ function viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		this.current_screen("selection_screen");
-		this.getNetworkList(); //for testing purposes
+		self.current_screen("selection_screen");
+		self.getNetworkList(); //for testing purposes
 	}
 
-	this.loadNetwork = function() {
+	self.loadNetwork = function() {
 		/*
 		Author: Derek Lause
 		Description: Transitions to the Network Selection screen
@@ -87,7 +106,7 @@ function viewmodel() {
 		*/
 	}
 
-	this.selectionFillList = function(networkList) {
+	self.selectionFillList = function(networkList) {
 		/*
 		Author: Trenton Nale
 		Description: Attempts to fill the list of networks with information from the
@@ -100,7 +119,7 @@ function viewmodel() {
 	}
 
 	//------------------------------------ Map View ------------------------------
-	this.gotoMap = function() {
+	self.gotoMap = function() {
 		/*
 		Author: Trenton Nale
 		Description: Transitions to the Map View screen
@@ -108,11 +127,11 @@ function viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		this.current_screen("map_screen");
+		self.current_screen("map_screen");
 	}
 
 	//-------------------------------- Informational View ------------------------
-	this.gotoInformational = function() {
+	self.gotoInformational = function() {
 		/*
 		Author: Trenton Nale
 		Description: Transitions to the Informational View screen
@@ -120,11 +139,11 @@ function viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		this.current_screen("informational_screen");
+		self.current_screen("informational_screen");
 	}
 
 	//-------------------------------- Network Definition ------------------------
-	this.gotoDefinition = function(networkObject) {
+	self.gotoDefinition = function(networkObject) {
 		/*
 		Author: Trenton Nale
 		Description: Transitions to the Network Definition screen
@@ -138,10 +157,10 @@ function viewmodel() {
 			   will start empty and submitting the network will instruct CoMPES to
 			   create a new network.
 		*/
-		this.current_screen("definition_screen");
+		self.current_screen("definition_screen");
 	}
 
-	this.buildNDF = function() {
+	self.buildNDF = function() {
 		/*
 		Author: Derek Lause
 		Description: This function will take in the data from the HTML form fields and
@@ -158,7 +177,7 @@ function viewmodel() {
 				{
 					"network_ID" : "",
 					"pes_mode" : "",
-				  "pe_algorithm" : ""
+				  	"pe_algorithm" : ""
 				},
 			"Hubs" :
 			{
@@ -187,9 +206,9 @@ function viewmodel() {
 			},
 		}
 
-		networkObject.network_config.network_ID = this.network_ID();
-		networkObject.network_config.pes_mode = this.pes_mode();
-		networkObject.network_config.pe_algorithm = this.chosen_algorithm();
+		networkObject.network_config.network_ID = self.network_ID();
+		networkObject.network_config.pes_mode = self.pes_mode();
+		networkObject.network_config.pe_algorithm = self.chosen_algorithm();
 
 		alert(networkObject.network_config.network_ID);
 		alert(networkObject.network_config.pes_mode);
@@ -197,7 +216,7 @@ function viewmodel() {
 
 	};
 
-	this.addACU = function() {
+	self.addACU = function(hub) {
 		/*
 		Author: Derek Lause
 		Description: Adds a template form field for an ACU to be added on the network wanting to be defined
@@ -205,9 +224,10 @@ function viewmodel() {
 		Output: HTML form fields for a new ACU to be added
 		Notes: Dynamic form fields need to be accessed properly to define the network correctly
 		*/
+		hub.addACU();
 	};
 
-	this.addHub = function() {
+	self.addHub = function() {
 		/*
 		Author: Derek Lause
 		Description: Adds a template form field for a hub to be added on the network wanting to be defined
@@ -215,6 +235,7 @@ function viewmodel() {
 		Output: HTML form fields for a new hub to be added
 		Notes: Dynamic form fields need to be accessed properly to define the network correctly
 		*/
+		self.hubs.push(new Hub());
 	};
 
 	//============================Backend============================================
@@ -236,7 +257,7 @@ function viewmodel() {
 			   });
 	};*/
 
-	this.sendLogin = function(name, pass) {
+	self.sendLogin = function(name, pass) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends login attempt to CoMPES and reacts to the response.
@@ -246,14 +267,14 @@ function viewmodel() {
 			   If not, notifies the user to try again.
 		*/
 		var jsonParam = JSON.stringify({'rest-method':'get', 'path':paths['login'], 'data':[name, pass]});
-		this.sendMessage(jsonParam,
-						 function() { this.gotoSelection() },
+		self.sendMessage(jsonParam,
+						 function() { self.gotoSelection() },
 						 function() {
 							alert("Username and/or password not recognized.\nPlease try again.");
 						 });
 	};
 
-	this.sendRegister = function(name, pass) {
+	self.sendRegister = function(name, pass) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends user registration to CoMPES and reacts to the response.
@@ -263,12 +284,12 @@ function viewmodel() {
 			   If not, notifies the user to try again.
 		*/
 		var jsonParam = JSON.stringify({'rest-method':'post', 'path':paths['login'], 'data':[name, pass]});
-		this.sendMessage(jsonParam,
+		self.sendMessage(jsonParam,
 						 function() {},
 						 function() {});
 	};
 
-	this.getNetworkList = function() {
+	self.getNetworkList = function() {
 		/*
 		Author: Trenton Nale
 		Discription: Requests a list of networks from CoMPES, calls selectionFillList on the response
@@ -291,7 +312,7 @@ function viewmodel() {
 		});
 	};
 
-	this.connectToNetwork = function(selectedNetwork) {
+	self.connectToNetwork = function(selectedNetwork) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends connection request to CoMPES for the selected network
@@ -300,12 +321,12 @@ function viewmodel() {
 		Notes: N/A
 		*/
 		var jsonParam = JSON.stringify({'rest-method':'get', 'path':paths['networks'], 'data':[selectedNetwork]});
-		this.sendMessage(jsonParam,
+		self.sendMessage(jsonParam,
 						 function() {},
 						 function() {});
 	};
 
-	this.submitNetwork = function(networkDefinitionFile) {
+	self.submitNetwork = function(networkDefinitionFile) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends request to provision a new network
@@ -315,12 +336,12 @@ function viewmodel() {
 		*/
 		var jsonParam = JSON.stringify({'rest-method':'post', 'path':paths['networks'],
 										'data':[networkDefinitionFile]});
-		this.sendMessage(jsonParam,
+		self.sendMessage(jsonParam,
 						 function() {},
 						 function() {});
 	};
 
-	this.updateNetwork = function(networkDefinitionFile) {
+	self.updateNetwork = function(networkDefinitionFile) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends request to update a network with new details
@@ -330,12 +351,12 @@ function viewmodel() {
 		*/
 		var jsonParam = JSON.stringify({'rest-method':'patch', 'path':paths['networks'],
 										'data':[networkDefinitionFile]});
-		this.sendMessage(jsonParam,
+		self.sendMessage(jsonParam,
 						 function() {},
 						 function() {});
 	};
 
-	this.removeNetwork = function(networkID) {
+	self.removeNetwork = function(networkID) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends request to remove a network from CoMPES
@@ -344,12 +365,12 @@ function viewmodel() {
 		Notes: N/A
 		*/
 		var jsonParam = JSON.stringify({'rest-method':'delete', 'path':paths['networks'], 'data':[networkID]});
-		this.sendMessage(jsonParam,
+		self.sendMessage(jsonParam,
 						 function() {},
 						 function() {});
 	};
 
-	this.startNodeTracking = function(nodeID) {
+	self.startNodeTracking = function(nodeID) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends request to begin receiving updates from CoMPES on a node's status
@@ -358,12 +379,12 @@ function viewmodel() {
 		Notes: N/A
 		*/
 		var jsonParam = JSON.stringify({'rest-method':'put', 'path':paths['networks'], 'data':[nodeID]});
-		this.sendMessage(jsonParam,
+		self.sendMessage(jsonParam,
 						 function() {},
 						 function() {});
 	};
 
-	this.stopNodeTracking = function(nodeID) {
+	self.stopNodeTracking = function(nodeID) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends request to stop receiving updates from CoMPES on a node's status
@@ -372,12 +393,12 @@ function viewmodel() {
 		Notes: N/A
 		*/
 		var jsonParam = JSON.stringify({'rest-method':'put', 'path':paths['networks'], 'data':[nodeID]});
-		this.sendMessage(jsonParam,
+		self.sendMessage(jsonParam,
 						 function() {},
 						 function() {});
 	};
 
-	this.startNetworkTracking = function(networkID) {
+	self.startNetworkTracking = function(networkID) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends request to start receiving updates from CoMPES on a network's status
@@ -386,12 +407,12 @@ function viewmodel() {
 		Notes: This tracking will likely produce a heavy drain on network resources
 		*/
 		var jsonParam = JSON.stringify({'rest-method':'put', 'path':paths['networks'], 'data':[networkID]});
-		this.sendMessage(jsonParam,
+		self.sendMessage(jsonParam,
 						 function() {},
 						 function() {});
 	};
 
-	this.stopNetworkTracking = function() {
+	self.stopNetworkTracking = function() {
 		/*
 		Author: Trenton Nale
 		Discription: Sends request to stop receiving updates from CoMPES on a network's status
@@ -400,12 +421,12 @@ function viewmodel() {
 		Notes: N/A
 		*/
 		var jsonParam = JSON.stringify({'rest-method':'put', 'path':paths['networks'], 'data':[networkID]});
-		this.sendMessage(jsonParam,
+		self.sendMessage(jsonParam,
 						 function() {},
 						 function() {});
 	};
 
-	this.sendMessage = function(message, successFunc, errorFunc) {
+	self.sendMessage = function(message, successFunc, errorFunc) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends a message to the backend to be routed to CoMPES
@@ -436,7 +457,7 @@ $(document).ready(function(){
 	       that houses the Twisted Client.
 	*/
 	//Apply knockout data-bindings
-	ko.applyBindings(new viewmodel());
+	ko.applyBindings(new Viewmodel());
 
 	//Get path for twisted client
 	var file_path = path.join(path.join(path.join(path.dirname(__dirname),'static' ), 'py'), 'TwistedClient.py');
