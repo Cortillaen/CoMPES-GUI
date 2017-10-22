@@ -35,6 +35,11 @@ function Viewmodel() {
 	var self = this;
 	self.current_screen = ko.observable("login_screen");
 
+
+	//============================= Login Page Varialbes ====================================
+	self.user = ko.observable("");
+	self.pass = ko.observable("");
+
 	//============================= Network Definition Page Variables =======================
 	self.network_ID = ko.observable("");
 	self.pes_mode = ko.observable("");
@@ -70,11 +75,8 @@ function Viewmodel() {
 		Notes: Gets the username and password from their fields on the page and compares
 			   them against dummy values for now.
 		*/
-		let user = document.getElementById("loginForm").elements.item(0).value;
-		let pass = document.getElementById("loginForm").elements.item(1).value;
-
-		if (pass == "test" && user == "admin1") {
-			//alert("LOGIN SUCCESS");
+		if (self.user() === "admin1" && self.pass() === "test") {
+			alert("Login success! Moving to network selection...")
 			self.gotoSelection();
 		}
 		else {
