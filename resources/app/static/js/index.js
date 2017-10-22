@@ -177,11 +177,7 @@ function Viewmodel() {
 				{
 				  "network_ID" : "",
 					"pes_mode" : "",
-<<<<<<< HEAD
 				 	"pe_algorithm" : ""
-=======
-				  	"pe_algorithm" : ""
->>>>>>> 60265ec8599bdb364eff794c6f16aca3caee0827
 				},
 			"Hubs" :
 			{
