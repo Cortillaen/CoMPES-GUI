@@ -9,6 +9,11 @@ const paths = {login:"/login", allNetworks:"/networks/all"}
 
 function ACU() {
 	this.id = ko.observable("");
+	this.location_str = ko.observable("");
+	this.location_gps = ko.observable("");
+	this.classification = ko.observable("");
+	this.guid = ko.observable("");
+	this.
 }
 
 function Hub() {
@@ -193,14 +198,15 @@ function Viewmodel() {
 					{
 						"ACU-ID" :
 						{
-							"ID" : {"" : ""},
-							"Location_STR" : {"" : ""},
-							"Location_GPS" : {"" : ""},
-							"Classification" : {"" : ""},
-							"GUID" : {"" : ""},
-							"States" : {"" : ""},
+							"ID" : "",
+							"Location_STR" : "",
+							"Location_GPS" : "",
+							"Classification" : "",
+							"Interpreter_Type" : "",
+							"GUID" : "",
+							"States" : {"Initial_Action" : "", "Action" : ""},
 							"Actions" : {"" : ""},
-							"Semantic_Links" : {"" : ""}
+							"Semantic_Links" : {"hub_ID" : "", }
 							// Associative Rules - optional, add later, not a high priority
 						},
 					},
