@@ -1,53 +1,60 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>Network Definition</title>
+<head>
+    <meta charset="UTF-8">
+    <title>Network Selection</title>
+    <link rel="shortcut icon" type="image/x-icon" href="./images/logoPicE.png" />
+    <script type="text/javascript" src="./javascript/ndf.js"></script>
+    <link rel="stylesheet" href="ndf.css">
 
-		<meta charset="utf-8" />
-		<link href="netconfig.css" type="text/css" rel="stylesheet" />
+</head>
+<body>
+	<div class="deviceCont">
+		<form action="signup-submit.php" method="post">
+			<fieldset>
+			<legend>Hub Configurations:</legend><br>
+
+			<label>Hub ID:</label> 
+			<input type="text" name="hubID" size="16" /><br>
+			<br>
+			<label> IP Verification: </label>
+			<input type="text" name="ip" size="16" /> &nbsp;
+			<button type="button">Test</button> &nbsp;
+			<label> ok, connecting, fail</label><br>
+			</fieldset>
+			</form>
+
+	<div class="interpCont">
+		<br>
+		<fieldset>
+		<legend>Middleware: </legend><br>
+		<br>
+		<input type="text" name="mode" size= "16"> 
+		<br>
+		<br>
+		<button type="button">Add Middleware</button>
+		<br>
+		</fieldset>
+		<br>
+
+		<textarea rows="8" cols="43" placeholder="Middleware info..." disabled="disabled"></textarea><br>
+
+	</div>
+
+	<div class="buttons">
+	<br>
+	<button type="button">Save</button>
+	<button type="button">Add Hubs</button>
+	</div>
+	</div>
+
+    <div class="image">
+	<br>
+	<br>
+        <img src="./images/logoBigE.png" alt="Logo">
+    </div>
 
 
-	</head>
-	<body>
-<form action="signup-submit.php" method="post">
-<fieldset>
-<legend>Hub Configurations:</legend><br>
-
-<label>Hub ID:</label> 
-<input type="text" name="hubID" size="16" /><br>
-<br>
-<label> IP Verification: </label>
-<input type="text" name="ip" size="16" /> &nbsp;
-<button type="button">Test</button> &nbsp;
-<label> ok, connecting, fail</label><br>
-</fieldset>
-
-
-
-
-<div>
-<br>
-<fieldset>
-<legend>Middleware: </legend><br>
-<br>
-<input type="text" name="mode" size= "16"> 
-<br>
-<br>
-<button type="button">Add Middleware</button>
-<br>
-</fieldset>
-<br>
-
-<textarea rows="8" cols="190" placeholder="Middleware info..." disabled="disabled"></textarea><br>
-
-</div>
-<div>
-<br>
-<button type="button">Save</button>
-<button type="button">Add Hubs</button>
-</div>
-
-</form>
 
 
 
