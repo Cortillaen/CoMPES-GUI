@@ -164,7 +164,18 @@
           <div data-bind="foreach: $data.acus">
             <div class="well">
               <label>ACU ID: </label>
-              <input data-bind="value: id"></input>
+              <input type="text" data-bind="value: id"></input>
+              <label>Location String: </label>
+              <input type="text" data-bind="value: location_str"></input>
+              <label>Location GPS: </label>
+              <input type="text" data-bind="value: location_gps"></input>
+              <label>Classification: </label>
+              <input type="text" data-bind="value: classification"></input>
+              <label>GUID: </label>
+              <input type="text" data-bind="value: guid"></input>
+              <label>Interpreter Type: </label>
+              <input data-bind="value: interpreter_type"></input>
+
             </div>
           </div>
           <button data-bind="click: function() { $root.addACU($data); }">Add ACU</button>

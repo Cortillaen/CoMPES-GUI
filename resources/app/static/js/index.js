@@ -9,6 +9,11 @@ const paths = {login:"/login", allNetworks:"/networks/all"}
 
 function ACU() {
 	this.id = ko.observable("");
+	this.location_str = ko.observable("");
+	this.location_gps = ko.observable("");
+	this.classification = ko.observable("");
+	this.guid = ko.observable("");
+	this.interpreter_type = ko.observable("");
 }
 
 function Hub() {
@@ -34,6 +39,11 @@ function Viewmodel() {
 	//============================= Data Bindings & Variables ===============================
 	var self = this;
 	self.current_screen = ko.observable("login_screen");
+
+
+	//============================= Login Page Varialbes ====================================
+	self.user = ko.observable("");
+	self.pass = ko.observable("");
 
 	//============================= Network Definition Page Variables =======================
 	self.network_ID = ko.observable("");
@@ -70,11 +80,8 @@ function Viewmodel() {
 		Notes: Gets the username and password from their fields on the page and compares
 			   them against dummy values for now.
 		*/
-		let user = document.getElementById("loginForm").elements.item(0).value;
-		let pass = document.getElementById("loginForm").elements.item(1).value;
-
-		if (pass == "test" && user == "admin1") {
-			//alert("LOGIN SUCCESS");
+		if (self.user() === "admin1" && self.pass() === "test") {
+			alert("Login success! Moving to network selection...")
 			self.gotoSelection();
 		}
 		else {
@@ -181,28 +188,22 @@ function Viewmodel() {
 				},
 			"Hubs" :
 			{
-				"hub_ID" :
-				{
-					"Hub-Config" :
-					{
-						"" : ""
-					},
+				"hub_ID" : [],
+				"hub_config" : [],
 					"ACUs" :
 					{
-						"ACU-ID" :
-						{
-							"ID" : {"" : ""},
-							"Location_STR" : {"" : ""},
-							"Location_GPS" : {"" : ""},
-							"Classification" : {"" : ""},
-							"GUID" : {"" : ""},
-							"States" : {"" : ""},
-							"Actions" : {"" : ""},
-							"Semantic_Links" : {"" : ""}
+							"id" : [],
+							"location_str" : [],
+							"location_gps" : [],
+							"classification" : [],
+							"interpreter_type" : [],
+							"guid" : [],
+							"States" : {"Initial_Action" : "", "Action" : ""},
+							"Actions" : [],
+							"Semantic_Links" : {"hub_ID" : "", "acu_ID" : ""}
 							// Associative Rules - optional, add later, not a high priority
-						},
+
 					},
-				},
 			},
 		}
 
@@ -210,10 +211,36 @@ function Viewmodel() {
 		networkObject.network_config.pes_mode = self.pes_mode();
 		networkObject.network_config.pe_algorithm = self.chosen_algorithm();
 
+		for(var i = 0; i < self.hubs().length; i++)
+		{
+			var current_hub = i;
+			self.putHub(self.hubs()[i], current_hub);
+
+			for(var j = 0; j < self.hubs()[current_hub].acus().length; j++)
+			{
+				self.putACU(self.hubs()[current_hub].acus()[j], j);
+			}
+		}
+
+
 		alert(networkObject.network_config.network_ID);
 		alert(networkObject.network_config.pes_mode);
 		alert(networkObject.network_config.pe_algorithm);
+		for(var i = 0; i < self.hubs().length; i++)
+		{
+			var position = i;
+			alert(networkObject.Hubs.hub_ID[i]);
 
+			for(var j = 0; j < self.hubs()[position].acus().length; j++)
+			{
+				alert(networkObject.Hubs.ACUs.id[j]);
+				alert(networkObject.Hubs.ACUs.location_str[j]);
+				alert(networkObject.Hubs.ACUs.location_gps[j]);
+				alert(networkObject.Hubs.ACUs.classification[j]);
+				alert(networkObject.Hubs.ACUs.guid[j]);
+				alert(networkObject.Hubs.ACUs.interpreter_type[j]);
+			}
+		}
 	};
 
 	self.addACU = function(hub) {
@@ -227,6 +254,21 @@ function Viewmodel() {
 		hub.addACU();
 	};
 
+	self.putACU = function(acu, position) {
+		/*
+		Author: Derek Lause
+		Description: Puts the ACU information into local memory for the program to access
+		Input:
+		Output:
+		Notes: Dynamic form fields need to be accessed properly to define the network correctly
+		*/
+		networkObject.Hubs.ACUs.id[position] = acu.id();
+		networkObject.Hubs.ACUs.location_str[position] = acu.location_str();
+		networkObject.Hubs.ACUs.location_gps[position] = acu.location_gps();
+		networkObject.Hubs.ACUs.classification[position] = acu.classification();
+		networkObject.Hubs.ACUs.guid[position] = acu.guid();
+		networkObject.Hubs.ACUs.interpreter_type[position] = acu.interpreter_type();
+	}
 	self.addHub = function() {
 		/*
 		Author: Derek Lause
@@ -237,6 +279,18 @@ function Viewmodel() {
 		*/
 		self.hubs.push(new Hub());
 	};
+
+	self.putHub = function(hub, position) {
+		/*
+		Author: Derek Lause
+		Description: Puts the hub information into local memory for the program to access
+		Input: a hub
+		Output: networkObject containing hub information
+		Notes: Dynamic form fields need to be accessed properly to define the network correctly
+		*/
+	 networkObject.Hubs.hub_ID[position] = hub.id();
+	 networkObject.Hubs.hub_config[position] = hub.config();
+	}
 
 	//============================Backend============================================
 	/* Template of a communication function using ajax
