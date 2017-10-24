@@ -140,7 +140,7 @@
           <fieldset>
       	     <legend>Network Configurations:</legend><br>
       	        <label>Network ID:</label>
-      		      <input type="text" data-bind="value: network_ID"/>
+      		      <input type="text" data-bind="value: networkObject.network_ID"/>
           </fieldset>
 
       <div>
@@ -148,16 +148,16 @@
         <fieldset>
           <legend>Policy Control:</legend><br>
             <label> PES MODE: </label>
-              <input type="radio" name="manual" value="manual" data-bind="checked: pes_mode" checked> Manual
-              <input type="radio" name="autonomous" value="autonomous" data-bind="checked: pes_mode"> Autonomous<br>
+              <input type="radio" name="manual" value="manual" data-bind="checked: networkObject.pes_mode" checked> Manual
+              <input type="radio" name="autonomous" value="autonomous" data-bind="checked: networkObject.pes_mode"> Autonomous<br>
 
             <label> PE Algorithm: </label>
-              <select data-bind="options: pe_algorithms, selectedOptions: chosen_algorithm" required>
+              <select data-bind="options: networkObject.pe_algorithms, selectedOptions: networkObject.chosen_algorithm" required>
                </select>
         </fieldset>
       </div>
 
-      <div data-bind="foreach: hubs">
+      <div data-bind="foreach: networkObject.hubs">
         <div class="well">
           <label>Hub ID: </label>
           <input data-bind="value: id"></input>

@@ -41,19 +41,23 @@ function Viewmodel() {
 	self.current_screen = ko.observable("login_screen");
 
 
+	function NetworkObject() {
+		this.network_ID = ko.observable("");
+		this.pes_mode = ko.observable("");
+		this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+		this.chosen_algorithm = ko.observable(this.pe_algorithms()[0]);
+		this.hubs = ko.observableArray([]);
+		this.testvar = "asfdaosfigjsaigwagjaigjoaiv";
+	}
+
+	self.networkObject = new NetworkObject();
+
 	//============================= Login Page Varialbes ====================================
 	self.user = ko.observable("");
 	self.pass = ko.observable("");
 
 	//============================= Network Definition Page Variables =======================
-	self.network_ID = ko.observable("");
-	self.pes_mode = ko.observable("");
-	self.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
-	self.chosen_algorithm = ko.observable(self.pe_algorithms()[0]);
 
-	self.hubs = ko.observableArray([]);
-
-	var networkObject = null; //object containing current network details in dictionary format
 
 	//==================================== Front-End ========================================
 	//-------------------------------------- Login -------------------------------
@@ -179,66 +183,16 @@ function Viewmodel() {
 			We need to figure out how to access the dynamic form fields that will be added to the screen (addACU and addHub)
 			https://knockoutjs.com/documentation/unobtrusive-event-handling.html is a good starting point
 		*/
-		networkObject = {
-			"network_config" :
-				{
-				  "network_ID" : "",
-					"pes_mode" : "",
-				 	"pe_algorithm" : ""
-				},
-			"Hubs" :
-			{
-				"hub_ID" : [],
-				"hub_config" : [],
-					"ACUs" :
-					{
-							"id" : [],
-							"location_str" : [],
-							"location_gps" : [],
-							"classification" : [],
-							"interpreter_type" : [],
-							"guid" : [],
-							"States" : {"Initial_Action" : "", "Action" : ""},
-							"Actions" : [],
-							"Semantic_Links" : {"hub_ID" : "", "acu_ID" : ""}
-							// Associative Rules - optional, add later, not a high priority
 
-					},
-			},
-		}
-
-		networkObject.network_config.network_ID = self.network_ID();
-		networkObject.network_config.pes_mode = self.pes_mode();
-		networkObject.network_config.pe_algorithm = self.chosen_algorithm();
-
-		for(var i = 0; i < self.hubs().length; i++)
-		{
-			var current_hub = i;
-			self.putHub(self.hubs()[i], current_hub);
-
-			for(var j = 0; j < self.hubs()[current_hub].acus().length; j++)
-			{
-				self.putACU(self.hubs()[current_hub].acus()[j], j);
-			}
-		}
-
-
-		alert(networkObject.network_config.network_ID);
-		alert(networkObject.network_config.pes_mode);
-		alert(networkObject.network_config.pe_algorithm);
+		console.log(ko.toJSON(this.networkObject));
 		for(var i = 0; i < self.hubs().length; i++)
 		{
 			var position = i;
-			alert(networkObject.Hubs.hub_ID[i]);
+			console.log(networkObject.Hubs.hub_ID[i]);
 
 			for(var j = 0; j < self.hubs()[position].acus().length; j++)
 			{
-				alert(networkObject.Hubs.ACUs.id[j]);
-				alert(networkObject.Hubs.ACUs.location_str[j]);
-				alert(networkObject.Hubs.ACUs.location_gps[j]);
-				alert(networkObject.Hubs.ACUs.classification[j]);
-				alert(networkObject.Hubs.ACUs.guid[j]);
-				alert(networkObject.Hubs.ACUs.interpreter_type[j]);
+				console.log(networkObject.Hubs.ACUs.id[j]);
 			}
 		}
 	};
@@ -277,7 +231,7 @@ function Viewmodel() {
 		Output: HTML form fields for a new hub to be added
 		Notes: Dynamic form fields need to be accessed properly to define the network correctly
 		*/
-		self.hubs.push(new Hub());
+		self.networkObject.hubs.push(new Hub());
 	};
 
 	self.putHub = function(hub, position) {
