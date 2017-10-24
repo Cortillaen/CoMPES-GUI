@@ -161,6 +161,8 @@
         <div class="well">
           <label>Hub ID: </label>
           <input data-bind="value: id"></input>
+		  <label>Hub Configurations</label>
+		  <input data-bind="value: config"></input>
           <div data-bind="foreach: $data.acus">
             <div class="well">
               <label>ACU ID: </label>
@@ -178,7 +180,7 @@
 
             </div>
           </div>
-          <button data-bind="click: function() { $root.addACU($data); }">Add ACU</button>
+          <button data-bind="click: $data.addACU">Add ACU</button>
         </div>
       </div>
 
