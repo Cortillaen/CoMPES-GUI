@@ -5,7 +5,7 @@ var path = require('path');
 
 const paths = {login:"/login", allNetworks:"/networks/all"}
 
-//###################################test stuff##############################
+//################################### DATA STRUCTURES ##############################
 
 function ACU() {
 	this.id = ko.observable("");
@@ -18,12 +18,20 @@ function ACU() {
 
 function Hub() {
 	this.id = ko.observable("");
-	this.config = ko.observable({"":""});
+	this.config = ko.observable("");
 	this.acus = ko.observableArray([]);
 
 	this.addACU = function() {
 		this.acus.push(new ACU())
 	};
+}
+
+function NetworkObject() {
+	this.network_ID = ko.observable("");
+	this.pes_mode = ko.observable("");
+	this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+	this.chosen_algorithm = ko.observable(this.pe_algorithms()[0]);
+	this.hubs = ko.observableArray([]);
 }
 
 //######################################## VIEWMODEL ########################################
@@ -39,17 +47,6 @@ function Viewmodel() {
 	//============================= Data Bindings & Variables ===============================
 	var self = this;
 	self.current_screen = ko.observable("login_screen");
-
-
-	function NetworkObject() {
-		this.network_ID = ko.observable("");
-		this.pes_mode = ko.observable("");
-		this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
-		this.chosen_algorithm = ko.observable(this.pe_algorithms()[0]);
-		this.hubs = ko.observableArray([]);
-		this.testvar = "asfdaosfigjsaigwagjaigjoaiv";
-	}
-
 	self.networkObject = new NetworkObject();
 
 	//============================= Login Page Varialbes ====================================
@@ -197,32 +194,6 @@ function Viewmodel() {
 		}
 	};
 
-	self.addACU = function(hub) {
-		/*
-		Author: Derek Lause
-		Description: Adds a template form field for an ACU to be added on the network wanting to be defined
-		Input: N/A
-		Output: HTML form fields for a new ACU to be added
-		Notes: Dynamic form fields need to be accessed properly to define the network correctly
-		*/
-		hub.addACU();
-	};
-
-	self.putACU = function(acu, position) {
-		/*
-		Author: Derek Lause
-		Description: Puts the ACU information into local memory for the program to access
-		Input:
-		Output:
-		Notes: Dynamic form fields need to be accessed properly to define the network correctly
-		*/
-		networkObject.Hubs.ACUs.id[position] = acu.id();
-		networkObject.Hubs.ACUs.location_str[position] = acu.location_str();
-		networkObject.Hubs.ACUs.location_gps[position] = acu.location_gps();
-		networkObject.Hubs.ACUs.classification[position] = acu.classification();
-		networkObject.Hubs.ACUs.guid[position] = acu.guid();
-		networkObject.Hubs.ACUs.interpreter_type[position] = acu.interpreter_type();
-	}
 	self.addHub = function() {
 		/*
 		Author: Derek Lause
@@ -233,18 +204,6 @@ function Viewmodel() {
 		*/
 		self.networkObject.hubs.push(new Hub());
 	};
-
-	self.putHub = function(hub, position) {
-		/*
-		Author: Derek Lause
-		Description: Puts the hub information into local memory for the program to access
-		Input: a hub
-		Output: networkObject containing hub information
-		Notes: Dynamic form fields need to be accessed properly to define the network correctly
-		*/
-	 networkObject.Hubs.hub_ID[position] = hub.id();
-	 networkObject.Hubs.hub_config[position] = hub.config();
-	}
 
 	//============================Backend============================================
 	/* Template of a communication function using ajax
