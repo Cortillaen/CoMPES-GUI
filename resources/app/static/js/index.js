@@ -8,7 +8,7 @@ const paths = {login:"/login", allNetworks:"/networks/all"}
 //################################### DATA STRUCTURES ##############################
 
 function ACU() {
-	this.id = ko.observable("");
+	this.id = ko.observable("ACU name");
 	this.location_str = ko.observable("");
 	this.location_gps = ko.observable("");
 	this.classification = ko.observable("");
@@ -17,7 +17,7 @@ function ACU() {
 }
 
 function Hub() {
-	this.id = ko.observable("");
+	this.id = ko.observable("Hub name");
 	this.config = ko.observable("");
 	this.acus = ko.observableArray([]);
 
@@ -27,7 +27,7 @@ function Hub() {
 }
 
 function NetworkObject() {
-	this.network_ID = ko.observable("");
+	this.network_ID = ko.observable("Network Name");
 	this.pes_mode = ko.observable("");
 	this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
 	this.chosen_algorithm = ko.observable(this.pe_algorithms()[0]);
@@ -136,6 +136,7 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		self.current_screen("map_screen");
+		$('#network_hierarchy').bonsai();
 	}
 
 	//-------------------------------- Informational View ------------------------
@@ -263,7 +264,6 @@ function Viewmodel() {
 		Input: N/A
 		Output: N/A
 		Notes: If the request fails, logs the error information to the console
-
 		var jsonParam = JSON.stringify({'rest-method':'get', 'path':paths['allNetworks'], 'data':[]});
 		this.sendMessage(jsonParam,
 						 function(response) { alert(response); },
