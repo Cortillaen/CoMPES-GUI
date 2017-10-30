@@ -17,13 +17,8 @@ function ACU() {
 }
 
 function Hub() {
-<<<<<<< HEAD
-	this.id = ko.observable("");
-	this.hub_config = {"middleware" : ko.observable("")}
-=======
 	this.id = ko.observable("Hub name");
-	this.config = ko.observable("");
->>>>>>> ef037ac0ec619ba421741414a45450eda2719295
+	this.hub_config = {"middleware" : ko.observable("")}
 	this.acus = ko.observableArray([]);
 
 	this.addACU = function() {
@@ -32,18 +27,11 @@ function Hub() {
 }
 
 function NetworkObject() {
-<<<<<<< HEAD
-	this.network_ID = ko.observable("");
+	this.network_ID = ko.observable("Network Name");
 	this.network_config = {"pes_mode" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])}
 	//this.pes_mode = ko.observable("");
 	//this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
 	this.chosen_algorithm = ko.observable(this.network_config.pe_algorithms()[0]);
-=======
-	this.network_ID = ko.observable("Network Name");
-	this.pes_mode = ko.observable("");
-	this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
-	this.chosen_algorithm = ko.observable(this.pe_algorithms()[0]);
->>>>>>> ef037ac0ec619ba421741414a45450eda2719295
 	this.hubs = ko.observableArray([]);
 }
 
@@ -60,6 +48,7 @@ function Viewmodel() {
 	//============================= Data Bindings & Variables ===============================
 	var self = this;
 	self.current_screen = ko.observable("login_screen");
+    self.current_config = ko.observable("network_config")
 	self.networkObject = new NetworkObject();
 
 	//============================= Login Page Varialbes ====================================
@@ -218,6 +207,26 @@ function Viewmodel() {
 		*/
 		self.networkObject.hubs.push(new Hub());
 	};
+    
+    self.displayNetworkConfig = function() {
+        self.current_config("network_config");
+    };
+    
+    self.hubButton = function() {
+        self.addHub();
+        self.displayHubConfig();
+    }
+    
+    self.acuButton = function() {
+        self.
+    }
+    self.displayHubConfig = function() {
+        self.current_config("hub_config");
+    };
+    
+    self.displayACUConfig = function() {
+        self.current_config("acu_config");
+    };
 
 	//============================Backend============================================
 	/* Template of a communication function using ajax

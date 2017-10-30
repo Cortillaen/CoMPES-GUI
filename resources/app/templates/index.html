@@ -80,6 +80,7 @@
       <img class="center-block" src="../static/images/logoBigE.png">
     </div>
   </script>
+  <!-- End of Login Screen -->
 
   <!-- Network Selection Screen -->
   <script type="text/html" id="selection_screen">
@@ -96,6 +97,7 @@
       </div>
     </div>
   </script>
+  <!-- End of Network Selection Screen -->
 
   <!-- Map Screen -->
   <script type="text/html" id="map_screen">
@@ -124,6 +126,7 @@
       </div>
     </div>
   </script>
+  <!-- End of Map Screen -->
 
   <!-- Informational Screen -->
   <script type="text/html" id="informational_screen">
@@ -146,18 +149,51 @@
       </div>
     </div>
   </script>
+    <!-- End of Informational Screen -->
 
   <!-- Network Definition Screen -->
   <script type="text/html" id="definition_screen">
       <div class="page-header"><h1>Network Definition</h1></div>
+      <div id="config-menu" data-bind="template: {name: current_config}" class="well well-lg">
+          <!-- The desired configuration will be placed into this template.--> 
+      </div>
         <form id="form-group" data-bind="submit: buildNDF">
+
+      <div>
+
+      </div>
+            
+      <div>
+      <br>
+        <button type="submit">Save</button>
+        <button data-bind="click: hubButton">Add Hub</button>
+          <button data-bind="click: $data.addACU">Add ACU</button>
+      </div>
+
+      </form>
+
+	<div class="publishBar">
+	 <div class="divider"></div>
+	 <button class="pbButtons"> NEW NETWORK </button> 
+	 <div class="divider"></div>
+	 <button class="pbButtons"> SAVE </button>
+	 <div class="divider"></div>
+	 <button class="pbButtons"> EDIT </button>
+	 <div class="divider"></div> 
+	 <button class="pbButtons"> DELETE </button>
+	 <div class="divider"></div>
+	 <button class="pbButtons"> Connect </button>
+	 <div class="divider"></div>
+	 <button class="pbButtons"> Disconnect </button>
+	</div>
+  </script>
+    
+  <script type="text/html" id="network_config">
           <fieldset>
       	     <legend>Network Configurations:</legend><br>
       	        <label>Network ID:</label>
       		      <input type="text" data-bind="value: networkObject.network_ID"/>
           </fieldset>
-
-      <div>
       <br>
         <fieldset>
           <legend>Policy Control:</legend><br>
@@ -169,14 +205,19 @@
               <select data-bind="options: networkObject.network_config.pe_algorithms, selectedOptions: networkObject.chosen_algorithm" required>
                </select>
         </fieldset>
-      </div>
-
-      <div data-bind="foreach: networkObject.hubs">
-        <div class="well">
+  </script>
+    
+  <script type="text/html" id="hub_config">
+     <div data-bind="foreach: networkObject.hubs">
           <label>Hub ID: </label>
           <input data-bind="value: id"></input>
 		  <label>Hub Configurations</label>
 		  <input data-bind="value: config"></input>
+          
+      </div>
+  </script>
+    
+  <script type="text/html" id="acu_config">
           <div data-bind="foreach: $data.acus">
             <div class="well">
               <label>ACU ID: </label>
@@ -194,18 +235,9 @@
 
             </div>
           </div>
-          <button data-bind="click: $data.addACU">Add ACU</button>
-        </div>
-      </div>
-
-      <div>
-      <br>
-        <button type="submit">Save</button>
-        <button data-bind="click: addHub">Add Hub</button>
-      </div>
-
-      </form>
   </script>
+    
+  <!-- End of Network Definition Page -->
 
   <script>
     // You can also require other files to run in this process
