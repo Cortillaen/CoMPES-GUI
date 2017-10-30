@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="description" content="Sidebar, well, banner, publish bar for NDF forms.">
+    <meta name="author" content="Josue Portillo">
+	<link rel="shortcut icon" type="image/x-icon" href="./images/logoPicE.png" />
+
+
+    <!-- Bootstrap core JavaScript -->
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/bootstrap.min.js"></script>
+	
+	<!-- Bootstrap core CSS -->
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="./css/ndfbase.css" rel="stylesheet">
+	<title>Network Definition</title>
+
+</head>
+<body>
+
+<button id="menu-toggle" class="tButton">Hide/Display Networks</button>
+
+<div class="overall">
+	<div id="wrapper">
+		<div id="sidebar-wrapper">
+			<div class="sidebar-nav">
+				<form id="searchBar">
+					<input type="text" name="search" placeholder="Search...">
+				</form>
+				<ul class="tree-list">
+                    <li><a href="#">Network 1<label for="l1"></label></a><input  id="l1" name="iddd" type="checkbox">
+						     <ul>
+					<li><a href="#">Hub 1<label for="l1i1"></label></a><input id="l1i1" type="checkbox">
+							<ol>
+					 <li><a href="#">ACU 1</a></li>
+					 <li><a href="#">ACU 2</a></li>
+							</ol>
+					</li>
+					<li><a href="#">Hub 2</a></li>
+							</ul>
+					</li>
+					<li><a href="#">Network 2 </a></li>
+					<li><a href="#">Network 3 </a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Menu Toggle Script -->
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    </script>
+	<div class="infoCont">
+        <strong>Logged in as: </strong>
+		<br>
+		<br>
+		<br>
+		<br>
+        <button class="pbButtons"> Logout </button> <button class="pbButtons"> Help </button>
+    </div>
+	<div class="bannerCont">
+        <img src="./images/logoBigE.png" alt="Logo">
+    </div>
+	<div class="content">
+	<div class="well well-lg">
+		Here will be the different selections for Hub, Network, and Device selections.
+    </div>
+	</div>
+	<div class="publishBar">
+	 <div class="divider"></div>
+	 <button class="pbButtons"> NEW NETWORK </button> 
+	 <div class="divider"></div>
+	 <button class="pbButtons"> SAVE </button>
+	 <div class="divider"></div>
+	 <button class="pbButtons"> EDIT </button>
+	 <div class="divider"></div> 
+	 <button class="pbButtons"> DELETE </button>
+	 <div class="divider"></div>
+	 <button class="pbButtons"> Connect </button>
+	 <div class="divider"></div>
+	 <button class="pbButtons"> Disconnect </button>
+	</div>
+	</div>
+
+</body>
+</html>

@@ -8,7 +8,7 @@ const paths = {login:"/login", allNetworks:"/networks/all"}
 //################################### DATA STRUCTURES ##############################
 
 function ACU() {
-	this.id = ko.observable("");
+	this.id = ko.observable("ACU name");
 	this.location_str = ko.observable("");
 	this.location_gps = ko.observable("");
 	this.classification = ko.observable("");
@@ -17,8 +17,13 @@ function ACU() {
 }
 
 function Hub() {
+<<<<<<< HEAD
 	this.id = ko.observable("");
 	this.hub_config = {"middleware" : ko.observable("")}
+=======
+	this.id = ko.observable("Hub name");
+	this.config = ko.observable("");
+>>>>>>> ef037ac0ec619ba421741414a45450eda2719295
 	this.acus = ko.observableArray([]);
 
 	this.addACU = function() {
@@ -27,11 +32,18 @@ function Hub() {
 }
 
 function NetworkObject() {
+<<<<<<< HEAD
 	this.network_ID = ko.observable("");
 	this.network_config = {"pes_mode" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])}
 	//this.pes_mode = ko.observable("");
 	//this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
 	this.chosen_algorithm = ko.observable(this.network_config.pe_algorithms()[0]);
+=======
+	this.network_ID = ko.observable("Network Name");
+	this.pes_mode = ko.observable("");
+	this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+	this.chosen_algorithm = ko.observable(this.pe_algorithms()[0]);
+>>>>>>> ef037ac0ec619ba421741414a45450eda2719295
 	this.hubs = ko.observableArray([]);
 }
 
@@ -137,6 +149,7 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		self.current_screen("map_screen");
+		$('#network_hierarchy').bonsai();
 	}
 
 	//-------------------------------- Informational View ------------------------
@@ -264,7 +277,6 @@ function Viewmodel() {
 		Input: N/A
 		Output: N/A
 		Notes: If the request fails, logs the error information to the console
-
 		var jsonParam = JSON.stringify({'rest-method':'get', 'path':paths['allNetworks'], 'data':[]});
 		this.sendMessage(jsonParam,
 						 function(response) { alert(response); },
