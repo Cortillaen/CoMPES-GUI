@@ -18,7 +18,7 @@ function ACU() {
 
 function Hub() {
 	this.id = ko.observable("");
-	this.config = ko.observable("");
+	this.hub_config = {"middleware" : ko.observable("")}
 	this.acus = ko.observableArray([]);
 
 	this.addACU = function() {
@@ -28,9 +28,10 @@ function Hub() {
 
 function NetworkObject() {
 	this.network_ID = ko.observable("");
-	this.pes_mode = ko.observable("");
-	this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
-	this.chosen_algorithm = ko.observable(this.pe_algorithms()[0]);
+	this.network_config = {"pes_mode" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])}
+	//this.pes_mode = ko.observable("");
+	//this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+	this.chosen_algorithm = ko.observable(this.network_config.pe_algorithms()[0]);
 	this.hubs = ko.observableArray([]);
 }
 

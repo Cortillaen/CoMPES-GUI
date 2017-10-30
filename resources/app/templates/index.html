@@ -152,7 +152,7 @@
               <input type="radio" name="autonomous" value="autonomous" data-bind="checked: networkObject.pes_mode"> Autonomous<br>
 
             <label> PE Algorithm: </label>
-              <select data-bind="options: networkObject.pe_algorithms, selectedOptions: networkObject.chosen_algorithm" required>
+              <select data-bind="options: networkObject.network_config.pe_algorithms, selectedOptions: networkObject.chosen_algorithm" required>
                </select>
         </fieldset>
       </div>
