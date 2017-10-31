@@ -48,6 +48,48 @@ function Viewmodel() {
 	//============================= Data Bindings & Variables ===============================
 	var self = this;
 	self.current_screen = ko.observable("login_screen");
+	self.operation_screen = ko.computed(function() {
+		if(self.current_screen() == "login_screen")
+			return "login_screen";
+		else if(self.current_screen() == "selection_screen")
+			return "selection_screen";
+		else if(self.current_screen() == "map_screen")
+			return "network_frame";
+		else if(self.current_screen() == "informational_screen")
+			return "network_frame";
+		else if(self.current_screen() == "definition_screen_network")
+			return "network_frame";
+		else if(self.current_screen() == "definition_screen_hub")
+			return "network_frame";
+		else if(self.current_screen() == "definition_screen_acu")
+			return "network_frame";
+		else
+			alert("Current Screen Not Recognized");
+	}, self)
+	self.operation_subscreen = ko.computed(function() {
+		if(self.current_screen() == "map_screen")
+			return "map_subscreen";
+		else if(self.current_screen() == "informational_screen")
+			return "informational_subscreen"
+		else if(self.current_screen() == "definition_screen_network")
+			return "definition_subscreen";
+		else if(self.current_screen() == "definition_screen_hub")
+			return "definition_subscreen";
+		else if(self.current_screen() == "definition_screen_acu")
+			return "definition_subscreen";
+		else
+			return "map_subscreen";
+	}, self)
+	self.definition_part = ko.computed(function() {
+		if(self.current_screen() == "definition_screen_network")
+			return "definition_part_network";
+		else if(self.current_screen() == "definition_screen_hub")
+			return "definition_part_hub";
+		else if(self.current_screen() == "definition_screen_acu")
+			return "definition_part_acu";
+		else
+			return "definition_part_acu";
+	}, self)
     self.current_config = ko.observable("network_config")
 	self.networkObject = new NetworkObject();
 
@@ -151,6 +193,7 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		self.current_screen("informational_screen");
+		$('#network_hierarchy').bonsai();
 	}
 
 	//-------------------------------- Network Definition ------------------------
@@ -168,7 +211,8 @@ function Viewmodel() {
 			   will start empty and submitting the network will instruct CoMPES to
 			   create a new network.
 		*/
-		self.current_screen("definition_screen");
+		self.current_screen("definition_screen_network");
+		$('#network_hierarchy').bonsai();
 	}
 
 	self.buildNDF = function() {
@@ -218,7 +262,7 @@ function Viewmodel() {
     }
     
     self.acuButton = function() {
-        self.
+        //self.
     }
     self.displayHubConfig = function() {
         self.current_config("hub_config");
