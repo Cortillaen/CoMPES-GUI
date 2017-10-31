@@ -18,7 +18,7 @@ function ACU() {
 
 function Hub() {
 	this.id = ko.observable("Hub name");
-	this.config = ko.observable("");
+	this.hub_config = {"middleware" : ko.observable("")}
 	this.acus = ko.observableArray([]);
 
 	this.addACU = function() {
@@ -28,9 +28,10 @@ function Hub() {
 
 function NetworkObject() {
 	this.network_ID = ko.observable("Network Name");
-	this.pes_mode = ko.observable("");
-	this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
-	this.chosen_algorithm = ko.observable(this.pe_algorithms()[0]);
+	this.network_config = {"pes_mode" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])}
+	//this.pes_mode = ko.observable("");
+	//this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+	this.chosen_algorithm = ko.observable(this.network_config.pe_algorithms()[0]);
 	this.hubs = ko.observableArray([]);
 }
 
@@ -47,6 +48,49 @@ function Viewmodel() {
 	//============================= Data Bindings & Variables ===============================
 	var self = this;
 	self.current_screen = ko.observable("login_screen");
+	self.operation_screen = ko.computed(function() {
+		if(self.current_screen() == "login_screen")
+			return "login_screen";
+		else if(self.current_screen() == "selection_screen")
+			return "selection_screen";
+		else if(self.current_screen() == "map_screen")
+			return "network_frame";
+		else if(self.current_screen() == "informational_screen")
+			return "network_frame";
+		else if(self.current_screen() == "definition_screen_network")
+			return "network_frame";
+		else if(self.current_screen() == "definition_screen_hub")
+			return "network_frame";
+		else if(self.current_screen() == "definition_screen_acu")
+			return "network_frame";
+		else
+			alert("Current Screen Not Recognized");
+	}, self)
+	self.operation_subscreen = ko.computed(function() {
+		if(self.current_screen() == "map_screen")
+			return "map_subscreen";
+		else if(self.current_screen() == "informational_screen")
+			return "informational_subscreen"
+		else if(self.current_screen() == "definition_screen_network")
+			return "definition_subscreen";
+		else if(self.current_screen() == "definition_screen_hub")
+			return "definition_subscreen";
+		else if(self.current_screen() == "definition_screen_acu")
+			return "definition_subscreen";
+		else
+			return "map_subscreen";
+	}, self)
+	self.definition_part = ko.computed(function() {
+		if(self.current_screen() == "definition_screen_network")
+			return "definition_part_network";
+		else if(self.current_screen() == "definition_screen_hub")
+			return "definition_part_hub";
+		else if(self.current_screen() == "definition_screen_acu")
+			return "definition_part_acu";
+		else
+			return "definition_part_acu";
+	}, self)
+    self.current_config = ko.observable("network_config")
 	self.networkObject = new NetworkObject();
 
 	//============================= Login Page Varialbes ====================================
@@ -149,6 +193,7 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		self.current_screen("informational_screen");
+		$('#network_hierarchy').bonsai();
 	}
 
 	//-------------------------------- Network Definition ------------------------
@@ -166,7 +211,8 @@ function Viewmodel() {
 			   will start empty and submitting the network will instruct CoMPES to
 			   create a new network.
 		*/
-		self.current_screen("definition_screen");
+		self.current_screen("definition_screen_network");
+		$('#network_hierarchy').bonsai();
 	}
 
 	self.buildNDF = function() {
@@ -205,6 +251,26 @@ function Viewmodel() {
 		*/
 		self.networkObject.hubs.push(new Hub());
 	};
+    
+    self.displayNetworkConfig = function() {
+        self.current_config("network_config");
+    };
+    
+    self.hubButton = function() {
+        self.addHub();
+        self.displayHubConfig();
+    }
+    
+    self.acuButton = function() {
+        //self.
+    }
+    self.displayHubConfig = function() {
+        self.current_config("hub_config");
+    };
+    
+    self.displayACUConfig = function() {
+        self.current_config("acu_config");
+    };
 
 	//============================Backend============================================
 	/* Template of a communication function using ajax
