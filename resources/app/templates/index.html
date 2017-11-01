@@ -101,7 +101,7 @@
   <script type="text/html" id="network_frame">
     <div class="row content">
       <div class="col-sm-3 sidenav" style="text-align:left">
-  
+
         <ol id='network_hierarchy' data-name='test'>
           <li><span data-bind="text: networkObject.network_ID, click: function() {alert('You clicked ' + networkObject.network_ID());}"></span>
             <ol><!-- ko foreach: { data: networkObject.hubs } -->
@@ -113,7 +113,7 @@
             <!-- /ko --></ol>
           </li>
         </ol>
-    
+
       </div>
       <div class="col-sm-9" id="network_screen_holder" data-bind="template: {name: operation_subscreen}">
         Interactive visualization of currently-selected level
@@ -127,10 +127,8 @@
     <div class="container text-center">
       <div class="page-header"><h1>Map View</h1></div>
       <h1>Grid</h1>
-<<<<<<< HEAD
-        <div class="row content">
+        <!--div class="row content"-->
         <div class="col-sm-3 sidenav" style="text-align:left">
-
 			<ol id='network_hierarchy' data-name='test'>
 				<li><span data-bind="text: networkObject.network_ID, click: function() {alert('You clicked ' + networkObject.network_ID());}"></span>
 					<ol><!-- ko foreach: { data: networkObject.hubs } -->
@@ -142,11 +140,9 @@
 					<!-- /ko --></ol>
 				</li>
 			</ol>
-
         </div>
-=======
+
       <div class="row content">
->>>>>>> 5b4aec1eed1e54a35a15e1e4d313154210489292
         <div class="col-sm-9" style="background-color:pink;">
           Interactive visualization of currently-selected level
         </div>
@@ -179,19 +175,19 @@
   <script type="text/html" id="definition_subscreen">
       <div class="page-header"><h1>Network Definition</h1></div>
       <div id="config-menu" data-bind="template: {name: definition_part}" class="well well-lg">
-          <!-- The desired configuration will be placed into this template.--> 
+          <!-- The desired configuration will be placed into this template.-->
       </div>
-        <form id="form-group" data-bind="submit: buildNDF">
+        <form class="form-group" data-bind="submit: buildNDF">
 
       <div>
 
       </div>
-            
+
       <div>
       <br>
         <button type="submit">Save</button>
-        
-          
+
+
       </div>
 
       </form>
@@ -199,12 +195,12 @@
       <!--
 	<div class="publishBar">
 	 <div class="divider"></div>
-	 <button class="pbButtons"> NEW NETWORK </button> 
+	 <button class="pbButtons"> NEW NETWORK </button>
 	 <div class="divider"></div>
 	 <button class="pbButtons"> SAVE </button>
 	 <div class="divider"></div>
 	 <button class="pbButtons"> EDIT </button>
-	 <div class="divider"></div> 
+	 <div class="divider"></div>
 	 <button class="pbButtons"> DELETE </button>
 	 <div class="divider"></div>
 	 <button class="pbButtons"> Connect </button>
@@ -213,36 +209,36 @@
 	</div>
   -->
   </script>
-    
+
   <script type="text/html" id="definition_part_network">
+    <div class="row form-inline">
     <fieldset>
-      <legend>Network Configurations:</legend><br>
+      <legend>Network Configurations:</legend>
       <label>Network ID:</label>
       <input type="text" data-bind="value: networkObject.network_ID"/>
-    </fieldset>
-    <br>
-    <fieldset>
-      <legend>Policy Control:</legend><br>
+      <legend>Policy Control:</legend>
       <label> PES MODE: </label>
-      <input type="radio" name="manual" value="manual" data-bind="checked: networkObject.pes_mode" checked> Manual
-      <input type="radio" name="autonomous" value="autonomous" data-bind="checked: networkObject.pes_mode"> Autonomous<br>
+      <input type="radio" name="manual" value="manual" data-bind="value: networkObject.pes_mode" checked> Manual
+      <input type="radio" name="autonomous" value="autonomous" data-bind="value: networkObject.pes_mode"> Autonomous<br>
 
       <label> PE Algorithm: </label>
       <select data-bind="options: networkObject.network_config.pe_algorithms, selectedOptions: networkObject.chosen_algorithm" required></select>
     </fieldset>
+  </div>
     <button data-bind="click: hubButton">Add Hub</button>
   </script>
-    
+
   <script type="text/html" id="definition_part_hub">
     <div data-bind="foreach: networkObject.hubs">
       <label>Hub ID: </label>
-      <input data-bind="value: id"></input>
-		  <label>Hub Configurations</label>
-		  <input data-bind="value: config"></input>
-      <button data-bind="click: $data.addACU">Add ACU</button>
+      <input data-bind="value: id"></input><br>
+		  <label>Middleware: </label>
+		  <input data-bind="value: hub_config.middleware"></input><br><br>
     </div>
+    <button data-bind="click: hubButton">Add Hub</button>
+    <button data-bind="click: acuButton">Add ACU</button>
   </script>
-    
+
   <script type="text/html" id="definition_part_acu">
           <div data-bind="foreach: $data.acus">
             <div class="well">
@@ -262,7 +258,7 @@
             </div>
           </div>
   </script>
-    
+
   <!-- End of Network Definition Page -->
 
   <script>

@@ -40,6 +40,9 @@
 		.image{
 			padding: 4em;
 		}
+		input {
+			vertical-align: top	;
+		}
 		button {
 			border-radius: .3em;
 			font-size: 2em;
