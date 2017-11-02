@@ -90,7 +90,7 @@ function Viewmodel() {
 		else
 			return "definition_part_acu";
 	}, self)
-    self.current_config = ko.observable("network_config")
+
 	self.networkObject = new NetworkObject();
 
 	//============================= Login Page Varialbes ====================================
@@ -229,7 +229,8 @@ function Viewmodel() {
 		*/
 
 		console.log(ko.toJSON(this.networkObject));
-		for(var i = 0; i < self.hubs().length; i++)
+
+		/*(for(var i = 0; i < self.hubs().length; i++)
 		{
 			var position = i;
 			console.log(networkObject.Hubs.hub_ID[i]);
@@ -238,7 +239,7 @@ function Viewmodel() {
 			{
 				console.log(networkObject.Hubs.ACUs.id[j]);
 			}
-		}
+		}*/
 	};
 
 	self.addHub = function() {
@@ -251,26 +252,16 @@ function Viewmodel() {
 		*/
 		self.networkObject.hubs.push(new Hub());
 	};
-    
-    self.displayNetworkConfig = function() {
-        self.current_config("network_config");
-    };
-    
+
     self.hubButton = function() {
         self.addHub();
-        self.displayHubConfig();
+        self.current_screen("definition_screen_hub");
     }
-    
+
     self.acuButton = function() {
-        //self.
+        self.networkObject.hubs()[i].addACU();
+				self.current_screen("definition_screen_acu");
     }
-    self.displayHubConfig = function() {
-        self.current_config("hub_config");
-    };
-    
-    self.displayACUConfig = function() {
-        self.current_config("acu_config");
-    };
 
 	//============================Backend============================================
 	/* Template of a communication function using ajax

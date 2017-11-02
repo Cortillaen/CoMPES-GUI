@@ -11,7 +11,7 @@ let mainWindow
 
 function createWindow () {
   mainWindow = new BrowserWindow({width: 800, height: 600})
-  
+
   /*const template = [
   {
 	  label: 'Login Page',
@@ -34,21 +34,21 @@ function createWindow () {
 	  click: () => {console.log('info view nav needs finish');}
   }
   ]
-  
+
   menu = Menu.buildFromTemplate(template)
-  Menu.setApplicationMenu(menu)*/
+  Menu.setApplicationMenu(null)*/
 
   mainWindow.loadURL(url.format({
   pathname: path.join(path.join(path.dirname(path.dirname(__dirname)), 'templates'), 'index.html'),
   protocol: 'file:',
   slashes: true,
-  
+
 }))
 
   mainWindow.on('closed', function () {
     mainWindow = null
   })
-  
+
   mainWindow.maximize();
   mainWindow.setResizable(false);
 }
