@@ -4,6 +4,7 @@ var child_process = require('child_process')
 var path = require('path');
 
 const paths = {login:"/login", allNetworks:"/networks/all"}
+//ko.options.deferUpdates = true;
 
 //################################### DATA STRUCTURES ##############################
 
@@ -18,17 +19,18 @@ function ACU() {
 
 function Hub() {
 	this.id = ko.observable("Hub name");
-	this.hub_config = {"middleware" : ko.observable("")}
+	this.hub_config = {"middleware" : ko.observable("")};
 	this.acus = ko.observableArray([]);
 
 	this.addACU = function() {
-		this.acus.push(new ACU())
+		alert("adding ACU");
+		this.acus.push(new ACU());
 	};
 }
 
 function NetworkObject() {
 	this.network_ID = ko.observable("Network Name");
-	this.network_config = {"pes_mode" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])}
+	this.network_config = {"pes_mode" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])};
 	//this.pes_mode = ko.observable("");
 	//this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
 	this.chosen_algorithm = ko.observable(this.network_config.pe_algorithms()[0]);
@@ -65,7 +67,7 @@ function Viewmodel() {
 			return "network_frame";
 		else
 			alert("Current Screen Not Recognized");
-	}, self)
+	}, self);
 	self.operation_subscreen = ko.computed(function() {
 		if(self.current_screen() == "map_screen")
 			return "map_subscreen";
@@ -79,7 +81,7 @@ function Viewmodel() {
 			return "definition_subscreen";
 		else
 			return "map_subscreen";
-	}, self)
+	}, self);
 	self.definition_part = ko.computed(function() {
 		if(self.current_screen() == "definition_screen_network")
 			return "definition_part_network";
@@ -87,20 +89,28 @@ function Viewmodel() {
 			return "definition_part_hub";
 		else if(self.current_screen() == "definition_screen_acu")
 			return "definition_part_acu";
-		else
-			return "definition_part_acu";
-	}, self)
+		else {
+			return "definition_part_network";
+		}
+	}, self).extend({deferred: true});
 
 	self.networkObject = new NetworkObject();
+	self.selectedItem = ko.observable(self.networkObject).extend({deferred: true});
 
-	//============================= Login Page Varialbes ====================================
+	//============================= Login Page Variables ====================================
 	self.user = ko.observable("");
 	self.pass = ko.observable("");
 
-	//============================= Network Definition Page Variables =======================
-
-
 	//==================================== Front-End ========================================
+	self.sidebarClick = function(clickedItem) {
+		if(self.operation_subscreen() == "map_subscreen")
+			self.mapSidebarClick(clickedItem);
+		else if(self.operation_subscreen() == "informational_subscreen")
+			self.informationalSidebarClick(clickedItem);
+		else if(self.operation_subscreen() == "definition_subscreen")
+			self.definitionSidebarClick(clickedItem);
+	}
+
 	//-------------------------------------- Login -------------------------------
 	self.gotoLogin = function() {
 		/*
@@ -117,7 +127,8 @@ function Viewmodel() {
 
 	self.signIn = function() {
 		/*
-		Author: Carey James, Trenton Nale
+		Author: Carey James
+		Contributors: Trenton Nale
 		Description: Validates the user and uses gotoSelection to transition to the
 					 Network Selection screen
 		Input: N/A
@@ -183,6 +194,13 @@ function Viewmodel() {
 		$('#network_hierarchy').bonsai();
 	}
 
+	self.mapSidebarClick = function(clickedItem) {
+		if(clickedItem.network_ID)
+			alert("You clicked on " + clickedItem.network_ID() + " on the Map Screen.");
+		else
+			alert("You clicked on " + clickedItem.id() + " on the Map Screen.");
+	}
+
 	//-------------------------------- Informational View ------------------------
 	self.gotoInformational = function() {
 		/*
@@ -194,6 +212,10 @@ function Viewmodel() {
 		*/
 		self.current_screen("informational_screen");
 		$('#network_hierarchy').bonsai();
+	}
+
+	self.informationalSidebarClick = function(clickedItem) {
+		alert("You clicked on " + clickedItem.id() + " on the Informational Screen.");
 	}
 
 	//-------------------------------- Network Definition ------------------------
@@ -213,6 +235,26 @@ function Viewmodel() {
 		*/
 		self.current_screen("definition_screen_network");
 		$('#network_hierarchy').bonsai();
+	}
+
+	self.definitionSidebarClick = function(clickedItem) {
+		if(clickedItem.constructor.name == "NetworkObject") {
+			alert(clickedItem.constructor.name);
+			self.selectedItem(clickedItem);
+			self.current_screen("definition_screen_network");
+		}
+		else if(clickedItem.constructor.name == "Hub") {
+			alert(clickedItem.constructor.name);
+			self.current_screen("definition_screen_hub");
+			self.selectedItem(clickedItem);
+		}
+		else if(clickedItem.constructor.name == "ACU") {
+			alert(clickedItem.constructor.name);
+			self.selectedItem(clickedItem);
+			self.current_screen("definition_screen_acu");
+		}
+		else
+			alert("clickedItem not recognized");
 	}
 
 	self.buildNDF = function() {
