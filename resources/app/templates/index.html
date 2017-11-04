@@ -159,26 +159,18 @@
   <!-- Network Definition Screen -->
   <script type="text/html" id="definition_subscreen">
       <div class="page-header"><h1>Network Definition</h1></div>
-      <div id="config-menu" data-bind="template: {name: definition_part, data: selectedItem}" class="well well-lg">
+      <div id="config-menu" data-bind="template: {name: 'definition_part', data: selectedItem}" class="well well-lg">
           <!-- The desired configuration will be placed into this template.-->
       </div>
-        <form class="form-group" data-bind="submit: buildNDF">
-
-      <div>
-
-      </div>
-
-      <div>
-      <br>
-        <button type="submit">Save</button>
-
-
-      </div>
-
+      <form class="form-group" data-bind="submit: buildNDF">
+        <div>
+          <button type="submit">Save</button>
+        </div>
       </form>
   </script>
 
-  <script type="text/html" id="definition_part_network">
+  <script type="text/html" id="definition_part">
+    <!-- ko if: ($data.constructor.name == "NetworkObject") -->
     <div class="row form-inline">
       <fieldset>
         <legend>Network Configurations:</legend>
@@ -194,17 +186,17 @@
       </fieldset>
     </div>
     <button data-bind="click: $root.addHub">Add Hub</button>
-  </script>
+    <!-- /ko -->
 
-  <script type="text/html" id="definition_part_hub">
+    <!-- ko if: ($data.constructor.name == "Hub") -->
     <label>Hub ID: </label>
     <input data-bind="value: id"></input><br>
 		<label>Middleware: </label>
 		<input data-bind="value: hub_config.middleware"></input><br><br>
     <button data-bind="click: addACU">Add ACU</button>
-  </script>
+    <!-- /ko -->
 
-  <script type="text/html" id="definition_part_acu">
+    <!-- ko if: ($data.constructor.name == "ACU") -->
     <label>ACU ID: </label>
     <input type="text" data-bind="value: id"></input>
     <label>Location String: </label>
@@ -217,6 +209,7 @@
     <input type="text" data-bind="value: guid"></input>
     <label>Interpreter Type: </label>
     <input data-bind="value: interpreter_type"></input>
+    <!-- /ko -->
   </script>
 
   <!-- End of Network Definition Page -->

@@ -3,54 +3,73 @@ var twistedClient;
 var child_process = require('child_process')
 var path = require('path');
 
-const paths = {login:"/login", allNetworks:"/networks/all"}
-//ko.options.deferUpdates = true;
-
-//################################### DATA STRUCTURES ##############################
-
-function ACU() {
-	this.id = ko.observable("ACU name");
-	this.location_str = ko.observable("");
-	this.location_gps = ko.observable("");
-	this.classification = ko.observable("");
-	this.guid = ko.observable("");
-	this.interpreter_type = ko.observable("");
-}
-
-function Hub() {
-	this.id = ko.observable("Hub name");
-	this.hub_config = {"middleware" : ko.observable("")};
-	this.acus = ko.observableArray([]);
-
-	this.addACU = function() {
-		alert("adding ACU");
-		this.acus.push(new ACU());
-	};
-}
-
-function NetworkObject() {
-	this.network_ID = ko.observable("Network Name");
-	this.network_config = {"pes_mode" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])};
-	//this.pes_mode = ko.observable("");
-	//this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
-	this.chosen_algorithm = ko.observable(this.network_config.pe_algorithms()[0]);
-	this.hubs = ko.observableArray([]);
-}
-
 //######################################## VIEWMODEL ########################################
 function Viewmodel() {
 	/*
 	Author: Trenton Nale
+	Contributors: Derek Lause
 	Description: Implements Knockout.js data bindings.  This includes all functions needed to operate
 				 the forward-facing portion of the GUI app.
 	Input: N/A
 	Output: N/A
 	Notes: Calling one of these functions must be done with `this.<functionName>(<params>);`
 	*/
+	//================================ Data Structures ======================================
+	function ACU() {
+		/*
+		Author: Trenton Nale
+		Description: Representation of a CoMPES ACU and associated data
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
+		this.id = ko.observable("ACU name");
+		this.location_str = ko.observable("");
+		this.location_gps = ko.observable("");
+		this.classification = ko.observable("");
+		this.guid = ko.observable("");
+		this.interpreter_type = ko.observable("");
+	}
+
+	function Hub() {
+		/*
+		Author: Trenton Nale
+		Description: Representation of a CoMPES hub and associated data
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
+		this.id = ko.observable("Hub name");
+		this.hub_config = {"middleware" : ko.observable("")};
+		this.acus = ko.observableArray([]);
+
+		this.addACU = function() {
+			this.acus.push(new ACU());
+			self.bonsai();
+		};
+	}
+
+	function NetworkObject() {
+		/*
+		Author: Derek Lause
+		Contributors: Trenton Nale
+		Description: Representation of a CoMPES network and associated data
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
+		this.network_ID = ko.observable("Network Name");
+		this.network_config = {"pes_mode" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])};
+		//this.pes_mode = ko.observable("");
+		//this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+		this.chosen_algorithm = ko.observable(this.network_config.pe_algorithms()[0]);
+		this.hubs = ko.observableArray([]);
+	}
+
 	//============================= Data Bindings & Variables ===============================
 	var self = this;
-	self.current_screen = ko.observable("login_screen");
-	self.operation_screen = ko.computed(function() {
+	self.current_screen = ko.observable("login_screen"); //single point of update for current screen
+	self.operation_screen = ko.computed(function() { //top-level screen template
 		if(self.current_screen() == "login_screen")
 			return "login_screen";
 		else if(self.current_screen() == "selection_screen")
@@ -68,7 +87,7 @@ function Viewmodel() {
 		else
 			alert("Current Screen Not Recognized");
 	}, self);
-	self.operation_subscreen = ko.computed(function() {
+	self.operation_subscreen = ko.computed(function() { //sub-screen template
 		if(self.current_screen() == "map_screen")
 			return "map_subscreen";
 		else if(self.current_screen() == "informational_screen")
@@ -82,27 +101,45 @@ function Viewmodel() {
 		else
 			return "map_subscreen";
 	}, self);
-	self.definition_part = ko.computed(function() {
-		if(self.current_screen() == "definition_screen_network")
-			return "definition_part_network";
-		else if(self.current_screen() == "definition_screen_hub")
-			return "definition_part_hub";
-		else if(self.current_screen() == "definition_screen_acu")
-			return "definition_part_acu";
-		else {
-			return "definition_part_network";
-		}
-	}, self).extend({deferred: true});
 
 	self.networkObject = new NetworkObject();
 	self.selectedItem = ko.observable(self.networkObject).extend({deferred: true});
+	self.bonsaidList = null;
 
 	//============================= Login Page Variables ====================================
 	self.user = ko.observable("");
 	self.pass = ko.observable("");
 
+	//=================================General Functions=====================================
+	self.bonsai = function() {
+		/*
+		Author: Trenton Nale
+		Description: Bonsais the network hierarchy list in the sidebar or updates it for changes in data
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
+		if(!self.bonsaidList) {
+			$('#network_hierarchy').bonsai();
+			self.bonsaidList = $('#network_hierarchy').data('bonsai');
+			self.bonsaidList.expandAll();
+		}
+		else {
+			self.bonsaidList.update();
+			self.bonsaidList.expandAll();
+		}
+	}
+
 	//==================================== Front-End ========================================
 	self.sidebarClick = function(clickedItem) {
+		/*
+		Author: Trenton Nale
+		Description: Hook for each screen's sidebar click handler
+		Input: clickedItem - the data element associated with the clicked DOM element
+		Output: N/A
+		Notes: This function is needed so a single function can be bound to the click event even though
+			   each screen has its own handler.
+		*/
 		if(self.operation_subscreen() == "map_subscreen")
 			self.mapSidebarClick(clickedItem);
 		else if(self.operation_subscreen() == "informational_subscreen")
@@ -123,6 +160,7 @@ function Viewmodel() {
 		*/
 		self.current_screen("login_screen");
 		twistedClient.stdout.end();
+		self.bonsaidList = null;
 	}
 
 	self.signIn = function() {
@@ -156,6 +194,7 @@ function Viewmodel() {
 		*/
 		self.current_screen("selection_screen");
 		self.getNetworkList(); //for testing purposes
+		self.bonsaidList = null;
 	}
 
 	self.loadNetwork = function() {
@@ -191,10 +230,17 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		self.current_screen("map_screen");
-		$('#network_hierarchy').bonsai();
+		self.bonsai();
 	}
 
 	self.mapSidebarClick = function(clickedItem) {
+		/*
+		Author: Trenton Nale
+		Description: Sidebar click handler for Map Screen
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
 		if(clickedItem.network_ID)
 			alert("You clicked on " + clickedItem.network_ID() + " on the Map Screen.");
 		else
@@ -211,10 +257,17 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		self.current_screen("informational_screen");
-		$('#network_hierarchy').bonsai();
+		self.bonsai();
 	}
 
 	self.informationalSidebarClick = function(clickedItem) {
+		/*
+		Author: Trenton Nale
+		Description: Sidebar click handler for Informational Screen
+		Input: clickedItem - the data element associated with the clicked DOM element
+		Output: N/A
+		Notes: N/A
+		*/
 		alert("You clicked on " + clickedItem.id() + " on the Informational Screen.");
 	}
 
@@ -234,22 +287,28 @@ function Viewmodel() {
 			   create a new network.
 		*/
 		self.current_screen("definition_screen_network");
-		$('#network_hierarchy').bonsai();
+		self.bonsai();
 	}
 
 	self.definitionSidebarClick = function(clickedItem) {
+		/*
+		Author: Trenton Nale
+		Description: Updates the active data element with clickedItem and changes the Definition
+					 Screen's internal template to the correct type (NetworkObject, Hub, or ACU)
+					 so the data is ready for editting
+		Input: clickedItem - the data element associated with the clicked DOM element
+		Output: N/A
+		Notes: N/A
+		*/
 		if(clickedItem.constructor.name == "NetworkObject") {
-			alert(clickedItem.constructor.name);
 			self.selectedItem(clickedItem);
 			self.current_screen("definition_screen_network");
 		}
 		else if(clickedItem.constructor.name == "Hub") {
-			alert(clickedItem.constructor.name);
-			self.current_screen("definition_screen_hub");
 			self.selectedItem(clickedItem);
+			self.current_screen("definition_screen_hub");
 		}
 		else if(clickedItem.constructor.name == "ACU") {
-			alert(clickedItem.constructor.name);
 			self.selectedItem(clickedItem);
 			self.current_screen("definition_screen_acu");
 		}
@@ -287,23 +346,15 @@ function Viewmodel() {
 	self.addHub = function() {
 		/*
 		Author: Derek Lause
+		Contributors: Trenton Nale
 		Description: Adds a template form field for a hub to be added on the network wanting to be defined
 		Input: N/A
 		Output: HTML form fields for a new hub to be added
 		Notes: Dynamic form fields need to be accessed properly to define the network correctly
 		*/
 		self.networkObject.hubs.push(new Hub());
+		self.bonsai();
 	};
-
-    self.hubButton = function() {
-        self.addHub();
-        self.current_screen("definition_screen_hub");
-    }
-
-    self.acuButton = function() {
-        self.networkObject.hubs()[i].addACU();
-				self.current_screen("definition_screen_acu");
-    }
 
 	//============================Backend============================================
 	/* Template of a communication function using ajax
