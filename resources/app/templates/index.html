@@ -182,7 +182,7 @@
         <input type="radio" name="autonomous" value="autonomous" data-bind="value: network_config.pes_mode"> Autonomous<br>
 
         <label> PE Algorithm: </label>
-        <select data-bind="options: network_config.pe_algorithms, selectedOptions: chosen_algorithm" required></select>
+        <select data-bind="options: $root.pe_algorithms, selectedOptions: chosen_algorithm" required></select>
       </fieldset>
     </div>
     <button data-bind="click: $root.addHub">Add Hub</button>

@@ -59,10 +59,10 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.network_ID = ko.observable("Network Name");
-		this.network_config = {"pes_mode" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])};
+		this.network_config = {"pes_mode" : ko.observable("")};
 		//this.pes_mode = ko.observable("");
 		//this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
-		this.chosen_algorithm = ko.observable(this.network_config.pe_algorithms()[0]);
+		this.chosen_algorithm = ko.observable(self.pe_algorithms()[0]);
 		this.hubs = ko.observableArray([]);
 	}
 
@@ -101,6 +101,7 @@ function Viewmodel() {
 		else
 			return "map_subscreen";
 	}, self);
+	self.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
 
 	self.networkObject = new NetworkObject();
 	self.selectedItem = ko.observable(self.networkObject).extend({deferred: true});
