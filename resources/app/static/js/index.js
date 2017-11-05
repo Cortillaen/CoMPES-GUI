@@ -59,9 +59,7 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.network_ID = ko.observable("Network Name");
-		this.network_config = {"pes_mode" : ko.observable("")};
-		//this.pes_mode = ko.observable("");
-		//this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+		this.network_config = {"pes_mode" : ko.observable("manual")};
 		this.chosen_algorithm = ko.observable(self.pe_algorithms()[0]);
 		this.hubs = ko.observableArray([]);
 	}
