@@ -203,12 +203,12 @@
         <label>Network ID:</label>
         <input type="text" data-bind="value: network_ID"/>
         <legend>Policy Control:</legend>
-        <label> PES MODE: </label>
-        <input type="radio" name="manual" value="manual" data-bind="value: network_config.pes_mode" checked> Manual
-        <input type="radio" name="autonomous" value="autonomous" data-bind="value: network_config.pes_mode"> Autonomous<br>
+        <label> PES Mode: </label>
+        <input type="radio" name="pes mode" value="manual" data-bind="checked: network_config.pes_mode" checked> Manual
+        <input type="radio" name="pes mode" value="autonomous" data-bind="checked: network_config.pes_mode"> Autonomous<br>
 
         <label> PE Algorithm: </label>
-        <select data-bind="options: network_config.pe_algorithms, selectedOptions: chosen_algorithm" required></select>
+        <select data-bind="options: $root.pe_algorithms, selectedOptions: chosen_algorithm" required></select>
       </fieldset>
     </div>
     <button data-bind="click: $root.addHub">Add Hub</button>
