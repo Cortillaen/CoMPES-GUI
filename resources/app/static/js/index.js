@@ -3,7 +3,6 @@ var twistedClient;
 var child_process = require('child_process')
 var path = require('path');
 
-<<<<<<< HEAD
 const paths = {login:"/login", allNetworks:"/networks/all"}
 
 //################################### DATA STRUCTURES ##############################
@@ -37,8 +36,6 @@ function NetworkObject() {
 	this.hubs = ko.observableArray([]);
 }
 
-=======
->>>>>>> 5d0d564fc201d9ff089d3ed7d64b70df5a5784be
 //######################################## VIEWMODEL ########################################
 function Viewmodel() {
 	/*
@@ -396,7 +393,6 @@ function Viewmodel() {
 		self.bonsai();
 	};
 
-<<<<<<< HEAD
     self.hubButton = function() {
         self.addHub();
         self.current_screen("definition_screen_hub");
@@ -407,8 +403,6 @@ function Viewmodel() {
 				self.current_screen("definition_screen_acu");
     }
 
-=======
->>>>>>> 5d0d564fc201d9ff089d3ed7d64b70df5a5784be
 	//============================Backend============================================
 	/* Template of a communication function using ajax
 	this."<function-name>" = function("<input parameters>") {
