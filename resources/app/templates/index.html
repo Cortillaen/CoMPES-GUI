@@ -103,11 +103,11 @@
       <div class="col-sm-3 sidenav" style="text-align:left">
 
         <ol id='network_hierarchy' data-name='test'>
-          <li><span data-bind="text: networkObject.network_ID, click: function() {alert('You clicked ' + networkObject.network_ID());}"></span>
+          <li><span data-bind="text: networkObject.network_ID, click: function() {sidebarClick($root.networkObject);}"></span>
             <ol><!-- ko foreach: { data: networkObject.hubs } -->
-              <li><span data-bind="text: id, click: function() {alert('You clicked ' + id());}"></span>
+              <li><span data-bind="text: id, click: function() {$root.sidebarClick($data);}"></span>
                 <ol><!-- ko foreach: { data: $data.acus } -->
-                  <li><span data-bind="text: id, click: function() {alert('You clicked ' + id());}"></span></li>
+                  <li><span data-bind="text: id, click: function() {$root.sidebarClick($data);}"></span></li>
                 <!-- /ko --></ol>
               </li>
             <!-- /ko --></ol>
@@ -127,6 +127,7 @@
     <div class="container text-center">
       <div class="page-header"><h1>Map View</h1></div>
       <h1>Grid</h1>
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
         <div class="row content">
@@ -158,6 +159,10 @@
       <div class="row content">
 >>>>>>> 5b4aec1eed1e54a35a15e1e4d313154210489292
         <div class="col-sm-9" style="background-color:pink;">
+=======
+      <div class="row content">
+        <div class="col-sm-12" style="background-color:pink;">
+>>>>>>> 5d0d564fc201d9ff089d3ed7d64b70df5a5784be
           Interactive visualization of currently-selected level
         </div>
       </div>
@@ -171,13 +176,13 @@
       <div class="page-header"><h1>Informational Screen</h1></div>
       <h1>Grid</h1>
       <div class="row content">
-        <div class="col-sm-9" style="background-color:pink;">
+        <div class="col-sm-12" style="background-color:pink;">
           Query Area
         </div>
-        <div class="col-sm-9" style="background-color:red;">
+        <div class="col-sm-12" style="background-color:red;">
           Metrics
         </div>
-        <div class="col-sm-9" style="background-color:orange;">
+        <div class="col-sm-12" style="background-color:orange;">
           Graphical Analysis
         </div>
       </div>
@@ -188,89 +193,57 @@
   <!-- Network Definition Screen -->
   <script type="text/html" id="definition_subscreen">
       <div class="page-header"><h1>Network Definition</h1></div>
-      <div id="config-menu" data-bind="template: {name: definition_part}" class="well well-lg">
+      <div id="config-menu" data-bind="template: {name: 'definition_part', data: selectedItem}" class="well well-lg">
           <!-- The desired configuration will be placed into this template.-->
       </div>
-        <form class="form-group" data-bind="submit: buildNDF">
-
-      <div>
-
-      </div>
-
-      <div>
-      <br>
-        <button type="submit">Save</button>
-
-
-      </div>
-
+      <form class="form-group" data-bind="submit: buildNDF">
+        <div>
+          <button type="submit">Save</button>
+        </div>
       </form>
-
-      <!--
-	<div class="publishBar">
-	 <div class="divider"></div>
-	 <button class="pbButtons"> NEW NETWORK </button>
-	 <div class="divider"></div>
-	 <button class="pbButtons"> SAVE </button>
-	 <div class="divider"></div>
-	 <button class="pbButtons"> EDIT </button>
-	 <div class="divider"></div>
-	 <button class="pbButtons"> DELETE </button>
-	 <div class="divider"></div>
-	 <button class="pbButtons"> Connect </button>
-	 <div class="divider"></div>
-	 <button class="pbButtons"> Disconnect </button>
-	</div>
-  -->
   </script>
 
-  <script type="text/html" id="definition_part_network">
+  <script type="text/html" id="definition_part">
+    <!-- ko if: ($data.constructor.name == "NetworkObject") -->
     <div class="row form-inline">
-    <fieldset>
-      <legend>Network Configurations:</legend>
-      <label>Network ID:</label>
-      <input type="text" data-bind="value: networkObject.network_ID"/>
-      <legend>Policy Control:</legend>
-      <label> PES MODE: </label>
-      <input type="radio" name="manual" value="manual" data-bind="value: networkObject.pes_mode" checked> Manual
-      <input type="radio" name="autonomous" value="autonomous" data-bind="value: networkObject.pes_mode"> Autonomous<br>
+      <fieldset>
+        <legend>Network Configurations:</legend>
+        <label>Network ID:</label>
+        <input type="text" data-bind="value: network_ID"/>
+        <legend>Policy Control:</legend>
+        <label> PES MODE: </label>
+        <input type="radio" name="manual" value="manual" data-bind="value: network_config.pes_mode" checked> Manual
+        <input type="radio" name="autonomous" value="autonomous" data-bind="value: network_config.pes_mode"> Autonomous<br>
 
-      <label> PE Algorithm: </label>
-      <select data-bind="options: networkObject.network_config.pe_algorithms, selectedOptions: networkObject.chosen_algorithm" required></select>
-    </fieldset>
-  </div>
-    <button data-bind="click: hubButton">Add Hub</button>
-  </script>
-
-  <script type="text/html" id="definition_part_hub">
-    <div data-bind="foreach: networkObject.hubs">
-      <label>Hub ID: </label>
-      <input data-bind="value: id"></input><br>
-		  <label>Middleware: </label>
-		  <input data-bind="value: hub_config.middleware"></input><br><br>
+        <label> PE Algorithm: </label>
+        <select data-bind="options: network_config.pe_algorithms, selectedOptions: chosen_algorithm" required></select>
+      </fieldset>
     </div>
-    <button data-bind="click: hubButton">Add Hub</button>
-    <button data-bind="click: acuButton">Add ACU</button>
-  </script>
+    <button data-bind="click: $root.addHub">Add Hub</button>
+    <!-- /ko -->
 
-  <script type="text/html" id="definition_part_acu">
-          <div data-bind="foreach: $data.acus">
-            <div class="well">
-              <label>ACU ID: </label>
-              <input type="text" data-bind="value: id"></input>
-              <label>Location String: </label>
-              <input type="text" data-bind="value: location_str"></input>
-              <label>Location GPS: </label>
-              <input type="text" data-bind="value: location_gps"></input>
-              <label>Classification: </label>
-              <input type="text" data-bind="value: classification"></input>
-              <label>GUID: </label>
-              <input type="text" data-bind="value: guid"></input>
-              <label>Interpreter Type: </label>
-              <input data-bind="value: interpreter_type"></input>
+    <!-- ko if: ($data.constructor.name == "Hub") -->
+    <label>Hub ID: </label>
+    <input data-bind="value: id"></input><br>
+		<label>Middleware: </label>
+		<input data-bind="value: hub_config.middleware"></input><br><br>
+    <button data-bind="click: addACU">Add ACU</button>
+    <!-- /ko -->
 
-            </div>
-          </div>
+    <!-- ko if: ($data.constructor.name == "ACU") -->
+    <label>ACU ID: </label>
+    <input type="text" data-bind="value: id"></input>
+    <label>Location String: </label>
+    <input type="text" data-bind="value: location_str"></input>
+    <label>Location GPS: </label>
+    <input type="text" data-bind="value: location_gps"></input>
+    <label>Classification: </label>
+    <input type="text" data-bind="value: classification"></input>
+    <label>GUID: </label>
+    <input type="text" data-bind="value: guid"></input>
+    <label>Interpreter Type: </label>
+    <input data-bind="value: interpreter_type"></input>
+    <!-- /ko -->
   </script>
 
   <!-- End of Network Definition Page -->
