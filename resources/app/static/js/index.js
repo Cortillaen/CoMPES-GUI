@@ -17,6 +17,7 @@ function ACU() {
 }
 
 function Hub() {
+	this.isActive = ko.observable()
 	this.id = ko.observable("Hub name");
 	this.hub_config = {"middleware" : ko.observable("")}
 	this.acus = ko.observableArray([]);
@@ -215,6 +216,10 @@ function Viewmodel() {
 		$('#network_hierarchy').bonsai();
 	}
 
+	self.displayHub = function(hub) {
+		return hub.isActive() ?  "active" : "inactive";
+	}
+
 	self.buildNDF = function() {
 		/*
 		Author: Derek Lause
@@ -259,7 +264,7 @@ function Viewmodel() {
     }
 
     self.acuButton = function() {
-        self.networkObject.hubs()[i].addACU();
+        self.networkObject.hubs().addACU();
 				self.current_screen("definition_screen_acu");
     }
 
