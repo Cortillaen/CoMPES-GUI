@@ -83,14 +83,59 @@
   <script type="text/html" id="selection_screen">
     <div class="container text-center">
       <div class="page-header"><h1>Network Selection</h1></div>
-      <h1>Grid</h1>
+
         <div class="row content">
-        <div class="col-sm-6 sidenav">
-          Network Lists
+        <div class="col-sm-6 sidenav" style="background-color:rgb(177, 203, 211);">
+		  	<div class="netListCont">
+			<p> List of Networks: </p>
+			<button onclick="getNetworkList()" id="list" type="button"> Get List of Networks </button>
+		</div> 
         </div>
-        <div class="col-sm-6" style="background-color:pink;">
-          Selected Server Details
+        <div class="col-sm-6" style="background-color:rgb(177, 203, 211);">
+          	<div class="selectedCont">
+			<p> Selected Network Configuration: </p>
+			<form id="selectionForm">
+				Network ID:  <input type="text" id="networkID" value=""> <br><br>
+				Hub ID:  <input type="text" id="hubID" value=""> <br><br>
+				Hub Configurations:  <input type="text" id="hubConfig" value=""> <br><br>
+				ACU ID:  <input type="text" id="acuID" value=""> <br><br>
+				Location <input type="text" id="location" value=""> <br><br>
+				Interpreter Type:  <input type="text" id="interpType" value=""> <br><br>
+				Interpreter State:  <input type="text" id="interpState" value=""> <br><br>
+				Physical State:  <input type="text" id="physState" value=""> <br><br>
+			</form>
+		</div>
         </div>
+
+
+		
+
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<br>
+		<div class = "images">
+		<img src="../static/images/logoBigE.png">
+		</div>
       </div>
     </div>
   </script>

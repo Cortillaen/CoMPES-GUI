@@ -104,6 +104,7 @@
 		    font-size: 2.5em;
 		}
 
+
 		input {
 			font-size: .5em;
 			padding-left: .5em;
@@ -129,7 +130,10 @@
 		}
 
 		/* Set height of the grid so .sidenav can be 100% (adjust as needed) */
-		.row.content {height: 440px}
+		.row.content {
+			height: 440px;
+			
+		}
 
 		.sidenav {
 			padding-top: 20px;
