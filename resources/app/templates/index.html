@@ -85,52 +85,31 @@
       <div class="page-header"><h1>Network Selection</h1></div>
 
         <div class="row content">
-        <div class="col-sm-6 sidenav" style="background-color:rgb(177, 203, 211);">
-		  	<div class="netListCont">
+		
+        <div class="col-sm-6 sidenav" style="background-color:rgb(177, 203, 211); border-style:solid;border-radius: 20px;">
+		  	
 			<p> List of Networks: </p>
 			<button onclick="getNetworkList()" id="list" type="button"> Get List of Networks </button>
 		</div> 
-        </div>
-        <div class="col-sm-6" style="background-color:rgb(177, 203, 211);">
+		 
+        
+        <div class="col-sm-6" style="background-color:rgb(177, 203, 211); border-style:solid;border-radius: 20px;">
+	
           	<div class="selectedCont">
-			<p> Selected Network Configuration: </p>
+			<p> Selected Network Configurations: </p>
 			<form id="selectionForm">
-				Network ID:  <input type="text" id="networkID" value=""> <br><br>
-				Hub ID:  <input type="text" id="hubID" value=""> <br><br>
-				Hub Configurations:  <input type="text" id="hubConfig" value=""> <br><br>
-				ACU ID:  <input type="text" id="acuID" value=""> <br><br>
-				Location <input type="text" id="location" value=""> <br><br>
-				Interpreter Type:  <input type="text" id="interpType" value=""> <br><br>
-				Interpreter State:  <input type="text" id="interpState" value=""> <br><br>
-				Physical State:  <input type="text" id="physState" value=""> <br><br>
+				Network Name:<br><textarea id="netName" rows="1" cols="35" disabled="disabled"></textarea><br><br>
+				IP Address:<br>  <textarea id="ipaddress" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				Number of Hubs:<br>  <textarea id ="numhubs" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				Number of ACUs:<br>  <textarea id="numacus" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				Location:<br> <textarea id="location" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				PES MODE:<br>  <textarea id="pesmode" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				Algorithm:<br>  <textarea id="algorithm" rows="1" cols="35" disabled="disabled"></textarea><br><br>
+			
 			</form>
+			<button id="connect" onclick="Connect()" id="list" type="button"> CONNECT </button>
 		</div>
         </div>
-
-
-		
-
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
-		<br>
 		<br>
 		<br>
 		<div class = "images">

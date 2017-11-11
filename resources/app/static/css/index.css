@@ -109,6 +109,11 @@
 			font-size: .5em;
 			padding-left: .5em;
 		}
+		
+		textarea {
+			font-size: .5em;
+			padding-left: .5em;
+		}
 		input[type=text] {
 				background-color: rgba(255, 255, 255, 0.68);
 			color: black;
@@ -156,3 +161,26 @@
 			}
 			.row.content {height:auto;}
 		}
+		
+.selectedCont {
+	float: left;
+	padding: .5em;
+	text-align: left;
+	margin-right: 7em;
+	clear:both;
+}
+
+.selectedCont input {
+	clear:both;
+	width:100%;
+}
+label{
+	align-content:right;
+	display:inline-block;
+}
+
+#connect{
+	background-color: #51d251;
+    border-radius: 20px;
+}
+
