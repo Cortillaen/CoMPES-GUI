@@ -123,8 +123,8 @@
   <!-- Network Frame - includes a sidebar displaying the network structure and an area for the main part
        of each screen. -->
   <script type="text/html" id="network_frame">
-    <div class="row content">
-      <div class="col-sm-3 sidenav" style="text-align:left">
+    
+      <div class="col-sm-3 sidenav" style="text-align:left;height:100%;position:absolute;float:right;">
 
         <ol id='network_hierarchy' data-name='test'>
           <li><span data-bind="text: networkObject.network_ID, click: function() {sidebarClick($root.networkObject);}"></span>
@@ -139,10 +139,10 @@
         </ol>
 
       </div>
-      <div class="col-sm-9" id="network_screen_holder" data-bind="template: {name: operation_subscreen}">
+      <div class="col-sm-9" id="network_screen_holder" data-bind="template: {name: operation_subscreen}" style="float:right;">
         Interactive visualization of currently-selected level
       </div>
-    </div>
+
   </script>
   <!-- End of Network Frame -->
 
@@ -199,7 +199,7 @@
       <fieldset>
         <legend>Network Configurations:</legend>
         <label>Network ID:</label>
-        <input type="text" data-bind="value: network_ID"/><br><br>
+        <input type="text" data-bind="value: network_ID"/><br>
         <legend>Policy Control:</legend>
         <label> PES Mode: </label>
         <input type="radio" name="pes mode" value="manual" data-bind="checked: network_config.pes_mode" checked> Manual
