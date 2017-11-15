@@ -199,7 +199,7 @@
       <fieldset>
         <legend>Network Configurations:</legend>
         <label>Network ID:</label>
-        <input type="text" data-bind="value: network_ID"/>
+        <input type="text" data-bind="value: network_ID"/><br><br>
         <legend>Policy Control:</legend>
         <label> PES Mode: </label>
         <input type="radio" name="pes mode" value="manual" data-bind="checked: network_config.pes_mode" checked> Manual
@@ -214,7 +214,7 @@
 
     <!-- ko if: ($data.constructor.name == "Hub") -->
     <label>Hub ID: </label>
-    <input data-bind="value: id"></input><br>
+    <input data-bind="value: id"></input><br><br>
 		<label>Middleware: </label>
 		<input data-bind="value: hub_config.middleware"></input><br><br>
     <button data-bind="click: addACU">Add ACU</button>
@@ -222,17 +222,17 @@
 
     <!-- ko if: ($data.constructor.name == "ACU") -->
     <label>ACU ID: </label>
-    <input type="text" data-bind="value: id"></input>
+    <input type="text" data-bind="value: id"></input><br><br>
     <label>Location String: </label>
-    <input type="text" data-bind="value: location_str"></input>
+    <input type="text" data-bind="value: location_str"></input><br><br>
     <label>Location GPS: </label>
-    <input type="text" data-bind="value: location_gps"></input>
+    <input type="text" data-bind="value: location_gps"></input><br><br>
     <label>Classification: </label>
-    <input type="text" data-bind="value: classification"></input>
+    <input type="text" data-bind="value: classification"></input><br><br>
     <label>GUID: </label>
-    <input type="text" data-bind="value: guid"></input>
+    <input type="text" data-bind="value: guid"></input><br><br>
     <label>Interpreter Type: </label>
-    <input data-bind="value: interpreter_type"></input>
+    <input type="text" data-bind="value: interpreter_type"></input><br><br>
     <!-- /ko -->
   </script>
 
