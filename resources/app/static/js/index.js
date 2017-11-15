@@ -64,7 +64,7 @@ function Viewmodel() {
 		this.hubs = ko.observableArray([]);
 	}
 	
-	function d3Data() {
+	function d3Data(nodesInput, linksInput) {
 		/*
 		Author: Tim Roth
 		Contributors: Trenton Nale
@@ -81,13 +81,17 @@ function Viewmodel() {
 		
 		var radius = 15;
 		
-		var nodes_data = [
+		alert(JSON.stringify(nodesInput));
+		
+		var nodes_data = nodesInput;
+		/*[
 			{"name": "Lillian", "sex": "F"},
 			{"name": "Gordon", "sex": "M"}
-		];
-		var links_data = [
+		];*/
+		var links_data = linksInput;
+		/*[
 			{"source": "Lillian", "target": "Gordon", "type":"A" }
-		];
+		];*/
 		
 		var simulation = d3.forceSimulation().nodes(nodes_data);
 		var link_force = d3.forceLink(links_data).id(function(d) {return d.name;});
@@ -421,6 +425,24 @@ function Viewmodel() {
 			alert("You clicked on " + clickedItem.id() + " on the Map Screen.");
 	}
 	
+	self.makeGraphData = function() {
+		var nodes_data = [];
+		var links_data = [];
+		
+		if(self.selectedItem().constructor.name == "NetworkObject") {
+			nodes_data.push({"name": self.networkObject.network_ID(), "type": "network"});
+			self.networkObject.hubs().forEach(function(hub) {
+				nodes_data.push({"name": hub.id(), "type": "hub"});
+				links_data.push({"source": self.networkObject.network_ID(), "target": hub.id(), "type": "architecture"});
+			});
+		}
+		else if(self.selectedItem.constructor.name == "Hub") {
+		}
+		else if(self.selectedItem.constructor.name == "ACU") {
+		}
+		return([nodes_data, links_data]);
+	}
+	
 	self.setupMap = function() {
 		/*
 		Author: Trenton Nale
@@ -429,9 +451,12 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		self.mapData = new d3Data();
+		self.selectedItem(self.networkObject);
+		var graphData = self.makeGraphData();
+		alert("Graphdata = " + JSON.stringify(graphData[0]));
+		self.mapData = new d3Data(graphData[0], graphData[1]);
 	}
-
+	
 	//-------------------------------- Informational View ------------------------
 	self.gotoInformational = function() {
 		/*
@@ -520,7 +545,6 @@ function Viewmodel() {
 		{
 			var position = i;
 			console.log(networkObject.Hubs.hub_ID[i]);
-
 			for(var j = 0; j < self.hubs()[position].acus().length; j++)
 			{
 				console.log(networkObject.Hubs.ACUs.id[j]);
@@ -607,10 +631,10 @@ function Viewmodel() {
 							", and " + stat + ", and " + description);
 						 });
 		*/
-		$.ajax({url: "http://127.0.0.1:8080/MUX/From @Electron ",
+		$.ajax({url: "http://127.0.0.1:8080/connect",
 				type: 'get',
 				success: function (response) {alert(response);},
-				error: function(response, stat, disc) {alert(disc);}
+				error: function(response, stat, disc) {alert("Error" + disc);}
 		});
 	};
 
@@ -762,7 +786,7 @@ $(document).ready(function(){
 	ko.applyBindings(new Viewmodel());
 
 	//Get path for twisted client
-	var file_path = path.join(path.join(path.join(path.dirname(__dirname),'static' ), 'py'), 'TwistedClient.py');
+	var file_path = path.join(path.join(path.join(path.dirname(__dirname),'static' ), 'py'), 'application.py');
 
 	//Spawn twisted subprocess
 	twistedClient = child_process.spawn("python",  [file_path]);
