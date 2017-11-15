@@ -99,6 +99,10 @@ function Viewmodel() {
 			.force("links", link_force)
 		;
 		
+		var div = d3.select("body").append("div")   
+		    .attr("class", "tooltip")
+		    .style("opacity", 0);
+		
 		//add tick instructions: 
 		simulation.on("tick", tickActions );
 
@@ -107,24 +111,47 @@ function Viewmodel() {
 			.attr("class", "everything");
 
 		//draw lines for the links 
-		var link = g.append("g")
-			  .attr("class", "links")
-			.selectAll("line")
+		var links = g.selectAll("links")
 			.data(links_data)
-			.enter().append("line")
-			  .attr("stroke-width", 2)
-			  .style("stroke", linkColour);        
+			.enter()
+			.append("line")
+			.attr("stroke-width", 2)
+			.style("stroke", linkColour);        
+
+		var gnodes = g.selectAll("gnode")
+		    .data(nodes_data)
+		    .enter()
+		    .append("g")
+		    .classed("gnode", true);
 
 		//draw circles for the nodes 
-		var node = g.append("g")
-				.attr("class", "nodes") 
-				.selectAll("circle")
-				.data(nodes_data)
-				.enter()
-				.append("circle")
-				.attr("r", radius)
-				.attr("fill", circleColour);
-		 
+		var node = gnodes.append("circle")
+			.attr("class", "node")
+			.attr("r", radius)
+			.attr("fill", circleColour)
+			.on("mouseover", function(d) {
+        		div.transition()        
+	                .duration(200)      
+	                .style("opacity", 1);      
+            	div .html(d.name + "<br/>" + "Testing")  
+	                .style("left", (d3.event.pageX + radius) + "px")     
+	                .style("top", (d3.event.pageY - 28 - radius) + "px");    
+	        })
+        	.on("mouseout", function(d) {
+        		div.transition()        
+                .duration(500)      
+                .style("opacity", 0);   
+        	})
+        	.on("click", function(d) {
+        		alert(d.name);
+        	});
+
+		var label = gnodes.append("text")
+            .attr("class", "label")
+            .attr("fill", "black")
+            .attr("text-anchor", "middle")
+            .style("font-size", "100%")
+    		.text(function(d) { return d.name; });
 		 
 		//add drag capabilities  
 		var drag_handler = d3.drag()
@@ -139,8 +166,7 @@ function Viewmodel() {
 		var zoom_handler = d3.zoom()
 			.on("zoom", zoom_actions);
 
-		zoom_handler(svg);     
-		alert(nodes_data);
+		zoom_handler(svg);
 
 		/** Functions **/
 
@@ -197,11 +223,15 @@ function Viewmodel() {
 				.attr("cy", function(d) { return d.y; });
 				
 			//update link positions 
-			link
+			links
 				.attr("x1", function(d) { return d.source.x; })
 				.attr("y1", function(d) { return d.source.y; })
 				.attr("x2", function(d) { return d.target.x; })
 				.attr("y2", function(d) { return d.target.y; });
+
+			label
+				.attr("dx", function(d) { return d.x; })
+				.attr("dy", function(d) { return d.y - radius - 2; });
 		} 
 	}
 
@@ -375,7 +405,6 @@ function Viewmodel() {
 		self.current_screen("map_screen");
 		self.bonsai();
 		self.setupMap();
-		alert(d3Data.width);
 	}
 
 	self.mapSidebarClick = function(clickedItem) {
