@@ -95,14 +95,38 @@
   <script type="text/html" id="selection_screen">
     <div class="container text-center">
       <div class="page-header"><h1>Network Selection</h1></div>
-      <h1>Grid</h1>
+
         <div class="row content">
-        <div class="col-sm-6 sidenav">
-          Network Lists
+		
+        <div class="col-sm-6 sidenav" style="background-color:rgb(177, 203, 211); border-style:solid;border-radius: 20px;">
+		  	
+			<p> List of Networks: </p>
+			<button onclick="getNetworkList()" id="list" type="button"> Get List of Networks </button>
+		</div> 
+		 
+        
+        <div class="col-sm-6" style="background-color:rgb(177, 203, 211); border-style:solid;border-radius: 20px;">
+	
+          	<div class="selectedCont">
+			<p> Selected Network Configurations: </p>
+			<form id="selectionForm">
+				Network Name:<br><textarea id="netName" rows="1" cols="35" disabled="disabled"></textarea><br><br>
+				IP Address:<br>  <textarea id="ipaddress" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				Number of Hubs:<br>  <textarea id ="numhubs" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				Number of ACUs:<br>  <textarea id="numacus" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				Location:<br> <textarea id="location" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				PES MODE:<br>  <textarea id="pesmode" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				Algorithm:<br>  <textarea id="algorithm" rows="1" cols="35" disabled="disabled"></textarea><br><br>
+			
+			</form>
+			<button id="connect" onclick="Connect()" id="list" type="button"> CONNECT </button>
+		</div>
         </div>
-        <div class="col-sm-6" style="background-color:pink;">
-          Selected Server Details
-        </div>
+		<br>
+		<br>
+		<div class = "images">
+		<img src="../static/images/logoBigE.png">
+		</div>
       </div>
     </div>
   </script>
@@ -111,25 +135,23 @@
   <!-- Network Frame - includes a sidebar displaying the network structure and an area for the main part
        of each screen. -->
   <script type="text/html" id="network_frame">
-    <div class="row content">
-      <div class="col-sm-3 sidenav" style="text-align:left">
-
+      <div class="col-sm-3 sidenav" style="text-align:left;height:100%;position:absolute;float:right;border-style:solid;border-radius:20px">
         <ol id='network_hierarchy' data-name='test'>
-          <li><span data-bind="text: networkObject.network_ID, click: function() {sidebarClick($root.networkObject);}"></span>
+          <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, style: {backgroundColor : $root.networkObject.isActive() ? 'green' : 'transparent'}"></span>
             <ol><!-- ko foreach: { data: networkObject.hubs } -->
-              <li><span data-bind="text: id, click: function() {$root.sidebarClick($data);}"></span>
+              <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, style: {backgroundColor : isActive() ? 'green' : 'transparent'}"></span>
                 <ol><!-- ko foreach: { data: $data.acus } -->
-                  <li><span data-bind="text: id, click: function() {$root.sidebarClick($data);}"></span></li>
+                  <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}, style: {backgroundColor : isActive() ? 'green' : 'transparent'}"></span></li>
                 <!-- /ko --></ol>
               </li>
             <!-- /ko --></ol>
           </li>
         </ol>
+      </div>
+      <div class="col-sm-9" id="network_screen_holder" data-bind="template: {name: operation_subscreen}" style="float:right;">
+        Interactive visualization of currently-selected level
+      </div>
 
-      </div>
-      <div class="col-sm-9" id="network_screen_holder" data-bind="template: {name: operation_subscreen}">
-      </div>
-    </div>
   </script>
   <!-- End of Network Frame -->
 
@@ -183,7 +205,7 @@
       <fieldset>
         <legend>Network Configurations:</legend>
         <label>Network ID:</label>
-        <input type="text" data-bind="value: network_ID"/>
+        <input type="text" data-bind="value: network_ID"/><br>
         <legend>Policy Control:</legend>
         <label> PES Mode: </label>
         <input type="radio" name="pes mode" value="manual" data-bind="checked: network_config.pes_mode" checked> Manual
@@ -193,30 +215,34 @@
         <select data-bind="options: $root.pe_algorithms, selectedOptions: chosen_algorithm" required></select>
       </fieldset>
     </div>
-    <button data-bind="click: $root.addHub">Add Hub</button>
+    <button data-bind="click: $data.addHub">Add Hub</button>
     <!-- /ko -->
 
     <!-- ko if: ($data.constructor.name == "Hub") -->
     <label>Hub ID: </label>
-    <input data-bind="value: id"></input><br>
+    <input data-bind="value: id"></input><br><br>
 		<label>Middleware: </label>
 		<input data-bind="value: hub_config.middleware"></input><br><br>
+    <button data-bind="click: function() {$data.parent.addHub();}">Add Another Hub</button>
     <button data-bind="click: addACU">Add ACU</button>
+    <button data-bind="click: function() {$data.parent.removeHub($data);}">Delete This Hub</button>
     <!-- /ko -->
 
     <!-- ko if: ($data.constructor.name == "ACU") -->
     <label>ACU ID: </label>
-    <input type="text" data-bind="value: id"></input>
+    <input type="text" data-bind="value: id"></input><br><br>
     <label>Location String: </label>
-    <input type="text" data-bind="value: location_str"></input>
+    <input type="text" data-bind="value: location_str"></input><br><br>
     <label>Location GPS: </label>
-    <input type="text" data-bind="value: location_gps"></input>
+    <input type="text" data-bind="value: location_gps"></input><br><br>
     <label>Classification: </label>
-    <input type="text" data-bind="value: classification"></input>
+    <input type="text" data-bind="value: classification"></input><br><br>
     <label>GUID: </label>
-    <input type="text" data-bind="value: guid"></input>
+    <input type="text" data-bind="value: guid"></input><br><br>
     <label>Interpreter Type: </label>
-    <input data-bind="value: interpreter_type"></input>
+    <input type="text" data-bind="value: interpreter_type"></input><br><br>
+    <button data-bind="click: function() {$data.parent.addACU();}">Add Another ACU</button>
+    <button data-bind="click: function() {$data.parent.removeACU($data);}">Delete This ACU</button>
     <!-- /ko -->
   </script>
 
