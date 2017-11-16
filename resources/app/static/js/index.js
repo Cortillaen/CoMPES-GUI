@@ -58,11 +58,10 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.id = ko.observable("ACU name" + self.counter.toString());
-		this.location_str = ko.observable("");
-		this.location_gps = ko.observable("");
+		this.location = ko.observable("");
 		this.classification = ko.observable("");
 		this.guid = ko.observable("");
-		this.interpreter_type = ko.observable("");
+		this.interpreter_type = ko.observable(self.interpreter_types()[0]);
 		this.parent = parent;
 		self.counter += 1;
 
@@ -190,7 +189,9 @@ function Viewmodel() {
 		else
 			return "map_subscreen";
 	}, self);
+
 	self.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+	self.interpreter_types = ko.observableArray(['PUSH', 'PULL']);
 
 	self.networkObject = new NetworkObject();
 	self.selectedItem = ko.observable(self.networkObject);

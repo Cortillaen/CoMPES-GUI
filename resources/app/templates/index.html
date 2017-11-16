@@ -85,16 +85,16 @@
       <div class="page-header"><h1>Network Selection</h1></div>
 
         <div class="row content">
-		
+
         <div class="col-sm-6 sidenav" style="background-color:rgb(177, 203, 211); border-style:solid;border-radius: 20px;">
-		  	
+
 			<p> List of Networks: </p>
 			<button onclick="getNetworkList()" id="list" type="button"> Get List of Networks </button>
-		</div> 
-		 
-        
+		</div>
+
+
         <div class="col-sm-6" style="background-color:rgb(177, 203, 211); border-style:solid;border-radius: 20px;">
-	
+
           	<div class="selectedCont">
 			<p> Selected Network Configurations: </p>
 			<form id="selectionForm">
@@ -105,7 +105,7 @@
 				Location:<br> <textarea id="location" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
 				PES MODE:<br>  <textarea id="pesmode" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
 				Algorithm:<br>  <textarea id="algorithm" rows="1" cols="35" disabled="disabled"></textarea><br><br>
-			
+
 			</form>
 			<button id="connect" onclick="Connect()" id="list" type="button"> CONNECT </button>
 		</div>
@@ -239,8 +239,8 @@
     <!-- ko if: ($data.constructor.name == "Hub") -->
     <label>Hub ID: </label>
     <input data-bind="value: id"></input><br><br>
-		<label>Middleware: </label>
-		<input data-bind="value: hub_config.middleware"></input><br><br>
+		<label>Middleware Import: </label>
+		<input placeholder=""data-bind="value: hub_config.middleware"></input><br><br>
     <button data-bind="click: function() {$data.parent.addHub();}">Add Another Hub</button>
     <button data-bind="click: addACU">Add ACU</button>
     <button data-bind="click: function() {$data.parent.removeHub($data);}">Delete This Hub</button>
@@ -249,16 +249,14 @@
     <!-- ko if: ($data.constructor.name == "ACU") -->
     <label>ACU ID: </label>
     <input type="text" data-bind="value: id"></input><br><br>
-    <label>Location String: </label>
-    <input type="text" data-bind="value: location_str"></input><br><br>
-    <label>Location GPS: </label>
-    <input type="text" data-bind="value: location_gps"></input><br><br>
+    <label>Location </label>
+    <input type="text" data-bind="value: location"></input><br><br>
     <label>Classification: </label>
     <input type="text" data-bind="value: classification"></input><br><br>
     <label>GUID: </label>
     <input type="text" data-bind="value: guid"></input><br><br>
     <label>Interpreter Type: </label>
-    <input type="text" data-bind="value: interpreter_type"></input><br><br>
+    <select data-bind="options: $root.interpreter_types, selectedOptions: interpreter_type"></select><br><br>
     <button data-bind="click: function() {$data.parent.addACU();}">Add Another ACU</button>
     <button data-bind="click: function() {$data.parent.removeACU($data);}">Delete This ACU</button>
     <!-- /ko -->
