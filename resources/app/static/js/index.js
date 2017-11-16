@@ -189,19 +189,6 @@ function Viewmodel() {
 			.attr("class", "node")
 			.attr("r", radius)
 			.attr("fill", circleColour)
-			.on("mouseover", function(d) {
-        		div.transition()        
-	                .duration(200)      
-	                .style("opacity", 1);      
-            	div .html(d.name + "<br/>" + "Testing")  
-	                .style("left", (d3.event.pageX + radius) + "px")     
-	                .style("top", (d3.event.pageY - 28 - radius) + "px");    
-	        })
-        	.on("mouseout", function(d) {
-        		div.transition()        
-                .duration(500)      
-                .style("opacity", 0);   
-        	})
         	.on("click", function(d) {
         		alert(d.name);
         	});
