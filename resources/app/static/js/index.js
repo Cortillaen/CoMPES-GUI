@@ -51,6 +51,7 @@ function Viewmodel() {
 	function ACU(parent) {
 		/*
 		Author: Trenton Nale
+		Contributors: Derek Lause
 		Description: Representation of a CoMPES ACU and associated data
 		Input: parent - the Hub creating this ACU
 		Output: N/A
@@ -76,6 +77,7 @@ function Viewmodel() {
 	function Hub(parent) {
 		/*
 		Author: Trenton Nale
+		Contributors: Derek Lause
 		Description: Representation of a CoMPES hub and associated data
 		Input: parent - the NetworkObject creating this Hub
 		Output: N/A
@@ -201,7 +203,7 @@ function Viewmodel() {
 	self.pass = ko.observable("");
 
 	//=========================== Definition Screen Variables ===============================
-	
+
 
 	//=================================General Functions=====================================
 	self.bonsai = function() {
@@ -444,7 +446,6 @@ function Viewmodel() {
 		}*/
 	};
 
-<<<<<<< HEAD
 	self.addHub = function() {
 		/*
 		Author: Derek Lause
@@ -468,8 +469,6 @@ function Viewmodel() {
 				self.current_screen("definition_screen_acu");
     }
 
-=======
->>>>>>> 1dfa3ab8fd33d525a9c3f1c8dfca6410d350125b
 	//============================Backend============================================
 	/* Template of a communication function using ajax
 	this."<function-name>" = function("<input parameters>") {
