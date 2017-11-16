@@ -31,6 +31,13 @@ function Viewmodel() {
 		this.interpreter_type = ko.observable("");
 		this.parent = parent;
 		self.counter += 1;
+
+		this.isActive = function() {
+			if(this == self.selectedItem())
+				return true;
+			else
+				return false;
+		};
 	}
 
 	function Hub(parent) {
@@ -58,6 +65,13 @@ function Viewmodel() {
 			this.acus.remove(acu);
 			self.bonsai();
 		};
+
+		this.isActive = function() {
+			if(this == self.selectedItem())
+				return true;
+			else
+				return false;
+		};
 	}
 
 	function NetworkObject() {
@@ -84,6 +98,13 @@ function Viewmodel() {
 			self.selectedItem(this);
 			this.hubs.remove(hub);
 			self.bonsai();
+		};
+
+		this.isActive = function() {
+			if(this == self.selectedItem())
+				return true;
+			else
+				return false;
 		};
 	}
 
@@ -184,7 +205,8 @@ function Viewmodel() {
 			   each screen has its own handler.
 		*/
 
-		$("#network_hierarchy > li > ol > li:nth-child(2) > #hub").css("background", "red");
+		//$("#network_hierarchy > li > ol > li:nth-child(2) > #hub").css("background", "red");
+		self.selectedItem(clickedItem);
 		if(self.operation_subscreen() == "map_subscreen")
 			self.mapSidebarClick(clickedItem);
 		else if(self.operation_subscreen() == "informational_subscreen")
@@ -346,15 +368,12 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		if(clickedItem.constructor.name == "NetworkObject") {
-			self.selectedItem(clickedItem);
 			self.current_screen("definition_screen_network");
 		}
 		else if(clickedItem.constructor.name == "Hub") {
-			self.selectedItem(clickedItem);
 			self.current_screen("definition_screen_hub");
 		}
 		else if(clickedItem.constructor.name == "ACU") {
-			self.selectedItem(clickedItem);
 			self.current_screen("definition_screen_acu");
 		}
 		else

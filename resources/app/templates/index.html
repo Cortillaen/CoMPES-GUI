@@ -125,11 +125,11 @@
   <script type="text/html" id="network_frame">
       <div class="col-sm-3 sidenav" style="text-align:left;height:100%;position:absolute;float:right;border-style:solid;border-radius:20px">
         <ol id='network_hierarchy' data-name='test'>
-          <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}"></span>
+          <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, style: {backgroundColor : $root.networkObject.isActive() ? 'green' : 'transparent'}"></span>
             <ol><!-- ko foreach: { data: networkObject.hubs } -->
-              <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}"></span>
+              <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, style: {backgroundColor : isActive() ? 'green' : 'transparent'}"></span>
                 <ol><!-- ko foreach: { data: $data.acus } -->
-                  <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}"></span></li>
+                  <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}, style: {backgroundColor : isActive() ? 'green' : 'transparent'}"></span></li>
                 <!-- /ko --></ol>
               </li>
             <!-- /ko --></ol>
