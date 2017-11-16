@@ -331,6 +331,7 @@ function Viewmodel() {
 	
 	//============================== Map View Variables =====================================
 	self.mapData = null;
+	self.mapMode = "architecture";
 
 	//=========================== Definition Screen Variables ===============================
 	
@@ -463,6 +464,7 @@ function Viewmodel() {
 		*/
 		self.current_screen("map_screen");
 		self.bonsai();
+		self.selectedItem(self.networkObject);
 		self.setupMap();
 	}
 
@@ -480,7 +482,15 @@ function Viewmodel() {
 			alert("You clicked on " + clickedItem.id() + " on the Map Screen.");
 	}
 	
-	self.makeGraphData = function() {
+	self.switchMapMode = function() {
+		self.mapMode = (self.mapMode == "architecture") ? "semantic" : "architecture";
+		
+		// CLEAR MAP
+		
+		self.setupMap();
+	}
+	
+	self.makeArchitectureGraphData = function() {
 		var nodes_data = [];
 		var links_data = [];
 		
@@ -492,10 +502,24 @@ function Viewmodel() {
 			});
 		}
 		else if(self.selectedItem.constructor.name == "Hub") {
+			nodes_data.push({"name": self.selectedItem.id(), "type": "hub"});
+			self.selectedItem.acus().forEach(function(acu) {
+				nodes_data.push({"name": acu.id(), "type": "acu"});
+				links_data.push({"source": self.selectedItem.id(), "target": acu.id(), "type": "architecture"});
+			});
 		}
 		else if(self.selectedItem.constructor.name == "ACU") {
+			nodes_data.push({"name": self.selectedItem.parent.id(), "type": "hub"});
+			self.selectedItem.parent.acus().forEach(function(acu) {
+				nodes_data.push({"name": acu.id(), "type": "acu"});
+				links_data.push({"source": self.selectedItem.parent.id(), "target": acu.id(), "type": "architecture"});
+			});
 		}
 		return([nodes_data, links_data]);
+	}
+	
+	self.makeSemanticGraphData = function() {
+		return NULL;
 	}
 	
 	self.setupMap = function() {
@@ -506,8 +530,7 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		self.selectedItem(self.networkObject);
-		var graphData = self.makeGraphData();
+		var graphData = (self.mapMode == "architecture") ? self.makeArchitectureGraphData() : self.makeSemanticGraphData();
 		alert("Graphdata = " + JSON.stringify(graphData[0]));
 		self.mapData = new d3Data(graphData[0], graphData[1]);
 	}
