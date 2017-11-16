@@ -123,21 +123,18 @@
   <!-- Network Frame - includes a sidebar displaying the network structure and an area for the main part
        of each screen. -->
   <script type="text/html" id="network_frame">
-    
       <div class="col-sm-3 sidenav" style="text-align:left;height:100%;position:absolute;float:right;border-style:solid;border-radius:20px">
-
         <ol id='network_hierarchy' data-name='test'>
-          <li><span data-bind="text: networkObject.network_ID, click: function() {sidebarClick($root.networkObject);}"></span>
+          <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}"></span>
             <ol><!-- ko foreach: { data: networkObject.hubs } -->
-              <li><span data-bind="text: id, click: function() {$root.sidebarClick($data);}"></span>
+              <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}"></span>
                 <ol><!-- ko foreach: { data: $data.acus } -->
-                  <li><span data-bind="text: id, click: function() {$root.sidebarClick($data);}"></span></li>
+                  <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}"></span></li>
                 <!-- /ko --></ol>
               </li>
             <!-- /ko --></ol>
           </li>
         </ol>
-
       </div>
       <div class="col-sm-9" id="network_screen_holder" data-bind="template: {name: operation_subscreen}" style="float:right;">
         Interactive visualization of currently-selected level
@@ -209,7 +206,7 @@
         <select data-bind="options: $root.pe_algorithms, selectedOptions: chosen_algorithm" required></select>
       </fieldset>
     </div>
-    <button data-bind="click: $root.addHub">Add Hub</button>
+    <button data-bind="click: $data.addHub">Add Hub</button>
     <!-- /ko -->
 
     <!-- ko if: ($data.constructor.name == "Hub") -->
@@ -217,7 +214,9 @@
     <input data-bind="value: id"></input><br><br>
 		<label>Middleware: </label>
 		<input data-bind="value: hub_config.middleware"></input><br><br>
+    <button data-bind="click: function() {$data.parent.addHub();}">Add Another Hub</button>
     <button data-bind="click: addACU">Add ACU</button>
+    <button data-bind="click: function() {$data.parent.removeHub($data);}">Delete This Hub</button>
     <!-- /ko -->
 
     <!-- ko if: ($data.constructor.name == "ACU") -->
@@ -233,6 +232,8 @@
     <input type="text" data-bind="value: guid"></input><br><br>
     <label>Interpreter Type: </label>
     <input type="text" data-bind="value: interpreter_type"></input><br><br>
+    <button data-bind="click: function() {$data.parent.addACU();}">Add Another ACU</button>
+    <button data-bind="click: function() {$data.parent.removeACU($data);}">Delete This ACU</button>
     <!-- /ko -->
   </script>
 
