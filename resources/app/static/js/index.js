@@ -48,37 +48,62 @@ function Viewmodel() {
 	Notes: Calling one of these functions must be done with `this.<functionName>(<params>);`
 	*/
 	//================================ Data Structures ======================================
-	function ACU() {
+	function ACU(parent) {
 		/*
 		Author: Trenton Nale
 		Description: Representation of a CoMPES ACU and associated data
-		Input: N/A
+		Input: parent - the Hub creating this ACU
 		Output: N/A
 		Notes: N/A
 		*/
-		this.id = ko.observable("ACU name");
+		this.id = ko.observable("ACU name" + self.counter.toString());
 		this.location_str = ko.observable("");
 		this.location_gps = ko.observable("");
 		this.classification = ko.observable("");
 		this.guid = ko.observable("");
 		this.interpreter_type = ko.observable("");
+		this.parent = parent;
+		self.counter += 1;
+
+		this.isActive = function() {
+			if(this == self.selectedItem())
+				return true;
+			else
+				return false;
+		};
 	}
 
-	function Hub() {
+	function Hub(parent) {
 		/*
 		Author: Trenton Nale
 		Description: Representation of a CoMPES hub and associated data
-		Input: N/A
+		Input: parent - the NetworkObject creating this Hub
 		Output: N/A
 		Notes: N/A
 		*/
-		this.id = ko.observable("Hub name");
+		this.id = ko.observable("Hub name" + self.counter.toString());
 		this.hub_config = {"middleware" : ko.observable("")};
 		this.acus = ko.observableArray([]);
+		this.parent = parent;
+		self.counter += 1;
 
 		this.addACU = function() {
-			this.acus.push(new ACU());
+			this.acus.push(new ACU(this));
 			self.bonsai();
+			self.selectedItem(this.acus.slice(-1)[0]);
+		};
+
+		this.removeACU = function(acu) {
+			self.selectedItem(this);
+			this.acus.remove(acu);
+			self.bonsai();
+		};
+
+		this.isActive = function() {
+			if(this == self.selectedItem())
+				return true;
+			else
+				return false;
 		};
 	}
 
@@ -95,6 +120,37 @@ function Viewmodel() {
 		this.network_config = {"pes_mode" : ko.observable("manual")};
 		this.chosen_algorithm = ko.observable(self.pe_algorithms()[0]);
 		this.hubs = ko.observableArray([]);
+
+		this.addHub = function() {
+			this.hubs.push(new Hub(this));
+			self.bonsai();
+			self.selectedItem(this.hubs.slice(-1)[0]);
+		};
+
+		this.removeHub = function(hub) {
+			self.selectedItem(this);
+			this.hubs.remove(hub);
+			self.bonsai();
+		};
+
+		this.isActive = function() {
+			if(this == self.selectedItem())
+				return true;
+			else
+				return false;
+		};
+	}
+
+	function replacer(key, value) {
+		/*
+		Author: Trenton Nale
+		Description: Pass as second param of toJSON() to ignore certain elements
+		Input: key - the key of a pair, value - the value of a pair
+		Output: the value if the pair is to be included in the JSON, otherwise undefined
+		Notes: N/A
+		*/
+		if (key == "parent") return undefined;
+		else return value;
 	}
 
 	//============================= Data Bindings & Variables ===============================
@@ -135,12 +191,17 @@ function Viewmodel() {
 	self.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
 
 	self.networkObject = new NetworkObject();
-	self.selectedItem = ko.observable(self.networkObject).extend({deferred: true});
+	self.selectedItem = ko.observable(self.networkObject);
+	self.selectedItemDOM = null;
 	self.bonsaidList = null;
+	self.counter = 0;
 
 	//============================= Login Page Variables ====================================
 	self.user = ko.observable("");
 	self.pass = ko.observable("");
+
+	//=========================== Definition Screen Variables ===============================
+	
 
 	//=================================General Functions=====================================
 	self.bonsai = function() {
@@ -162,6 +223,10 @@ function Viewmodel() {
 		}
 	}
 
+	self.log = function(data, event) {
+		alert("heh: " + event.target.id.toString());
+	}
+
 	//==================================== Front-End ========================================
 	self.sidebarClick = function(clickedItem) {
 		/*
@@ -172,6 +237,9 @@ function Viewmodel() {
 		Notes: This function is needed so a single function can be bound to the click event even though
 			   each screen has its own handler.
 		*/
+
+		//$("#network_hierarchy > li > ol > li:nth-child(2) > #hub").css("background", "red");
+		self.selectedItem(clickedItem);
 		if(self.operation_subscreen() == "map_subscreen")
 			self.mapSidebarClick(clickedItem);
 		else if(self.operation_subscreen() == "informational_subscreen")
@@ -333,15 +401,12 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		if(clickedItem.constructor.name == "NetworkObject") {
-			self.selectedItem(clickedItem);
 			self.current_screen("definition_screen_network");
 		}
 		else if(clickedItem.constructor.name == "Hub") {
-			self.selectedItem(clickedItem);
 			self.current_screen("definition_screen_hub");
 		}
 		else if(clickedItem.constructor.name == "ACU") {
-			self.selectedItem(clickedItem);
 			self.current_screen("definition_screen_acu");
 		}
 		else
@@ -365,7 +430,7 @@ function Viewmodel() {
 			https://knockoutjs.com/documentation/unobtrusive-event-handling.html is a good starting point
 		*/
 
-		console.log(ko.toJSON(this.networkObject));
+		console.log(ko.toJSON(this.networkObject, replacer));
 
 		/*(for(var i = 0; i < self.hubs().length; i++)
 		{
@@ -379,6 +444,7 @@ function Viewmodel() {
 		}*/
 	};
 
+<<<<<<< HEAD
 	self.addHub = function() {
 		/*
 		Author: Derek Lause
@@ -402,6 +468,8 @@ function Viewmodel() {
 				self.current_screen("definition_screen_acu");
     }
 
+=======
+>>>>>>> 1dfa3ab8fd33d525a9c3f1c8dfca6410d350125b
 	//============================Backend============================================
 	/* Template of a communication function using ajax
 	this."<function-name>" = function("<input parameters>") {

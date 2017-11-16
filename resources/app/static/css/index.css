@@ -104,7 +104,13 @@
 		    font-size: 2.5em;
 		}
 
+
 		input {
+			font-size: .5em;
+			padding-left: .5em;
+		}
+		
+		textarea {
 			font-size: .5em;
 			padding-left: .5em;
 		}
@@ -129,11 +135,14 @@
 		}
 
 		/* Set height of the grid so .sidenav can be 100% (adjust as needed) */
-		.row.content {height: 440px}
+		.row.content {
+			height: 440px;
+			
+		}
 
 		.sidenav {
 			padding-top: 20px;
-			background-color: yellow;
+			background-color: rgba(11, 222, 230, 0.85);
 			height: 100%;
 		}
 
@@ -152,3 +161,30 @@
 			}
 			.row.content {height:auto;}
 		}
+		
+.selectedCont {
+	float: left;
+	padding: .5em;
+	text-align: left;
+	margin-right: 7em;
+	clear:both;
+}
+
+.selectedCont input {
+	clear:both;
+	width:100%;
+}
+label{
+	align-content:right;
+	display:inline-block;
+}
+
+#connect{
+	background-color: #51d251;
+    border-radius: 20px;
+}
+
+ol > li > span {
+	font-size: 120%;
+	padding: 2px 5px 2px 5px;
+}
