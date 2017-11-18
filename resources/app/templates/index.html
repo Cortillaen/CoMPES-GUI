@@ -126,9 +126,9 @@
       <div class="col-sm-3 sidenav" style="text-align:left;height:100%;position:absolute;float:right;border-style:solid;border-radius:20px">
         <ol id='network_hierarchy' data-name='test'>
           <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, style: {backgroundColor : $root.networkObject.isActive() ? 'green' : 'transparent'}"></span>
-            <ol><!-- ko foreach: { data: networkObject.hubs } -->
+            <ol><!-- ko foreach: { data: networkObject.Hubs } -->
               <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, style: {backgroundColor : isActive() ? 'green' : 'transparent'}"></span>
-                <ol><!-- ko foreach: { data: $data.acus } -->
+                <ol><!-- ko foreach: { data: $data.ACUs } -->
                   <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}, style: {backgroundColor : isActive() ? 'green' : 'transparent'}"></span></li>
                 <!-- /ko --></ol>
               </li>
@@ -157,9 +157,9 @@
         <div class="col-sm-3 sidenav" style="text-align:left">
 			<ol id='network_hierarchy' data-name='test'>
 				<li><span data-bind="text: networkObject.network_ID, click: function() {alert('You clicked ' + networkObject.network_ID());}"></span>
-					<ol><!-- ko foreach: { data: networkObject.hubs } -->
+					<ol><!-- ko foreach: { data: networkObject.Hubs } -->
 						<li><span data-bind="text: id, click: function() {alert('You clicked ' + id());}"></span>
-							<ol><!-- ko foreach: { data: $data.acus } -->
+							<ol><!-- ko foreach: { data: $data.ACUs } -->
 								<li><span data-bind="text: id, click: function() {alert('You clicked ' + id());}"></span></li>
 							<!-- /ko --></ol>
 						</li>

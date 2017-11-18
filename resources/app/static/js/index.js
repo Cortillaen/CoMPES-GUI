@@ -5,7 +5,7 @@ var path = require('path');
 
 const paths = {login:"/login", allNetworks:"/networks/all"}
 
-//################################### DATA STRUCTURES ##############################
+/*################################### DATA STRUCTURES ##############################
 
 function ACU() {
 	this.id = ko.observable("ACU name");
@@ -20,21 +20,19 @@ function Hub() {
 	this.isActive = ko.observable()
 	this.id = ko.observable("Hub name");
 	this.hub_config = {"middleware" : ko.observable("")}
-	this.acus = ko.observableArray([]);
+	this.ACUs = ko.observableArray([]);
 
 	this.addACU = function() {
-		this.acus.push(new ACU())
+		this.ACUs.push(new ACU())
 	};
 }
 
 function NetworkObject() {
 	this.network_ID = ko.observable("Network Name");
-	this.network_config = {"pes_mode" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])}
-	//this.pes_mode = ko.observable("");
-	//this.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+	this.Network_Config = {"User-ID" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])}
 	this.chosen_algorithm = ko.observable(this.network_config.pe_algorithms()[0]);
-	this.hubs = ko.observableArray([]);
-}
+	this.Hubs = ko.observableArray([]);
+}*/
 
 //######################################## VIEWMODEL ########################################
 function Viewmodel() {
@@ -84,19 +82,19 @@ function Viewmodel() {
 		*/
 		this.id = ko.observable("Hub name" + self.counter.toString());
 		this.hub_config = {"middleware" : ko.observable("")};
-		this.acus = ko.observableArray([]);
+		this.ACUs = ko.observableArray([]);
 		this.parent = parent;
 		self.counter += 1;
 
 		this.addACU = function() {
-			this.acus.push(new ACU(this));
+			this.ACUs.push(new ACU(this));
 			self.bonsai();
-			self.selectedItem(this.acus.slice(-1)[0]);
+			self.selectedItem(this.ACUs.slice(-1)[0]);
 		};
 
 		this.removeACU = function(acu) {
 			self.selectedItem(this);
-			this.acus.remove(acu);
+			this.ACUs.remove(acu);
 			self.bonsai();
 		};
 
@@ -118,19 +116,19 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.network_ID = ko.observable("Network Name");
-		this.network_config = {"pes_mode" : ko.observable("manual")};
+		this.Network_Config = {"User-ID" : ko.observable("manual"), "Network-ID": ko.observable(""), "PES_Mode"};
 		this.chosen_algorithm = ko.observable(self.pe_algorithms()[0]);
-		this.hubs = ko.observableArray([]);
+		this.Hubs = ko.observableArray([]);
 
 		this.addHub = function() {
-			this.hubs.push(new Hub(this));
+			this.Hubs.push(new Hub(this));
 			self.bonsai();
-			self.selectedItem(this.hubs.slice(-1)[0]);
+			self.selectedItem(this.Hubs.slice(-1)[0]);
 		};
 
 		this.removeHub = function(hub) {
 			self.selectedItem(this);
-			this.hubs.remove(hub);
+			this.Hubs.remove(hub);
 			self.bonsai();
 		};
 
@@ -435,12 +433,12 @@ function Viewmodel() {
 
 		console.log(ko.toJSON(this.networkObject, replacer));
 
-		/*(for(var i = 0; i < self.hubs().length; i++)
+		/*(for(var i = 0; i < self.Hubs().length; i++)
 		{
 			var position = i;
 			console.log(networkObject.Hubs.hub_ID[i]);
 
-			for(var j = 0; j < self.hubs()[position].acus().length; j++)
+			for(var j = 0; j < self.Hubs()[position].ACUs().length; j++)
 			{
 				console.log(networkObject.Hubs.ACUs.id[j]);
 			}
@@ -456,7 +454,7 @@ function Viewmodel() {
 		Output: HTML form fields for a new hub to be added
 		Notes: Dynamic form fields need to be accessed properly to define the network correctly
 		*/
-		self.networkObject.hubs.push(new Hub());
+		self.networkObject.Hubs.push(new Hub());
 		self.bonsai();
 	};
 
@@ -466,7 +464,7 @@ function Viewmodel() {
     }
 
     self.acuButton = function() {
-        self.networkObject.hubs().addACU();
+        self.networkObject.Hubs().addACU();
 				self.current_screen("definition_screen_acu");
     }
 
