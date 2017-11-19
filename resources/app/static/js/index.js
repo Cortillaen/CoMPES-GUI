@@ -466,10 +466,6 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		self.setupMap();
-		if(clickedItem.network_ID)
-			alert("You clicked on " + clickedItem.network_ID() + " on the Map Screen.");
-		else
-			alert("You clicked on " + clickedItem.id() + " on the Map Screen.");
 	}
 	
 	self.switchMapMode = function() {

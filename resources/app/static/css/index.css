@@ -204,3 +204,7 @@ ol > li > span {
 	border-left-style: solid;
 	border-right-style: solid;
 }
+
+#graphArea {
+	text-align: center;
+}
