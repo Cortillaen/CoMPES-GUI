@@ -129,7 +129,6 @@ function Viewmodel() {
 		Input: N/A
 		Output: N/A
 		Notes: Builds a set of variables that depend on the Map View being active
-				changing to another screen without clearing these will throw errors
 		*/
 		var svg = d3.select("svg");
 		var width = +svg.attr("width");
@@ -137,21 +136,12 @@ function Viewmodel() {
 		
 		var radius = 15;
 		
-		alert(JSON.stringify(nodesInput));
-		
 		var nodes_data = nodesInput;
-		/*[
-			{"name": "Lillian", "sex": "F"},
-			{"name": "Gordon", "sex": "M"}
-		];*/
 		var links_data = linksInput;
-		/*[
-			{"source": "Lillian", "target": "Gordon", "type":"A" }
-		];*/
 		
 		var simulation = d3.forceSimulation().nodes(nodes_data);
 		var link_force = d3.forceLink(links_data).id(function(d) {return d.name;});
-		var charge_force = d3.forceManyBody().strength(-100);
+		var charge_force = d3.forceManyBody().strength(-1400);
 		var center_force = d3.forceCenter(width / 2, height / 2);
 		simulation
 			.force("charge_force", charge_force)
@@ -206,7 +196,7 @@ function Viewmodel() {
 			.on("drag", drag_drag)
 			.on("end", drag_end);	
 			
-		drag_handler(node);
+		//drag_handler(node);
 
 
 		//add zoom capabilities 
@@ -238,7 +228,7 @@ function Viewmodel() {
 			}
 		}
 
-		//Drag functions 
+		/*//Drag functions 
 		//d is the node 
 		function drag_start(d) {
 		 if (!d3.event.active) simulation.alphaTarget(0.3).restart();
@@ -256,7 +246,7 @@ function Viewmodel() {
 		  if (!d3.event.active) simulation.alphaTarget(0);
 		  d.fx = null;
 		  d.fy = null;
-		}
+		}*/
 
 		//Zoom functions 
 		function zoom_actions(){
@@ -531,7 +521,6 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		var graphData = (self.mapMode == "architecture") ? self.makeArchitectureGraphData() : self.makeSemanticGraphData();
-		alert("Graphdata = " + JSON.stringify(graphData[0]));
 		self.mapData = new d3Data(graphData[0], graphData[1]);
 	}
 	
@@ -610,21 +599,10 @@ function Viewmodel() {
 		Output: Network Definition File
 		Notes: If networkObject is not null, load the network onto the screen displayed into the correct areas for editing
 			Otherwise, the HTML fields will be blank and the filled out information will be sent to CoMPES
-			We need to figure out how to access the dynamic form fields that will be added to the screen (addACU and addHub)
-			https://knockoutjs.com/documentation/unobtrusive-event-handling.html is a good starting point
 		*/
 
 		console.log(ko.toJSON(this.networkObject, replacer));
 
-		/*(for(var i = 0; i < self.hubs().length; i++)
-		{
-			var position = i;
-			console.log(networkObject.Hubs.hub_ID[i]);
-			for(var j = 0; j < self.hubs()[position].acus().length; j++)
-			{
-				console.log(networkObject.Hubs.ACUs.id[j]);
-			}
-		}*/
 	};
 
 	//============================Backend============================================
