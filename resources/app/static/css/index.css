@@ -199,3 +199,8 @@ ol > li > span {
 	font-size: 120%;
 	padding: 2px 5px 2px 5px;
 }
+
+.selected {
+	border-left-style: solid;
+	border-right-style: solid;
+}

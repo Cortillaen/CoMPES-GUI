@@ -181,6 +181,8 @@ function Viewmodel() {
 			.attr("fill", circleColour)
         	.on("click", function(d) {
         		alert(d.name);
+        		self.selectedItem(d.data);
+        		self.setupMap();
         	});
 
 		var label = gnodes.append("text")
@@ -190,13 +192,13 @@ function Viewmodel() {
             .style("font-size", "100%")
     		.text(function(d) { return d.name; });
 		 
-		//add drag capabilities  
+		/*//add drag capabilities  
 		var drag_handler = d3.drag()
 			.on("start", drag_start)
 			.on("drag", drag_drag)
 			.on("end", drag_end);	
 			
-		//drag_handler(node);
+		drag_handler(node);*/
 
 
 		//add zoom capabilities 
@@ -208,24 +210,21 @@ function Viewmodel() {
 		/** Functions **/
 
 		//Function to choose what color circle we have
-		//Let's return blue for males and red for females
 		function circleColour(d){
-			if(d.sex =="M"){
+			if(d.type == "network")
 				return "blue";
-			} else {
-				return "pink";
-			}
+			else if(d.type == "hub")
+				return "green";
+			else
+				return "yellow";
 		}
 
-		//Function to choose the line colour and thickness 
-		//If the link type is "A" return green 
-		//If the link type is "E" return red 
+		//Function to choose the line colour
 		function linkColour(d){
-			if(d.type == "A"){
-				return "green";
-			} else {
-				return "red";
-			}
+			if(self.mapMode == "architecture")
+				return "purple";
+			else
+				return "orange";
 		}
 
 		/*//Drag functions 
@@ -466,6 +465,7 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
+		self.setupMap();
 		if(clickedItem.network_ID)
 			alert("You clicked on " + clickedItem.network_ID() + " on the Map Screen.");
 		else
@@ -480,36 +480,45 @@ function Viewmodel() {
 		self.setupMap();
 	}
 	
-	self.makeArchitectureGraphData = function() {
+	self.makeGraphData = function() {
 		var nodes_data = [];
 		var links_data = [];
 		
-		if(self.selectedItem().constructor.name == "NetworkObject") {
-			nodes_data.push({"name": self.networkObject.network_ID(), "type": "network"});
-			self.networkObject.hubs().forEach(function(hub) {
-				nodes_data.push({"name": hub.id(), "type": "hub"});
-				links_data.push({"source": self.networkObject.network_ID(), "target": hub.id(), "type": "architecture"});
-			});
+		//clear map if it's already drawn
+		if(self.mapData) {
+			d3.selectAll("svg > *").remove();
 		}
-		else if(self.selectedItem.constructor.name == "Hub") {
-			nodes_data.push({"name": self.selectedItem.id(), "type": "hub"});
-			self.selectedItem.acus().forEach(function(acu) {
-				nodes_data.push({"name": acu.id(), "type": "acu"});
-				links_data.push({"source": self.selectedItem.id(), "target": acu.id(), "type": "architecture"});
-			});
+		//build node and link data based on selectedItem
+		if(self.mapMode == "architecture") {
+			//for the network node, build all connected hubs
+			if(self.selectedItem().constructor.name == "NetworkObject") {
+				nodes_data.push({"name": self.networkObject.network_ID(), "type": "network", "data": self.networkObject});
+				self.networkObject.hubs().forEach(function(hub) {
+					nodes_data.push({"name": hub.id(), "type": "hub", "data": hub});
+					links_data.push({"source": self.networkObject.network_ID(), "target": hub.id(), "type": "architecture"});
+				});
+			}
+			//for a hub, build all connected ACUs
+			else if(self.selectedItem().constructor.name == "Hub") {
+				nodes_data.push({"name": self.selectedItem().id(), "type": "hub", "data": self.selectedItem});
+				self.selectedItem().acus().forEach(function(acu) {
+					nodes_data.push({"name": acu.id(), "type": "acu", "data": acu});
+					links_data.push({"source": self.selectedItem().id(), "target": acu.id(), "type": "architecture"});
+				});
+			}
+			//for an ACU, build its parent hub and all of that hub's connected ACUs
+			else if(self.selectedItem().constructor.name == "ACU") {
+				nodes_data.push({"name": self.selectedItem().parent.id(), "type": "hub", "data": self.selectedItem().parent});
+				self.selectedItem().parent.acus().forEach(function(acu) {
+					nodes_data.push({"name": acu.id(), "type": "acu", "data": acu});
+					links_data.push({"source": self.selectedItem().parent.id(), "target": acu.id(), "type": "architecture"});
+				});
+			}
 		}
-		else if(self.selectedItem.constructor.name == "ACU") {
-			nodes_data.push({"name": self.selectedItem.parent.id(), "type": "hub"});
-			self.selectedItem.parent.acus().forEach(function(acu) {
-				nodes_data.push({"name": acu.id(), "type": "acu"});
-				links_data.push({"source": self.selectedItem.parent.id(), "target": acu.id(), "type": "architecture"});
-			});
+		else {
+			fd;
 		}
 		return([nodes_data, links_data]);
-	}
-	
-	self.makeSemanticGraphData = function() {
-		return NULL;
 	}
 	
 	self.setupMap = function() {
@@ -520,7 +529,7 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		var graphData = (self.mapMode == "architecture") ? self.makeArchitectureGraphData() : self.makeSemanticGraphData();
+		var graphData = self.makeGraphData();
 		self.mapData = new d3Data(graphData[0], graphData[1]);
 	}
 	
