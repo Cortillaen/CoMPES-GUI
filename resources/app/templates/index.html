@@ -137,11 +137,11 @@
   <script type="text/html" id="network_frame">
       <div class="col-sm-3 sidenav" style="text-align:left;height:100%;position:absolute;float:right;border-style:solid;border-radius:20px">
         <ol id='network_hierarchy' data-name='test'>
-          <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, style: {backgroundColor : $root.networkObject.isActive() ? 'green' : 'transparent'}"></span>
+          <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, css: {selected: $root.networkObject.isActive()}"></span>
             <ol><!-- ko foreach: { data: networkObject.hubs } -->
-              <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, style: {backgroundColor : isActive() ? 'green' : 'transparent'}"></span>
+              <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span>
                 <ol><!-- ko foreach: { data: $data.acus } -->
-                  <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}, style: {backgroundColor : isActive() ? 'green' : 'transparent'}"></span></li>
+                  <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span></li>
                 <!-- /ko --></ol>
               </li>
             <!-- /ko --></ol>
@@ -157,30 +157,26 @@
 
   <!-- Map Screen -->
   <script type="text/html" id="map_subscreen">
-    <div class="container text-center">
-      <div class="page-header"><h1>&nbsp&nbspMap View&nbsp&nbsp</h1></div>
-      <div class="row content" id="graphArea">
-		    <svg class="well" width="800" height="500"></svg>
-      </div>
+    <div class="page-header"><h1>&nbsp&nbspMap View&nbsp&nbsp</h1></div>
+    <div class="row content" id="graphArea">
+	    <svg class="well" width="800" height="500"></svg>
     </div>
   </script>
   <!-- End of Map Screen -->
 
   <!-- Informational Screen -->
   <script type="text/html" id="informational_subscreen">
-    <div class="container text-center">
-      <div class="page-header"><h1>Informational Screen</h1></div>
-      <h1>Grid</h1>
-      <div class="row content">
-        <div class="col-sm-12" style="background-color:pink;">
-          Query Area
-        </div>
-        <div class="col-sm-12" style="background-color:red;">
-          Metrics
-        </div>
-        <div class="col-sm-12" style="background-color:orange;">
-          Graphical Analysis
-        </div>
+    <div class="page-header"><h1>Informational Screen</h1></div>
+    <h1>Grid</h1>
+    <div class="row content">
+      <div class="col-sm-12" style="background-color:pink;">
+        Query Area
+      </div>
+      <div class="col-sm-12" style="background-color:red;">
+        Metrics
+      </div>
+      <div class="col-sm-12" style="background-color:orange;">
+        Graphical Analysis
       </div>
     </div>
   </script>
