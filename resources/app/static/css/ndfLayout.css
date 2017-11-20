@@ -1,0 +1,76 @@
+
+
+html {
+	text-align:center;
+	background-blend-mode: multiply;
+	background-color: rgba(0, 188, 212, 0);
+	background-image: url("../images/background3.png");
+	background-size: 100em 80em;
+	background-repeat: no-repeat;
+}
+
+
+
+
+
+
+.bannerCont {
+	background: red;
+	border: .25em #5e5e5e;
+	border-radius: 1em;
+    color: black;
+	width: 35em;
+    height: 5em;
+    float: left;
+   	text-align: center;
+   	padding: .5em;
+}
+
+.infoCont {
+	float: left;
+	width: 10em;
+	height: 5em;
+	background: blue;
+	border: .25em #5e5e5e;
+	border-radius: 1em;
+	justify-content: left;
+	text-align: left;
+	padding: .5em;
+
+
+}
+
+
+.dirCont {
+	float: left;
+	height: 25em;
+	width: 10em;
+	background: purple;
+	border: .25em #5e5e5e;
+	border-radius: 1em;
+	padding: .5em;
+	justify-content: left;
+	text-align: left;
+}
+
+
+.selectionCont {
+	background: yellow;
+	float: left;
+	height: 25em;
+	width: 35em;
+	border: .25em #5e5e5e;
+	border-radius: 1em;
+	padding: .5em;
+	justify-content: left;
+	text-align: left;
+
+}
+
+
+
+
+
+
+
+
