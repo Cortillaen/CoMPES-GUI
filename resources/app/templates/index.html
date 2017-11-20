@@ -61,11 +61,11 @@
       <form id="form-group">
         <div class="form-group">
           <label for="username"> Username: </label>
-          <input type="text" id="username" name="usr" value="" class="form-control">
+          <input type="text" id="username" data-bind="value: user" class="form-control">
         </div>
         <div class="form-group">
           <label for="password"> Password: </label>
-          <input type="text" id="password" name="pw" value="" class="form-control">
+          <input type="text" id="password" data-bind="value: pass" class="form-control">
         </div>
       </form>
       <div class="btn-group">
@@ -125,7 +125,7 @@
   <script type="text/html" id="network_frame">
       <div class="col-sm-3 sidenav" style="text-align:left;height:100%;position:absolute;float:right;border-style:solid;border-radius:20px">
         <ol id='network_hierarchy' data-name='test'>
-          <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, style: {backgroundColor : $root.networkObject.isActive() ? 'green' : 'transparent'}"></span>
+          <li><span id='network' data-bind="text: networkObject.Network_Config.Network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, style: {backgroundColor : $root.networkObject.isActive() ? 'green' : 'transparent'}"></span>
             <ol><!-- ko foreach: { data: networkObject.Hubs } -->
               <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, style: {backgroundColor : isActive() ? 'green' : 'transparent'}"></span>
                 <ol><!-- ko foreach: { data: $data.ACUs } -->
@@ -156,7 +156,7 @@
         <!--div class="row content"-->
         <div class="col-sm-3 sidenav" style="text-align:left">
 			<ol id='network_hierarchy' data-name='test'>
-				<li><span data-bind="text: networkObject.network_ID, click: function() {alert('You clicked ' + networkObject.network_ID());}"></span>
+				<li><span data-bind="text: networkObject.Network_Config.Network_ID, click: function() {alert('You clicked ' + networkObject.Network_Config.Network_ID());}"></span>
 					<ol><!-- ko foreach: { data: networkObject.Hubs } -->
 						<li><span data-bind="text: id, click: function() {alert('You clicked ' + id());}"></span>
 							<ol><!-- ko foreach: { data: $data.ACUs } -->
@@ -223,14 +223,14 @@
       <fieldset>
         <legend>Network Configurations:</legend>
         <label>Network ID:</label>
-        <input type="text" data-bind="value: network_ID"/><br>
+        <input type="text" data-bind="value: Network_Config.Network_ID"/><br>
         <legend>Policy Control:</legend>
         <label> PES Mode: </label>
-        <input type="radio" name="pes mode" value="manual" data-bind="checked: network_config.pes_mode" checked> Manual
-        <input type="radio" name="pes mode" value="autonomous" data-bind="checked: network_config.pes_mode"> Autonomous<br>
+        <input type="radio" name="pes mode" value="manual" data-bind="checked: Network_Config.PES_Mode" checked> Manual
+        <input type="radio" name="pes mode" value="autonomous" data-bind="checked: Network_Config.PES_Mode"> Autonomous<br>
 
         <label> PE Algorithm: </label>
-        <select data-bind="options: $root.pe_algorithms, selectedOptions: chosen_algorithm" required></select>
+        <select data-bind="options: $root.pe_algorithms, selectedOptions: Network_Config.PE_Algorithm" required></select>
       </fieldset>
     </div>
     <button data-bind="click: $data.addHub">Add Hub</button>

@@ -115,9 +115,7 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		this.network_ID = ko.observable("Network Name");
-		this.Network_Config = {"User-ID" : ko.observable("manual"), "Network-ID": ko.observable(""), "PES_Mode"};
-		this.chosen_algorithm = ko.observable(self.pe_algorithms()[0]);
+		this.Network_Config = {"User-ID" : ko.observable(""), "Network_ID": ko.observable("Network Name"), "PES_Mode": ko.observable(""), "PE_Alogrithm": self.pe_algorithms()[0]};
 		this.Hubs = ko.observableArray([]);
 
 		this.addHub = function() {
@@ -342,8 +340,8 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		if(clickedItem.network_ID)
-			alert("You clicked on " + clickedItem.network_ID() + " on the Map Screen.");
+		if(clickedItem.Network_Config.Network_ID)
+			alert("You clicked on " + clickedItem.Network_Config.Network_ID() + " on the Map Screen.");
 		else
 			alert("You clicked on " + clickedItem.id() + " on the Map Screen.");
 	}
