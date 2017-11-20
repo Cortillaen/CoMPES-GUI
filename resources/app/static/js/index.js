@@ -603,3 +603,5 @@ $(window).on("unload", function() {
 	//This function specifies the behaviour of the program when the user exits the application.
 	twistedClient.kill()
 });
+
+

@@ -32,10 +32,77 @@
           <li><a data-bind="click: gotoMap">Map Screen</a></li>
           <li><a data-bind="click: gotoInformational">Informational Screen</a></li>
           <li><a data-bind="click: gotoDefinition">Definition Screen</a></li>
+		  
         </ul>
         <ul class="nav navbar-nav navbar-right" style="padding-right: 15px">
+		<li><button id="myBtn" class="btn btn-danger navbar-btn">Add New User</button></li>
+		</ul>
+		<div class="divider">
+		</div>
+		 <ul class="nav navbar-nav navbar-right" style="padding-right: 15px">
          <li><button class="btn btn-danger navbar-btn" data-bind="click: gotoLogin">Login</button></li>
         </ul>
+<!-- Trigger/Open The Modal -->
+
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+	 <h1> Register </h1>
+	<div class="registerCont">
+          <form id="form-group">
+        <div class="form-group">
+          <label for="username"> Username: </label>
+          <input type="text" id="username" name="usr" value="" class="form-control">
+        </div>
+        <div class="form-group">
+          <label for="password"> Password: </label>
+          <input type="text" id="password" name="pw" value="" class="form-control">
+        </div>
+		  <div class="form-group">
+          <label for="retype-password"> Re-type Password: </label>
+          <input type="text" id="retype-password" name="pw" value="" class="form-control">
+        </div>
+      
+  
+	</form>
+	    <button id ="submit" type="button" class ="btn btn-primary" style="width:100%">Submit</button>
+  </div>
+
+  </div>
+
+</div>
+
+<script>
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
       </div>
     </nav>
 
@@ -56,28 +123,36 @@
 
   <!-- Login Screen -->
   <script type="text/html" id="login_screen">
-    <div class="page-header"><h1> Login to CoMPES </h1></div>
+    <div class="page-header"><h1> Welcome to CoMPES! </h1></div>
+	
     <div class="loginCont">
       <form id="form-group">
         <div class="form-group">
-          <label for="username"> Username: </label>
+		
+          <span class = "glyphicon glyphicon-user"></span><label>:</label>
           <input type="text" id="username" name="usr" value="" class="form-control">
         </div>
         <div class="form-group">
-          <label for="password"> Password: </label>
+          <span class = "glyphicon glyphicon-lock"></span><label>:</label>
           <input type="text" id="password" name="pw" value="" class="form-control">
         </div>
       </form>
       <div class="btn-group">
-        <button id="register" type="button" class="btn btn-primary">Add new user</button>
-        <button id="login" type="button" data-bind="click: signIn" class ="btn btn-primary">Login to GUI</button>
+
+
+        <button id="login" type="button" data-bind="click: signIn" class ="btn btn-primary" style="width:500%;position:relative;right:120px;">Login</button>
       </div>
-    </div>
+	 
+	
+
+		</div>
+
     <div>
       <img class="center-block" src="../static/images/logoBigE.png">
     </div>
   </script>
   <!-- End of Login Screen -->
+
 
   <!-- Network Selection Screen -->
   <script type="text/html" id="selection_screen">
@@ -98,7 +173,7 @@
           	<div class="selectedCont">
 			<p> Selected Network Configurations: </p>
 			<form id="selectionForm">
-				Network Name:<br><textarea id="netName" rows="1" cols="35" disabled="disabled"></textarea><br><br>
+				Network Name:<br> <textarea id="netName" rows="1" cols="35" disabled="disabled"></textarea><br><br>
 				IP Address:<br>  <textarea id="ipaddress" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
 				Number of Hubs:<br>  <textarea id ="numhubs" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
 				Number of ACUs:<br>  <textarea id="numacus" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
