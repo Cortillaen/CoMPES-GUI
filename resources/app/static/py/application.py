@@ -4,7 +4,7 @@ Dummy GUI Backend used to test CoMPES
 import sys, ujson
 from multiprocessing import Queue
 
-from flask import Flask
+from flask import Flask, request
 from twisted.python import log
 from twisted.internet import reactor
 from twisted.web.resource import Resource
@@ -41,9 +41,12 @@ def msg_to_mux():
 def putMSG(queue, msg):
 	queues[queue].put(msg, False)
 	
-def buildConnection(CoMPES_address):
+def buildConnection(CoMPES_address, userID="", userPass=""):
 	global factory
-	header = {'user-id':'testUser', 'password': 'testtest', 'register':'True'}
+	if((userID == "") or (userPass == "")):
+		header = {'user-id':'testUser', 'password': 'testtest', 'register':'True'}
+	else:
+		header = {'user-id':userID, 'password':userPass, 'register':'True'}
 	factory = CoMPES_WebSocket_Factory(CoMPES_address, header)
 	
 #==================================CoMPES Websocket==============================
@@ -93,6 +96,13 @@ def multiplexer(opt):
 	if(opt == "connect"):
 		try:
 			print("Connecting to CoMPES Provisioning Server @: %s" % (CoMPES_address))
+
+			#get username and pass from post body
+			tempJSON = jsonify(json.loads(request.data))
+			userID = tempJSON['userID']
+			userPass = tempJSON['userPass']
+
+			buildConnection(CoMPES_address, userID, userPass)
 			connectWS(factory)
 			response = msg_to_mux()
 		except:
@@ -240,10 +250,15 @@ def multiplexer(opt):
 	#Get an NDF
 	elif(opt == "obs-1"):
 		try:
-			request = {}
+			#request = {}
 			#-----REPLACE FILE CODE-----
-			request["Data"] = ujson.dumps({"User-ID": "testUser", "Network-ID" : "testNetwork"})
+			#request["Data"] = ujson.dumps({"User-ID": "testUser", "Network-ID" : "testNetwork"})
 			#---------------------------
+			#requestData = ujson.dumps(request.data)
+			
+			receivedData = jsonify(json.loads(request.data))
+			request = {}
+			request["Data"] = ujson.dumps({"User-ID":receivedData["User-ID"], "Network-ID":receivedData["Network-ID"]})
 			
 			#Package request with necessary headers
 			request["Module"] = "Observation"
@@ -352,6 +367,7 @@ def multiplexer(opt):
 		try:
 			factory.closeCoMPESConnection()
 			response = "Disconnected from CoMPES"
+			username = ""
 		except:
 			response = "Error: Failed to connect to CoMPES"
 	
@@ -370,8 +386,5 @@ if __name__ == "__main__":
 	resource = WSGIResource(reactor, reactor.getThreadPool(), app)
 	site = Site(resource)
 	reactor.listenTCP(8080, site, interface=localHost)
-	
-	#provision a WS Factory
-	buildConnection(CoMPES_address)
 	
 	reactor.run()

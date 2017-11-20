@@ -676,10 +676,10 @@ function Viewmodel() {
 							", and " + stat + ", and " + description);
 						 });
 		*/
-		$.ajax({url: "http://127.0.0.1:8080/connect",
-				type: 'get',
-				success: function (response) {alert(response);},
-				error: function(response, stat, disc) {alert("Error" + disc);}
+		var message = JSON.stringify({'User-ID':self.user(), 'User-Password':self.pass()});
+		sendMessage("connect", message,
+			function (response) {alert("success: " + response);},
+			function(response, stat, disc) {alert("Error: " + disc);}
 		});
 	};
 
@@ -691,10 +691,11 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		var jsonParam = JSON.stringify({'rest-method':'get', 'path':paths['networks'], 'data':[selectedNetwork]});
-		self.sendMessage(jsonParam,
-						 function() {},
-						 function() {});
+		var message = JSON.stringify({'User-ID':self.user(), 'Network-ID':selectedNetwork});
+		sendMessage("connect", message,
+			function (response) {alert("success: " + response);},
+			function(response, stat, disc) {alert("Error: " + disc);}
+		});
 	};
 
 	self.submitNetwork = function(networkDefinitionFile) {
@@ -797,7 +798,7 @@ function Viewmodel() {
 						 function() {});
 	};
 
-	self.sendMessage = function(message, successFunc, errorFunc) {
+	self.sendMessage = function(routing, message, successFunc, errorFunc) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends a message to the backend to be routed to CoMPES
@@ -808,7 +809,7 @@ function Viewmodel() {
 		Notes: This function will have to wait on the Mux to pass the message on to CoMPES, get a
 			   response, and send the response back here before continuing
 		*/
-		$.ajax({url: "127.0.0.1:8080/MUX/FromElectron",
+		$.ajax({url: "127.0.0.1:8080/" + routing,
 				type: 'get',
 				contentType: 'application/json',
 				data: message,
