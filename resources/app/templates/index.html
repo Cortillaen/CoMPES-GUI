@@ -198,8 +198,8 @@ window.onclick = function(event) {
   <!-- Network Frame - includes a sidebar displaying the network structure and an area for the main part
        of each screen. -->
   <script type="text/html" id="network_frame">
-    <div class="row content">
-      <div class="col-sm-3 sidenav" style="text-align:left">
+    
+      <div class="col-sm-3 sidenav" style="text-align:left;height:100%;position:absolute;float:right;border-style:solid;border-radius:20px">
 
         <ol id='network_hierarchy' data-name='test'>
           <li><span data-bind="text: networkObject.network_ID, click: function() {sidebarClick($root.networkObject);}"></span>
@@ -214,10 +214,10 @@ window.onclick = function(event) {
         </ol>
 
       </div>
-      <div class="col-sm-9" id="network_screen_holder" data-bind="template: {name: operation_subscreen}">
+      <div class="col-sm-9" id="network_screen_holder" data-bind="template: {name: operation_subscreen}" style="float:right;">
         Interactive visualization of currently-selected level
       </div>
-    </div>
+
   </script>
   <!-- End of Network Frame -->
 
@@ -274,7 +274,7 @@ window.onclick = function(event) {
       <fieldset>
         <legend>Network Configurations:</legend>
         <label>Network ID:</label>
-        <input type="text" data-bind="value: network_ID"/>
+        <input type="text" data-bind="value: network_ID"/><br>
         <legend>Policy Control:</legend>
         <label> PES Mode: </label>
         <input type="radio" name="pes mode" value="manual" data-bind="checked: network_config.pes_mode" checked> Manual
@@ -289,7 +289,7 @@ window.onclick = function(event) {
 
     <!-- ko if: ($data.constructor.name == "Hub") -->
     <label>Hub ID: </label>
-    <input data-bind="value: id"></input><br>
+    <input data-bind="value: id"></input><br><br>
 		<label>Middleware: </label>
 		<input data-bind="value: hub_config.middleware"></input><br><br>
     <button data-bind="click: addACU">Add ACU</button>
@@ -297,17 +297,17 @@ window.onclick = function(event) {
 
     <!-- ko if: ($data.constructor.name == "ACU") -->
     <label>ACU ID: </label>
-    <input type="text" data-bind="value: id"></input>
+    <input type="text" data-bind="value: id"></input><br><br>
     <label>Location String: </label>
-    <input type="text" data-bind="value: location_str"></input>
+    <input type="text" data-bind="value: location_str"></input><br><br>
     <label>Location GPS: </label>
-    <input type="text" data-bind="value: location_gps"></input>
+    <input type="text" data-bind="value: location_gps"></input><br><br>
     <label>Classification: </label>
-    <input type="text" data-bind="value: classification"></input>
+    <input type="text" data-bind="value: classification"></input><br><br>
     <label>GUID: </label>
-    <input type="text" data-bind="value: guid"></input>
+    <input type="text" data-bind="value: guid"></input><br><br>
     <label>Interpreter Type: </label>
-    <input data-bind="value: interpreter_type"></input>
+    <input type="text" data-bind="value: interpreter_type"></input><br><br>
     <!-- /ko -->
   </script>
 
