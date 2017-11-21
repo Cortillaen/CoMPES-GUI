@@ -232,8 +232,10 @@ function Viewmodel() {
 			.attr("r", radius)
 			.attr("fill", circleColour)
         	.on("click", function(d) {
-        		self.selectedItem(d.data);
-        		self.setupMap();
+        		if(self.selectedItem != d.data) {
+					self.selectedItem(d.data);
+					self.setupMap();
+				}
         	});
 
 		var label = gnodes.append("text")
