@@ -199,8 +199,7 @@ function Viewmodel() {
 		simulation
 			.force("charge_force", charge_force)
 			.force("center_force", center_force)
-			.force("links", link_force)
-		;
+			.force("link", link_force);
 		
 		var div = d3.select("body").append("div")   
 		    .attr("class", "tooltip")
@@ -615,7 +614,7 @@ function Viewmodel() {
 				nodes_data.push({"name": acu.id(), "type": "acu", "data": acu});
 				links_data.push({"source": self.selectedItem().id(), "target": acu.id(), "type": "architecture"});
 				if((self.mapMode() == "semantic") && (acu.semantic_links().length > 0)) {
-					var semLinks = acu.semantic_links().replace(", ", ",").split(",");
+					var semLinks = acu.semantic_links().replace(new RegExp(', ', 'g'), ",").split(",");
 					for(var semLink in semLinks) {
 						links_data.push({"source": acu.id(), "target": semLinks[semLink], "type": "semantic"});
 					}
@@ -638,7 +637,7 @@ function Viewmodel() {
 				nodes_data.push({"name": self.selectedItem().parent.id(), "type": "hub", "data": self.selectedItem().parent});
 				links_data.push({"source": self.selectedItem().id(), "target": self.selectedItem().parent.id(), "type": "architecture"});
 				if((self.mapMode() == "semantic") && (self.selectedItem().semantic_links().length > 0)) {
-					var semLinks = self.selectedItem().semantic_links().replace(", ", ",").split(",");
+					var semLinks = self.selectedItem().semantic_links().replace(new RegExp(', ', 'g'), ",").split(",");
 					for(var semLink in semLinks) {
 						var semNode = ko.utils.arrayFirst(self.selectedItem().parent.acus(), function(child) {
 							return child.id() == semLinks[semLink];
@@ -975,7 +974,7 @@ $(document).ready(function(){
 	var file_path = path.join(path.join(path.join(path.dirname(__dirname),'static' ), 'py'), 'application.py');
 
 	//Spawn twisted subprocess
-	twistedClient = child_process.spawn("python",  [file_path]);
+	/*twistedClient = child_process.spawn("python",  [file_path]);
 
 	//Register handelers for input/output streams
 	//This is the handeler for when the client exits
@@ -986,6 +985,7 @@ $(document).ready(function(){
 
 	//This handeler reads error data from the Client
 	twistedClient.stderr.on('data', function(data) {console.log(data.toString()); alert("Error:" + data.toString());});
+	*/
 });
 
 $(window).on("unload", function() {
