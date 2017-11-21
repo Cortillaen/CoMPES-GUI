@@ -31,6 +31,7 @@ function Viewmodel() {
 		this.classification = ko.observable("");
 		this.guid = ko.observable("");
 		this.interpreter_type = ko.observable("");
+		this.semantic_links = ko.observable("");
 		this.parent = parent;
 		self.counter += 1;
 
@@ -272,7 +273,7 @@ function Viewmodel() {
 
 		//Function to choose the line colour
 		function linkColour(d){
-			if(self.mapMode == "architecture")
+			if(d.type == "architecture")
 				return "purple";
 			else
 				return "orange";
@@ -372,7 +373,7 @@ function Viewmodel() {
 	
 	//============================== Map View Variables =====================================
 	self.mapData = null;
-	self.mapMode = "architecture";
+	self.mapMode = ko.observable("architecture");
 
 	//=========================== Definition Screen Variables ===============================
 	
@@ -441,6 +442,7 @@ function Viewmodel() {
 				acuTemp.classification(info["hubs"][key]["acus"][secondKey]["classification"]);
 				acuTemp.guid(info["hubs"][key]["acus"][secondKey]["guid"]);
 				acuTemp.interpreter_type(info["hubs"][key]["acus"][secondKey]["interpreter_type"]);
+				acuTemp.semantic_links(info["hubs"][key]["acus"][secondKey]["semantic_links"]);
 			}
 		}
 		self.selectedItem(self.networkObject);
@@ -574,7 +576,7 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		self.mapMode = (self.mapMode == "architecture") ? "semantic" : "architecture";
+		self.mapMode((self.mapMode() == "architecture") ? "semantic" : "architecture");
 		
 		// CLEAR MAP
 		
@@ -598,34 +600,54 @@ function Viewmodel() {
 			d3.selectAll("svg > *").remove();
 		}
 		//build node and link data based on selectedItem
-		if(self.mapMode == "architecture") {
-			//for the network node, build all connected hubs
-			if(self.selectedItem().constructor.name == "NetworkObject") {
-				nodes_data.push({"name": self.networkObject.network_ID(), "type": "network", "data": self.networkObject});
-				self.networkObject.hubs().forEach(function(hub) {
-					nodes_data.push({"name": hub.id(), "type": "hub", "data": hub});
-					links_data.push({"source": self.networkObject.network_ID(), "target": hub.id(), "type": "architecture"});
-				});
-			}
-			//for a hub, build all connected ACUs
-			else if(self.selectedItem().constructor.name == "Hub") {
-				nodes_data.push({"name": self.selectedItem().id(), "type": "hub", "data": self.selectedItem});
-				self.selectedItem().acus().forEach(function(acu) {
-					nodes_data.push({"name": acu.id(), "type": "acu", "data": acu});
-					links_data.push({"source": self.selectedItem().id(), "target": acu.id(), "type": "architecture"});
-				});
-			}
-			//for an ACU, build its parent hub and all of that hub's connected ACUs
-			else if(self.selectedItem().constructor.name == "ACU") {
+		//for the network node, build all connected hubs
+		if(self.selectedItem().constructor.name == "NetworkObject") {
+			nodes_data.push({"name": self.networkObject.network_ID(), "type": "network", "data": self.networkObject});
+			self.networkObject.hubs().forEach(function(hub) {
+				nodes_data.push({"name": hub.id(), "type": "hub", "data": hub});
+				links_data.push({"source": self.networkObject.network_ID(), "target": hub.id(), "type": "architecture"});
+			});
+		}
+		//for a hub, build all connected ACUs
+		else if(self.selectedItem().constructor.name == "Hub") {
+			nodes_data.push({"name": self.selectedItem().id(), "type": "hub", "data": self.selectedItem});
+			self.selectedItem().acus().forEach(function(acu) {
+				nodes_data.push({"name": acu.id(), "type": "acu", "data": acu});
+				links_data.push({"source": self.selectedItem().id(), "target": acu.id(), "type": "architecture"});
+				if((self.mapMode() == "semantic") && (acu.semantic_links().length > 0)) {
+					var semLinks = acu.semantic_links().replace(", ", ",").split(",");
+					for(var semLink in semLinks) {
+						links_data.push({"source": acu.id(), "target": semLinks[semLink], "type": "semantic"});
+					}
+				}
+			});
+		}
+		//for an ACU, build its parent hub and all of that hub's connected ACUs
+		else if(self.selectedItem().constructor.name == "ACU") {
+			//if in architecture mode, build as though ACU's parent hub was selected
+			if(self.mapMode() == "architecture") {
 				nodes_data.push({"name": self.selectedItem().parent.id(), "type": "hub", "data": self.selectedItem().parent});
 				self.selectedItem().parent.acus().forEach(function(acu) {
 					nodes_data.push({"name": acu.id(), "type": "acu", "data": acu});
 					links_data.push({"source": self.selectedItem().parent.id(), "target": acu.id(), "type": "architecture"});
 				});
 			}
-		}
-		else {
-			fd;
+			//if in semantic mode, build with ACU's parent and all semantically linked ACUs
+			else {
+				nodes_data.push({"name": self.selectedItem().id(), "type":"acu", "data":self.selectedItem()});
+				nodes_data.push({"name": self.selectedItem().parent.id(), "type": "hub", "data": self.selectedItem().parent});
+				links_data.push({"source": self.selectedItem().id(), "target": self.selectedItem().parent.id(), "type": "architecture"});
+				if((self.mapMode() == "semantic") && (self.selectedItem().semantic_links().length > 0)) {
+					var semLinks = self.selectedItem().semantic_links().replace(", ", ",").split(",");
+					for(var semLink in semLinks) {
+						var semNode = ko.utils.arrayFirst(self.selectedItem().parent.acus(), function(child) {
+							return child.id() == semLinks[semLink];
+						});
+						nodes_data.push({"name": semLinks[semLink], "type": "acu", "data": semNode});
+						links_data.push({"source": self.selectedItem().id(), "target": semLinks[semLink], "type": "semantic"});
+					}
+				}
+			}
 		}
 		self.mapData = new d3Data(nodes_data, links_data);
 		//return([nodes_data, links_data]);
