@@ -1,7 +1,9 @@
 //##################################### Global Variables ####################################
+const electron = require('electron');
+const path = require('path');
+const fs = require('fs');
 var twistedClient;
 var child_process = require('child_process')
-var path = require('path');
 
 //######################################## VIEWMODEL ########################################
 function Viewmodel() {
@@ -33,6 +35,13 @@ function Viewmodel() {
 		self.counter += 1;
 
 		this.isActive = function() {
+			/*
+			Author: Trenton Nale
+			Description: Returns whether this ACU is the selectedItem
+			Input: N/A
+			Output: Boolean response
+			Notes: N/A
+			*/
 			if(this == self.selectedItem())
 				return true;
 			else
@@ -55,18 +64,39 @@ function Viewmodel() {
 		self.counter += 1;
 
 		this.addACU = function() {
+			/*
+			Author: Trenton Nale
+			Description: Adds a new ACU to this Hub
+			Input: N/A
+			Output: N/A
+			Notes: N/A
+			*/
 			this.acus.push(new ACU(this));
 			self.bonsai();
 			self.selectedItem(this.acus.slice(-1)[0]);
 		};
 
 		this.removeACU = function(acu) {
+			/*
+			Author: Trenton Nale
+			Description: Removes a specified ACU from this Hub
+			Input: acu - ACU to remove
+			Output: N/A
+			Notes: N/A
+			*/
 			self.selectedItem(this);
 			this.acus.remove(acu);
 			self.bonsai();
 		};
 
 		this.isActive = function() {
+			/*
+			Author: Trenton Nale
+			Description: Returns whether this Hub is the selectedItem
+			Input: N/A
+			Output: Boolean response
+			Notes: N/A
+			*/
 			if(this == self.selectedItem())
 				return true;
 			else
@@ -89,18 +119,39 @@ function Viewmodel() {
 		this.hubs = ko.observableArray([]);
 
 		this.addHub = function() {
+			/*
+			Author: Trenton Nale
+			Description: Adds new hub to the NetworkObject
+			Input: N/A
+			Output: N/A
+			Notes: N/A
+			*/
 			this.hubs.push(new Hub(this));
 			self.bonsai();
 			self.selectedItem(this.hubs.slice(-1)[0]);
 		};
 
 		this.removeHub = function(hub) {
+			/*
+			Author: Trenton Nale
+			Description: Removes a specific hub from the NetworkObject
+			Input: hub - the Hub to remove
+			Output: N/A
+			Notes: N/A
+			*/
 			self.selectedItem(this);
 			this.hubs.remove(hub);
 			self.bonsai();
 		};
 
 		this.isActive = function() {
+			/*
+			Author: Trenton Nale
+			Description: Returns whether this object is the selectedItem
+			Input: N/A
+			Output: Boolean response
+			Notes: N/A
+			*/
 			if(this == self.selectedItem())
 				return true;
 			else
@@ -112,7 +163,8 @@ function Viewmodel() {
 		/*
 		Author: Trenton Nale
 		Description: Pass as second param of toJSON() to ignore certain elements
-		Input: key - the key of a pair, value - the value of a pair
+		Input: key - the key of a pair to be ignored
+			   value - the value of a pair to be ignored
 		Output: the value if the pair is to be included in the JSON, otherwise undefined
 		Notes: N/A
 		*/
@@ -180,7 +232,6 @@ function Viewmodel() {
 			.attr("r", radius)
 			.attr("fill", circleColour)
         	.on("click", function(d) {
-        		alert(d.name);
         		self.selectedItem(d.data);
         		self.setupMap();
         	});
@@ -310,9 +361,10 @@ function Viewmodel() {
 
 	self.networkObject = new NetworkObject();
 	self.selectedItem = ko.observable(self.networkObject);
-	self.selectedItemDOM = null;
+	//self.selectedItemDOM = null;
 	self.bonsaidList = null;
-	self.counter = 0;
+	self.counter = 0; //stopgap to ensure unique hub/ACU names until validation is implemented
+	self.path = path.join(electron.remote.app.getPath('userData'), 'CoMPES_GUI.json');
 
 	//============================= Login Page Variables ====================================
 	self.user = ko.observable("");
@@ -329,7 +381,8 @@ function Viewmodel() {
 	self.bonsai = function() {
 		/*
 		Author: Trenton Nale
-		Description: Bonsais the network hierarchy list in the sidebar or updates it for changes in data
+		Description: Bonsais (formats as hierarchical tree) the network hierarchy list in the
+					 sidebar or updates it for changes in data
 		Input: N/A
 		Output: N/A
 		Notes: N/A
@@ -345,8 +398,52 @@ function Viewmodel() {
 		}
 	}
 
-	self.log = function(data, event) {
-		alert("heh: " + event.target.id.toString());
+	self.loadNDF = function(ndf) {
+		/*
+		Author: Trenton Nale
+		Description: Builds an NDF into the networkObject either from one passed in or from a local file
+		Input: ndf - the NDF to use, or undefined if building from local file
+		Output: N/A
+		Notes: Currently, the local build only looks at a set file
+		*/
+		var info; //storage for the JSON data to be used in building the networkObject
+		if(ndf["network_ID"]) info = ndf;
+		//if an NDF was passed, use that; otherwise read in from local file
+		else {
+			try {
+				info = JSON.parse(fs.readFileSync(self.path));
+			} catch(error) {
+				alert("No file found to load.")
+			}
+		}
+		//move through the JSON representation and copy all of its data into the networkObject
+		self.networkObject.network_ID(info["network_ID"]);
+		for (var key in info["network_config"])
+			self.networkObject.network_config[key] = ko.observable(info.network_config[key]);
+		var temp = self.pe_algorithms().indexOf(info["chosen_algorithm"]);
+		if(temp > -1)
+			self.networkObject.chosen_algorithm(self.pe_algorithms()[temp]);
+		else
+			alert("PE Algorithm not recognized.");
+		for(var key in info["hubs"]) {
+			self.networkObject.addHub();
+			var hubTemp = self.networkObject.hubs().slice(-1)[0];
+			hubTemp.id(info["hubs"][key]["id"]);
+			var secondKey = "";
+			for(secondKey in info["hubs"][key]["hub_config"])
+				hubTemp.hub_config[secondKey] = ko.observable(info["hubs"][key]["hub_config"][secondKey]);
+			for(secondKey in info["hubs"][key]["acus"]) {
+				hubTemp.addACU();
+				var acuTemp = hubTemp.acus().slice(-1)[0];
+				acuTemp.id(info["hubs"][key]["acus"][secondKey]["id"]);
+				acuTemp.location_str(info["hubs"][key]["acus"][secondKey]["location_str"]);
+				acuTemp.location_gps(info["hubs"][key]["acus"][secondKey]["location_gps"]);
+				acuTemp.classification(info["hubs"][key]["acus"][secondKey]["classification"]);
+				acuTemp.guid(info["hubs"][key]["acus"][secondKey]["guid"]);
+				acuTemp.interpreter_type(info["hubs"][key]["acus"][secondKey]["interpreter_type"]);
+			}
+		}
+		self.selectedItem(self.networkObject);
 	}
 
 	//==================================== Front-End ========================================
@@ -396,7 +493,8 @@ function Viewmodel() {
 		Notes: Gets the username and password from their fields on the page and compares
 			   them against dummy values for now.
 		*/
-		if (self.user() === "admin1" && self.pass() === "test") {
+		self.sendLogin(self.user(), self.pass());
+		if (self.user() == "admin1" && self.pass() == "test") {
 			alert("Login success! Moving to network selection...")
 			self.gotoSelection();
 		}
@@ -469,6 +567,13 @@ function Viewmodel() {
 	}
 	
 	self.switchMapMode = function() {
+		/*
+		Author: Trenton Nale
+		Description: Swaps between architecture and semantic modes
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
 		self.mapMode = (self.mapMode == "architecture") ? "semantic" : "architecture";
 		
 		// CLEAR MAP
@@ -476,7 +581,15 @@ function Viewmodel() {
 		self.setupMap();
 	}
 	
-	self.makeGraphData = function() {
+	self.setupMap = function() {
+		/*
+		Author: Trenton Nale
+		Description: Clears any current map data and builds the data appropriate to the current mode
+					 and selectedItem
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
 		var nodes_data = [];
 		var links_data = [];
 		
@@ -514,20 +627,21 @@ function Viewmodel() {
 		else {
 			fd;
 		}
-		return([nodes_data, links_data]);
+		self.mapData = new d3Data(nodes_data, links_data);
+		//return([nodes_data, links_data]);
 	}
 	
-	self.setupMap = function() {
+	/*self.setupMap = function() {
 		/*
 		Author: Trenton Nale
 		Description: Configure d3 to display network map
 		Input: N/A
 		Output: N/A
 		Notes: N/A
-		*/
+		/
 		var graphData = self.makeGraphData();
 		self.mapData = new d3Data(graphData[0], graphData[1]);
-	}
+	}*/
 	
 	//-------------------------------- Informational View ------------------------
 	self.gotoInformational = function() {
@@ -605,10 +719,12 @@ function Viewmodel() {
 		Notes: If networkObject is not null, load the network onto the screen displayed into the correct areas for editing
 			Otherwise, the HTML fields will be blank and the filled out information will be sent to CoMPES
 		*/
-
-		console.log(ko.toJSON(this.networkObject, replacer));
-
+		return ko.toJSON(this.networkObject, replacer);
 	};
+
+	self.saveNDFToFile = function() {
+		fs.writeFileSync(self.path, ko.toJSON(this.networkObject, replacer));
+	}
 
 	//============================Backend============================================
 	/* Template of a communication function using ajax
@@ -629,6 +745,29 @@ function Viewmodel() {
 			   });
 	};*/
 
+	self.sendMessage = function(routing, message, successFunc, errorFunc) {
+		/*
+		Author: Trenton Nale
+		Discription: Sends a message to the backend to be routed to CoMPES
+		Input: routing - a string containing the routing option for the backend
+			   message - a JSON-formatted text string containing the message contents;
+			   successFunc - the function that should be executed upon receiving response from the Mux;
+			   errorFunc - the function that should be executed if the message fails
+		Output: N/A
+		Notes: This function will have to wait on the Mux to pass the message on to CoMPES, get a
+			   response, and send the response back here before continuing
+		*/
+		//alert("http://127.0.0.1:8080/" + routing);
+		$.ajax({url: "http://127.0.0.1:8080/" + routing,
+				type: 'get',
+				contentType: 'application/json',
+				data: message,
+				dataType: 'json',
+				success: successFunc,
+				error: errorFunc
+		});
+	};
+
 	self.sendLogin = function(name, pass) {
 		/*
 		Author: Trenton Nale
@@ -638,9 +777,9 @@ function Viewmodel() {
 		Notes: If the ID and password are accepted, transitions to the Network Selection screen.
 			   If not, notifies the user to try again.
 		*/
-		var jsonParam = JSON.stringify({'rest-method':'get', 'path':paths['login'], 'data':[name, pass]});
-		self.sendMessage(jsonParam,
-						 function() { self.gotoSelection() },
+		var message = JSON.stringify({"userID":name, "userPass":pass});
+		self.sendMessage("connect", message,
+						 function() { alert("login success"); self.gotoSelection(); },
 						 function() {
 							alert("Username and/or password not recognized.\nPlease try again.");
 						 });
@@ -677,10 +816,10 @@ function Viewmodel() {
 						 });
 		*/
 		var message = JSON.stringify({'User-ID':self.user(), 'User-Password':self.pass()});
-		sendMessage("connect", message,
+		self.sendMessage("connect", message,
 			function (response) {alert("success: " + response);},
 			function(response, stat, disc) {alert("Error: " + disc);}
-		});
+		);
 	};
 
 	self.connectToNetwork = function(selectedNetwork) {
@@ -695,7 +834,7 @@ function Viewmodel() {
 		sendMessage("connect", message,
 			function (response) {alert("success: " + response);},
 			function(response, stat, disc) {alert("Error: " + disc);}
-		});
+		);
 	};
 
 	self.submitNetwork = function(networkDefinitionFile) {
@@ -797,27 +936,6 @@ function Viewmodel() {
 						 function() {},
 						 function() {});
 	};
-
-	self.sendMessage = function(routing, message, successFunc, errorFunc) {
-		/*
-		Author: Trenton Nale
-		Discription: Sends a message to the backend to be routed to CoMPES
-		Input: message - a JSON-formatted text string containing the message contents;
-			   successFunc - the function that should be executed upon receiving response from the Mux;
-			   errorFunc - the function that should be executed if the message fails
-		Output: N/A
-		Notes: This function will have to wait on the Mux to pass the message on to CoMPES, get a
-			   response, and send the response back here before continuing
-		*/
-		$.ajax({url: "127.0.0.1:8080/" + routing,
-				type: 'get',
-				contentType: 'application/json',
-				data: message,
-				dataType: 'json',
-				success: successFunc,
-				error: errorFunc
-		});
-	}
 };
 //############################################### Document-Level js ######################################
 $(document).ready(function(){

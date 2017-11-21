@@ -106,7 +106,7 @@ def multiplexer(opt):
 			connectWS(factory)
 			response = msg_to_mux()
 		except:
-			response = "Error: Connection to CoMPES failed"
+			response = jsonify({'error':'Error: Connection to CoMPES failed'})
 	
 	#Send an NDF to CoMPES	
 	elif(opt == "def-1"):
@@ -255,7 +255,7 @@ def multiplexer(opt):
 			#request["Data"] = ujson.dumps({"User-ID": "testUser", "Network-ID" : "testNetwork"})
 			#---------------------------
 			#requestData = ujson.dumps(request.data)
-			
+
 			receivedData = jsonify(json.loads(request.data))
 			request = {}
 			request["Data"] = ujson.dumps({"User-ID":receivedData["User-ID"], "Network-ID":receivedData["Network-ID"]})

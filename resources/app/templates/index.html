@@ -73,11 +73,11 @@
       <form id="form-group">
         <div class="form-group">
           <label for="username"> Username: </label>
-          <input type="text" id="username" name="usr" value="" class="form-control">
+          <input type="text" id="username" data-bind="value: user" class="form-control">
         </div>
         <div class="form-group">
           <label for="password"> Password: </label>
-          <input type="text" id="password" name="pw" value="" class="form-control">
+          <input type="password" id="password" data-bind="value: pass" class="form-control">
         </div>
       </form>
       <div class="btn-group">
@@ -190,7 +190,8 @@
       </div>
       <form class="form-group" data-bind="submit: buildNDF">
         <div>
-          <button type="submit">Save</button>
+          <button data-bind="click: saveNDFToFile">Save to File</button>
+          <button data-bind="click: loadNDF">Load from File</button>
         </div>
       </form>
   </script>
