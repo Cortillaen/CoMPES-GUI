@@ -26,12 +26,16 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.id = ko.observable("ACU name" + self.counter.toString());
-		this.location_str = ko.observable("");
-		this.location_gps = ko.observable("");
+		this.loc = ko.observable("");
 		this.classification = ko.observable("");
 		this.guid = ko.observable("");
+		this.get = ko.observable("");
+		this.raw_states = ko.observableArray([]);
+		this.defined_states = ko.observableArray([]);
+		this.actions = ko.observableArray([]);
+		this.execute = ko.observableArray([]);
 		this.interpreter_type = ko.observable("");
-		this.semantic_links = ko.observable("");
+		this.semantic_links = ko.observableArray([]);
 		this.parent = parent;
 		self.counter += 1;
 
@@ -48,6 +52,57 @@ function Viewmodel() {
 			else
 				return false;
 		};
+		
+		this.add_item = function(list, index) {
+			/*
+			Author: Derek Lause
+			Contributor: Trenton Nale
+			Description: Adds an item on the ACU page for the specific field
+			Input: N/A
+			Output: N/A
+			Notes: N/A
+			*/
+			if(self.temp[index]() !== "") {
+			if(list.indexOf(self.temp[index]()) === -1) {
+				list.push(self.temp[index]());
+				self.temp[index]("");
+				}
+			else {alert("State already exists.");}
+		}
+		else {alert("You must enter a name to add a state.");}
+		};
+		
+		this.remove_item = function(list, index) {
+			/*
+			Author: Trenton Nale
+			Contributor: Derek Lause
+			Description: Removes an item on the ACU page for the specific field
+			Input: N/A
+			Output: N/A
+			Notes: N/A
+			*/
+			if(self.temp[index]() !== "") {
+			if(list.indexOf(self.temp[index]()) !== -1) {
+				list.remove(self.temp[index]());
+				self.temp[index]("");
+				}
+			else {alert("State does not exists.");}
+		}
+		else {alert("You must enter a name to remove a state.");}
+		};
+		
+		this.fill = function(selected, i) {
+			/*
+			Author: Trenton Nale
+			Contributor: Derek Lause
+			Description: Returns whether this ACU is the selectedItem
+			Input: N/A
+			Output: Boolean response
+			Notes: N/A
+			*/
+			self.temp[i](selected);
+		};
+	
 	}
 
 	function Hub(parent) {
@@ -115,8 +170,8 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.network_ID = ko.observable("Network Name");
-		this.network_config = {"pes_mode" : ko.observable("manual")};
-		this.chosen_algorithm = ko.observable(self.pe_algorithms()[0]);
+		this.network_config = {"PES_Mode" : ko.observable("manual"), "PE_Algorithm" : ko.observable(self.pe_algorithms()[0])};
+		//this.chosen_algorithm = ko.observable(self.pe_algorithms()[0]);
 		this.hubs = ko.observableArray([]);
 
 		this.addHub = function() {
@@ -367,6 +422,8 @@ function Viewmodel() {
 	self.bonsaidList = null;
 	self.counter = 0; //stopgap to ensure unique hub/ACU names until validation is implemented
 	self.path = path.join(electron.remote.app.getPath('userData'), 'CoMPES_GUI.json');
+	self.temp = [ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable("")];
+	self.index = ko.observable("");
 
 	//============================= Login Page Variables ====================================
 	self.user = ko.observable("");
@@ -742,7 +799,29 @@ function Viewmodel() {
 		Notes: If networkObject is not null, load the network onto the screen displayed into the correct areas for editing
 			Otherwise, the HTML fields will be blank and the filled out information will be sent to CoMPES
 		*/
-		return ko.toJSON(this.networkObject, replacer);
+		//network configs and empty hub set
+		var network = 
+		{
+			"Network Config": {
+				"User-ID": self.user(),
+				"Network-ID": self.networkObject.network_ID(),
+				"PES_Mode": self.networkObject.network_config.PES_Mode(),
+				"PE_Algorithm": self.networkObject.network_config.PE_Algorithm()
+			},
+			"Hubs":{}
+		};
+		
+		//for each hub, add it to the array of hubs
+		self.networkObject.hubs.foreach(function(hub) {
+			network[Hubs][hub.id()] = {
+				/*"Hub Config" : {
+					"STATUS" : 
+					"Imports" :
+					"Phrase-relatedness" : 
+				}*/
+			};
+		});
+		// return ko.toJSON(this.networkObject, replacer);
 	};
 
 	self.saveNDFToFile = function() {
