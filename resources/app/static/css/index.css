@@ -23,6 +23,15 @@
 			border: 2px solid #0a2f4e;
 			border-radius: 12px;
 		}
+		.links line {
+      stroke: #999;
+      stroke-opacity: 0.6;
+    }
+
+    .nodes circle {
+      stroke: black ;
+      stroke-width: 0px;
+    }
 		.loginCont {
 			background: rgba(66, 139, 152, 0.27);
 			border: .25em #5e5e5e;
@@ -162,6 +171,17 @@
 			.row.content {height:auto;}
 		}
 		
+		div.tooltip {    
+			padding: 4px;             
+			font: 12px sans-serif;        
+			background: lightsteelblue;   
+			border: 1px;      
+			border-radius: 8px;
+    		font-size: 200%;
+    		color: black;
+    		background-color: white;
+		}
+		
 .selectedCont {
 	float: left;
 	padding: .5em;
@@ -187,4 +207,13 @@ label{
 ol > li > span {
 	font-size: 120%;
 	padding: 2px 5px 2px 5px;
+}
+
+.selected {
+	border-left-style: solid;
+	border-right-style: solid;
+}
+
+#graphArea {
+	text-align: center;
 }

@@ -1,7 +1,9 @@
 //##################################### Global Variables ####################################
+const electron = require('electron');
+const path = require('path');
+const fs = require('fs');
 var twistedClient;
 var child_process = require('child_process')
-var path = require('path');
 
 const paths = {login:"/login", allNetworks:"/networks/all"}
 
@@ -56,19 +58,83 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.id = ko.observable("ACU name" + self.counter.toString());
-		this.location = ko.observable("");
+		this.loc = ko.observable("");
 		this.classification = ko.observable("");
 		this.guid = ko.observable("");
-		this.interpreter_type = ko.observable(self.interpreter_types()[0]);
+		this.get = ko.observable("");
+		this.raw_states = ko.observableArray([]);
+		this.defined_states = ko.observableArray([]);
+		this.actions = ko.observableArray([]);
+		this.execute = ko.observableArray([]);
+		this.interpreter_type = ko.observable("");
+		this.semantic_links = ko.observableArray([]);
 		this.parent = parent;
 		self.counter += 1;
 
 		this.isActive = function() {
+			/*
+			Author: Trenton Nale
+			Description: Returns whether this ACU is the selectedItem
+			Input: N/A
+			Output: Boolean response
+			Notes: N/A
+			*/
 			if(this == self.selectedItem())
 				return true;
 			else
 				return false;
 		};
+		
+		this.add_item = function(list, index) {
+			/*
+			Author: Derek Lause
+			Contributor: Trenton Nale
+			Description: Adds an item on the ACU page for the specific field
+			Input: N/A
+			Output: N/A
+			Notes: N/A
+			*/
+			if(self.temp[index]() !== "") {
+			if(list.indexOf(self.temp[index]()) === -1) {
+				list.push(self.temp[index]());
+				self.temp[index]("");
+				}
+			else {alert("State already exists.");}
+		}
+		else {alert("You must enter a name to add a state.");}
+		};
+		
+		this.remove_item = function(list, index) {
+			/*
+			Author: Trenton Nale
+			Contributor: Derek Lause
+			Description: Removes an item on the ACU page for the specific field
+			Input: N/A
+			Output: N/A
+			Notes: N/A
+			*/
+			if(self.temp[index]() !== "") {
+			if(list.indexOf(self.temp[index]()) !== -1) {
+				list.remove(self.temp[index]());
+				self.temp[index]("");
+				}
+			else {alert("State does not exists.");}
+		}
+		else {alert("You must enter a name to remove a state.");}
+		};
+		
+		this.fill = function(selected, i) {
+			/*
+			Author: Trenton Nale
+			Contributor: Derek Lause
+			Description: Returns whether this ACU is the selectedItem
+			Input: N/A
+			Output: Boolean response
+			Notes: N/A
+			*/
+			self.temp[i](selected);
+		};
+	
 	}
 
 	function Hub(parent) {
@@ -87,18 +153,39 @@ function Viewmodel() {
 		self.counter += 1;
 
 		this.addACU = function() {
+			/*
+			Author: Trenton Nale
+			Description: Adds a new ACU to this Hub
+			Input: N/A
+			Output: N/A
+			Notes: N/A
+			*/
 			this.ACUs.push(new ACU(this));
 			self.bonsai();
 			self.selectedItem(this.ACUs.slice(-1)[0]);
 		};
 
 		this.removeACU = function(acu) {
+			/*
+			Author: Trenton Nale
+			Description: Removes a specified ACU from this Hub
+			Input: acu - ACU to remove
+			Output: N/A
+			Notes: N/A
+			*/
 			self.selectedItem(this);
 			this.ACUs.remove(acu);
 			self.bonsai();
 		};
 
 		this.isActive = function() {
+			/*
+			Author: Trenton Nale
+			Description: Returns whether this Hub is the selectedItem
+			Input: N/A
+			Output: Boolean response
+			Notes: N/A
+			*/
 			if(this == self.selectedItem())
 				return true;
 			else
@@ -115,22 +202,45 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
+		this.network_ID = ko.observable("Network Name");
+		this.network_config = {"PES_Mode" : ko.observable("manual"), "PE_Algorithm" : ko.observable(self.pe_algorithms()[0])};
 		this.Network_Config = {"User-ID" : ko.observable(""), "Network_ID": ko.observable("Network Name"), "PES_Mode": ko.observable(""), "PE_Alogrithm": self.pe_algorithms()[0]};
 		this.Hubs = ko.observableArray([]);
 
 		this.addHub = function() {
+			/*
+			Author: Trenton Nale
+			Description: Adds new hub to the NetworkObject
+			Input: N/A
+			Output: N/A
+			Notes: N/A
+			*/
 			this.Hubs.push(new Hub(this));
 			self.bonsai();
 			self.selectedItem(this.Hubs.slice(-1)[0]);
 		};
 
 		this.removeHub = function(hub) {
+			/*
+			Author: Trenton Nale
+			Description: Removes a specific hub from the NetworkObject
+			Input: hub - the Hub to remove
+			Output: N/A
+			Notes: N/A
+			*/
 			self.selectedItem(this);
 			this.Hubs.remove(hub);
 			self.bonsai();
 		};
 
 		this.isActive = function() {
+			/*
+			Author: Trenton Nale
+			Description: Returns whether this object is the selectedItem
+			Input: N/A
+			Output: Boolean response
+			Notes: N/A
+			*/
 			if(this == self.selectedItem())
 				return true;
 			else
@@ -142,12 +252,164 @@ function Viewmodel() {
 		/*
 		Author: Trenton Nale
 		Description: Pass as second param of toJSON() to ignore certain elements
-		Input: key - the key of a pair, value - the value of a pair
+		Input: key - the key of a pair to be ignored
+			   value - the value of a pair to be ignored
 		Output: the value if the pair is to be included in the JSON, otherwise undefined
 		Notes: N/A
 		*/
 		if (key == "parent") return undefined;
 		else return value;
+	}
+	
+	function d3Data(nodesInput, linksInput) {
+		/*
+		Author: Tim Roth
+		Contributors: Trenton Nale
+		Description: Force directed graph adapted from Tim Roth's example at
+					https://bl.ocks.org/puzzler10/4438752bb93f45dc5ad5214efaa12e4a
+		Input: N/A
+		Output: N/A
+		Notes: Builds a set of variables that depend on the Map View being active
+		*/
+		var svg = d3.select("svg");
+		var width = +svg.attr("width");
+		var height = +svg.attr("height");
+		
+		var radius = 15;
+		
+		var nodes_data = nodesInput;
+		var links_data = linksInput;
+		
+		var simulation = d3.forceSimulation().nodes(nodes_data);
+		var link_force = d3.forceLink(links_data).id(function(d) {return d.name;});
+		var charge_force = d3.forceManyBody().strength(-1400);
+		var center_force = d3.forceCenter(width / 2, height / 2);
+		simulation
+			.force("charge_force", charge_force)
+			.force("center_force", center_force)
+			.force("link", link_force);
+		
+		var div = d3.select("body").append("div")   
+		    .attr("class", "tooltip")
+		    .style("opacity", 0);
+		
+		//add tick instructions: 
+		simulation.on("tick", tickActions );
+
+		//add encompassing group for the zoom 
+		var g = svg.append("g")
+			.attr("class", "everything");
+
+		//draw lines for the links 
+		var links = g.selectAll("links")
+			.data(links_data)
+			.enter()
+			.append("line")
+			.attr("stroke-width", 2)
+			.style("stroke", linkColour);        
+
+		var gnodes = g.selectAll("gnode")
+		    .data(nodes_data)
+		    .enter()
+		    .append("g")
+		    .classed("gnode", true);
+
+		//draw circles for the nodes 
+		var node = gnodes.append("circle")
+			.attr("class", "node")
+			.attr("r", radius)
+			.attr("fill", circleColour)
+        	.on("click", function(d) {
+        		if(self.selectedItem != d.data) {
+					self.selectedItem(d.data);
+					self.setupMap();
+				}
+        	});
+
+		var label = gnodes.append("text")
+            .attr("class", "label")
+            .attr("fill", "black")
+            .attr("text-anchor", "middle")
+            .style("font-size", "100%")
+    		.text(function(d) { return d.name; });
+		 
+		/*//add drag capabilities  
+		var drag_handler = d3.drag()
+			.on("start", drag_start)
+			.on("drag", drag_drag)
+			.on("end", drag_end);	
+			
+		drag_handler(node);*/
+
+
+		//add zoom capabilities 
+		var zoom_handler = d3.zoom()
+			.on("zoom", zoom_actions);
+
+		zoom_handler(svg);
+
+		/** Functions **/
+
+		//Function to choose what color circle we have
+		function circleColour(d){
+			if(d.type == "network")
+				return "blue";
+			else if(d.type == "hub")
+				return "green";
+			else
+				return "yellow";
+		}
+
+		//Function to choose the line colour
+		function linkColour(d){
+			if(d.type == "architecture")
+				return "purple";
+			else
+				return "orange";
+		}
+
+		/*//Drag functions 
+		//d is the node 
+		function drag_start(d) {
+		 if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+			d.fx = d.x;
+			d.fy = d.y;
+		}
+
+		//make sure you can't drag the circle outside the box
+		function drag_drag(d) {
+		  d.fx = d3.event.x;
+		  d.fy = d3.event.y;
+		}
+
+		function drag_end(d) {
+		  if (!d3.event.active) simulation.alphaTarget(0);
+		  d.fx = null;
+		  d.fy = null;
+		}*/
+
+		//Zoom functions 
+		function zoom_actions(){
+			g.attr("transform", d3.event.transform)
+		}
+
+		function tickActions() {
+			//update circle positions each tick of the simulation 
+			node
+				.attr("cx", function(d) { return d.x; })
+				.attr("cy", function(d) { return d.y; });
+				
+			//update link positions 
+			links
+				.attr("x1", function(d) { return d.source.x; })
+				.attr("y1", function(d) { return d.source.y; })
+				.attr("x2", function(d) { return d.target.x; })
+				.attr("y2", function(d) { return d.target.y; });
+
+			label
+				.attr("dx", function(d) { return d.x; })
+				.attr("dy", function(d) { return d.y - radius - 2; });
+		} 
 	}
 
 	//============================= Data Bindings & Variables ===============================
@@ -191,13 +453,20 @@ function Viewmodel() {
 
 	self.networkObject = new NetworkObject();
 	self.selectedItem = ko.observable(self.networkObject);
-	self.selectedItemDOM = null;
+	//self.selectedItemDOM = null;
 	self.bonsaidList = null;
-	self.counter = 0;
+	self.counter = 0; //stopgap to ensure unique hub/ACU names until validation is implemented
+	self.path = path.join(electron.remote.app.getPath('userData'), 'CoMPES_GUI.json');
+	self.temp = [ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable("")];
+	self.index = ko.observable("");
 
 	//============================= Login Page Variables ====================================
 	self.user = ko.observable("");
 	self.pass = ko.observable("");
+	
+	//============================== Map View Variables =====================================
+	self.mapData = null;
+	self.mapMode = ko.observable("architecture");
 
 	//=========================== Definition Screen Variables ===============================
 
@@ -206,7 +475,8 @@ function Viewmodel() {
 	self.bonsai = function() {
 		/*
 		Author: Trenton Nale
-		Description: Bonsais the network hierarchy list in the sidebar or updates it for changes in data
+		Description: Bonsais (formats as hierarchical tree) the network hierarchy list in the
+					 sidebar or updates it for changes in data
 		Input: N/A
 		Output: N/A
 		Notes: N/A
@@ -222,8 +492,53 @@ function Viewmodel() {
 		}
 	}
 
-	self.log = function(data, event) {
-		alert("heh: " + event.target.id.toString());
+	self.loadNDF = function(ndf) {
+		/*
+		Author: Trenton Nale
+		Description: Builds an NDF into the networkObject either from one passed in or from a local file
+		Input: ndf - the NDF to use, or undefined if building from local file
+		Output: N/A
+		Notes: Currently, the local build only looks at a set file
+		*/
+		var info; //storage for the JSON data to be used in building the networkObject
+		if(ndf["network_ID"]) info = ndf;
+		//if an NDF was passed, use that; otherwise read in from local file
+		else {
+			try {
+				info = JSON.parse(fs.readFileSync(self.path));
+			} catch(error) {
+				alert("No file found to load.")
+			}
+		}
+		//move through the JSON representation and copy all of its data into the networkObject
+		self.networkObject.network_ID(info["network_ID"]);
+		for (var key in info["network_config"])
+			self.networkObject.network_config[key] = ko.observable(info.network_config[key]);
+		var temp = self.pe_algorithms().indexOf(info["chosen_algorithm"]);
+		if(temp > -1)
+			self.networkObject.chosen_algorithm(self.pe_algorithms()[temp]);
+		else
+			alert("PE Algorithm not recognized.");
+		for(var key in info["hubs"]) {
+			self.networkObject.addHub();
+			var hubTemp = self.networkObject.hubs().slice(-1)[0];
+			hubTemp.id(info["hubs"][key]["id"]);
+			var secondKey = "";
+			for(secondKey in info["hubs"][key]["hub_config"])
+				hubTemp.hub_config[secondKey] = ko.observable(info["hubs"][key]["hub_config"][secondKey]);
+			for(secondKey in info["hubs"][key]["acus"]) {
+				hubTemp.addACU();
+				var acuTemp = hubTemp.acus().slice(-1)[0];
+				acuTemp.id(info["hubs"][key]["acus"][secondKey]["id"]);
+				acuTemp.location_str(info["hubs"][key]["acus"][secondKey]["location_str"]);
+				acuTemp.location_gps(info["hubs"][key]["acus"][secondKey]["location_gps"]);
+				acuTemp.classification(info["hubs"][key]["acus"][secondKey]["classification"]);
+				acuTemp.guid(info["hubs"][key]["acus"][secondKey]["guid"]);
+				acuTemp.interpreter_type(info["hubs"][key]["acus"][secondKey]["interpreter_type"]);
+				acuTemp.semantic_links(info["hubs"][key]["acus"][secondKey]["semantic_links"]);
+			}
+		}
+		self.selectedItem(self.networkObject);
 	}
 
 	//==================================== Front-End ========================================
@@ -273,7 +588,8 @@ function Viewmodel() {
 		Notes: Gets the username and password from their fields on the page and compares
 			   them against dummy values for now.
 		*/
-		if (self.user() === "admin1" && self.pass() === "test") {
+		self.sendLogin(self.user(), self.pass());
+		if (self.user() == "admin1" && self.pass() == "test") {
 			alert("Login success! Moving to network selection...")
 			self.gotoSelection();
 		}
@@ -330,6 +646,8 @@ function Viewmodel() {
 		*/
 		self.current_screen("map_screen");
 		self.bonsai();
+		self.selectedItem(self.networkObject);
+		self.setupMap();
 	}
 
 	self.mapSidebarClick = function(clickedItem) {
@@ -340,12 +658,106 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		if(clickedItem.Network_Config.Network_ID)
-			alert("You clicked on " + clickedItem.Network_Config.Network_ID() + " on the Map Screen.");
-		else
-			alert("You clicked on " + clickedItem.id() + " on the Map Screen.");
+		self.setupMap();
 	}
-
+	
+	self.switchMapMode = function() {
+		/*
+		Author: Trenton Nale
+		Description: Swaps between architecture and semantic modes
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
+		self.mapMode((self.mapMode() == "architecture") ? "semantic" : "architecture");
+		
+		// CLEAR MAP
+		
+		self.setupMap();
+	}
+	
+	self.setupMap = function() {
+		/*
+		Author: Trenton Nale
+		Description: Clears any current map data and builds the data appropriate to the current mode
+					 and selectedItem
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
+		var nodes_data = [];
+		var links_data = [];
+		
+		//clear map if it's already drawn
+		if(self.mapData) {
+			d3.selectAll("svg > *").remove();
+		}
+		//build node and link data based on selectedItem
+		//for the network node, build all connected hubs
+		if(self.selectedItem().constructor.name == "NetworkObject") {
+			nodes_data.push({"name": self.networkObject.network_ID(), "type": "network", "data": self.networkObject});
+			self.networkObject.hubs().forEach(function(hub) {
+				nodes_data.push({"name": hub.id(), "type": "hub", "data": hub});
+				links_data.push({"source": self.networkObject.network_ID(), "target": hub.id(), "type": "architecture"});
+			});
+		}
+		//for a hub, build all connected ACUs
+		else if(self.selectedItem().constructor.name == "Hub") {
+			nodes_data.push({"name": self.selectedItem().id(), "type": "hub", "data": self.selectedItem});
+			self.selectedItem().acus().forEach(function(acu) {
+				nodes_data.push({"name": acu.id(), "type": "acu", "data": acu});
+				links_data.push({"source": self.selectedItem().id(), "target": acu.id(), "type": "architecture"});
+				if((self.mapMode() == "semantic") && (acu.semantic_links().length > 0)) {
+					var semLinks = acu.semantic_links().replace(new RegExp(', ', 'g'), ",").split(",");
+					for(var semLink in semLinks) {
+						links_data.push({"source": acu.id(), "target": semLinks[semLink], "type": "semantic"});
+					}
+				}
+			});
+		}
+		//for an ACU, build its parent hub and all of that hub's connected ACUs
+		else if(self.selectedItem().constructor.name == "ACU") {
+			//if in architecture mode, build as though ACU's parent hub was selected
+			if(self.mapMode() == "architecture") {
+				nodes_data.push({"name": self.selectedItem().parent.id(), "type": "hub", "data": self.selectedItem().parent});
+				self.selectedItem().parent.acus().forEach(function(acu) {
+					nodes_data.push({"name": acu.id(), "type": "acu", "data": acu});
+					links_data.push({"source": self.selectedItem().parent.id(), "target": acu.id(), "type": "architecture"});
+				});
+			}
+			//if in semantic mode, build with ACU's parent and all semantically linked ACUs
+			else {
+				nodes_data.push({"name": self.selectedItem().id(), "type":"acu", "data":self.selectedItem()});
+				nodes_data.push({"name": self.selectedItem().parent.id(), "type": "hub", "data": self.selectedItem().parent});
+				links_data.push({"source": self.selectedItem().id(), "target": self.selectedItem().parent.id(), "type": "architecture"});
+				if((self.mapMode() == "semantic") && (self.selectedItem().semantic_links().length > 0)) {
+					var semLinks = self.selectedItem().semantic_links().replace(new RegExp(', ', 'g'), ",").split(",");
+					for(var semLink in semLinks) {
+						var semNode = ko.utils.arrayFirst(self.selectedItem().parent.acus(), function(child) {
+							return child.id() == semLinks[semLink];
+						});
+						nodes_data.push({"name": semLinks[semLink], "type": "acu", "data": semNode});
+						links_data.push({"source": self.selectedItem().id(), "target": semLinks[semLink], "type": "semantic"});
+					}
+				}
+			}
+		}
+		self.mapData = new d3Data(nodes_data, links_data);
+		//return([nodes_data, links_data]);
+	}
+	
+	/*self.setupMap = function() {
+		/*
+		Author: Trenton Nale
+		Description: Configure d3 to display network map
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		/
+		var graphData = self.makeGraphData();
+		self.mapData = new d3Data(graphData[0], graphData[1]);
+	}*/
+	
 	//-------------------------------- Informational View ------------------------
 	self.gotoInformational = function() {
 		/*
@@ -425,22 +837,34 @@ function Viewmodel() {
 		Output: Network Definition File
 		Notes: If networkObject is not null, load the network onto the screen displayed into the correct areas for editing
 			Otherwise, the HTML fields will be blank and the filled out information will be sent to CoMPES
-			We need to figure out how to access the dynamic form fields that will be added to the screen (addACU and addHub)
-			https://knockoutjs.com/documentation/unobtrusive-event-handling.html is a good starting point
 		*/
-
-		console.log(ko.toJSON(this.networkObject, replacer));
-
-		/*(for(var i = 0; i < self.Hubs().length; i++)
+		//network configs and empty hub set
+		var network = 
 		{
-			var position = i;
-			console.log(networkObject.Hubs.hub_ID[i]);
+			"Network Config": {
+				"User-ID": self.user(),
+				"Network-ID": self.networkObject.network_ID(),
+				"PES_Mode": self.networkObject.network_config.PES_Mode(),
+				"PE_Algorithm": self.networkObject.network_config.PE_Algorithm()
+			},
+			"Hubs":{}
+		};
+		
+		//for each hub, add it to the array of hubs
+		self.networkObject.hubs.foreach(function(hub) {
+			network[Hubs][hub.id()] = {
+				/*"Hub Config" : {
+					"STATUS" : 
+					"Imports" :
+					"Phrase-relatedness" : 
+				}*/
+			};
+		});
+		// return ko.toJSON(this.networkObject, replacer);
+	};
 
-			for(var j = 0; j < self.Hubs()[position].ACUs().length; j++)
-			{
-				console.log(networkObject.Hubs.ACUs.id[j]);
-			}
-		}*/
+	self.saveNDFToFile = function() {
+		fs.writeFileSync(self.path, ko.toJSON(this.networkObject, replacer));
 	};
 
 	self.addHub = function() {
@@ -485,6 +909,29 @@ function Viewmodel() {
 			   });
 	};*/
 
+	self.sendMessage = function(routing, message, successFunc, errorFunc) {
+		/*
+		Author: Trenton Nale
+		Discription: Sends a message to the backend to be routed to CoMPES
+		Input: routing - a string containing the routing option for the backend
+			   message - a JSON-formatted text string containing the message contents;
+			   successFunc - the function that should be executed upon receiving response from the Mux;
+			   errorFunc - the function that should be executed if the message fails
+		Output: N/A
+		Notes: This function will have to wait on the Mux to pass the message on to CoMPES, get a
+			   response, and send the response back here before continuing
+		*/
+		//alert("http://127.0.0.1:8080/" + routing);
+		$.ajax({url: "http://127.0.0.1:8080/" + routing,
+				type: 'get',
+				contentType: 'application/json',
+				data: message,
+				dataType: 'json',
+				success: successFunc,
+				error: errorFunc
+		});
+	};
+
 	self.sendLogin = function(name, pass) {
 		/*
 		Author: Trenton Nale
@@ -494,9 +941,9 @@ function Viewmodel() {
 		Notes: If the ID and password are accepted, transitions to the Network Selection screen.
 			   If not, notifies the user to try again.
 		*/
-		var jsonParam = JSON.stringify({'rest-method':'get', 'path':paths['login'], 'data':[name, pass]});
-		self.sendMessage(jsonParam,
-						 function() { self.gotoSelection() },
+		var message = JSON.stringify({"userID":name, "userPass":pass});
+		self.sendMessage("connect", message,
+						 function() { alert("login success"); self.gotoSelection(); },
 						 function() {
 							alert("Username and/or password not recognized.\nPlease try again.");
 						 });
@@ -532,11 +979,11 @@ function Viewmodel() {
 							", and " + stat + ", and " + description);
 						 });
 		*/
-		$.ajax({url: "http://127.0.0.1:8080/MUX/From @Electron ",
-				type: 'get',
-				success: function (response) {alert(response);},
-				error: function(response, stat, disc) {alert(disc);}
-		});
+		var message = JSON.stringify({'User-ID':self.user(), 'User-Password':self.pass()});
+		self.sendMessage("connect", message,
+			function (response) {alert("success: " + response);},
+			function(response, stat, disc) {alert("Error: " + disc);}
+		);
 	};
 
 	self.connectToNetwork = function(selectedNetwork) {
@@ -547,10 +994,11 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		var jsonParam = JSON.stringify({'rest-method':'get', 'path':paths['networks'], 'data':[selectedNetwork]});
-		self.sendMessage(jsonParam,
-						 function() {},
-						 function() {});
+		var message = JSON.stringify({'User-ID':self.user(), 'Network-ID':selectedNetwork});
+		sendMessage("connect", message,
+			function (response) {alert("success: " + response);},
+			function(response, stat, disc) {alert("Error: " + disc);}
+		);
 	};
 
 	self.submitNetwork = function(networkDefinitionFile) {
@@ -652,27 +1100,6 @@ function Viewmodel() {
 						 function() {},
 						 function() {});
 	};
-
-	self.sendMessage = function(message, successFunc, errorFunc) {
-		/*
-		Author: Trenton Nale
-		Discription: Sends a message to the backend to be routed to CoMPES
-		Input: message - a JSON-formatted text string containing the message contents;
-			   successFunc - the function that should be executed upon receiving response from the Mux;
-			   errorFunc - the function that should be executed if the message fails
-		Output: N/A
-		Notes: This function will have to wait on the Mux to pass the message on to CoMPES, get a
-			   response, and send the response back here before continuing
-		*/
-		$.ajax({url: "127.0.0.1:8080/MUX/FromElectron",
-				type: 'get',
-				contentType: 'application/json',
-				data: message,
-				dataType: 'json',
-				success: successFunc,
-				error: errorFunc
-		});
-	}
 };
 //############################################### Document-Level js ######################################
 $(document).ready(function(){
@@ -687,10 +1114,10 @@ $(document).ready(function(){
 	ko.applyBindings(new Viewmodel());
 
 	//Get path for twisted client
-	var file_path = path.join(path.join(path.join(path.dirname(__dirname),'static' ), 'py'), 'TwistedClient.py');
+	var file_path = path.join(path.join(path.join(path.dirname(__dirname),'static' ), 'py'), 'application.py');
 
 	//Spawn twisted subprocess
-	twistedClient = child_process.spawn("python",  [file_path]);
+	/*twistedClient = child_process.spawn("python",  [file_path]);
 
 	//Register handelers for input/output streams
 	//This is the handeler for when the client exits
@@ -701,6 +1128,7 @@ $(document).ready(function(){
 
 	//This handeler reads error data from the Client
 	twistedClient.stderr.on('data', function(data) {console.log(data.toString()); alert("Error:" + data.toString());});
+	*/
 });
 
 $(window).on("unload", function() {
