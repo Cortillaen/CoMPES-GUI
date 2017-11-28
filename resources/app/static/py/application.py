@@ -99,8 +99,8 @@ def multiplexer(opt):
 
 			#get username and pass from post body
 			tempJSON = jsonify(json.loads(request.data))
-			userID = tempJSON['userID']
-			userPass = tempJSON['userPass']
+			userID = tempJSON['User-ID']
+			userPass = tempJSON['User-Password']
 
 			buildConnection(CoMPES_address, userID, userPass)
 			connectWS(factory)

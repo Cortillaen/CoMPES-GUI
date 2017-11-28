@@ -128,9 +128,15 @@
       <div class="col-sm-3 sidenav" style="text-align:left;height:100%;position:absolute;float:right;border-style:solid;border-radius:20px">
         <ol id='network_hierarchy' data-name='test'>
           <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, css: {selected: $root.networkObject.isActive()}"></span>
+<<<<<<< HEAD
             <ol><!-- ko foreach: { data: networkObject.hubs } -->
               <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span>
                 <ol><!-- ko foreach: { data: $data.acus } -->
+=======
+            <ol><!-- ko foreach: { data: networkObject.Hubs } -->
+              <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span>
+                <ol><!-- ko foreach: { data: $data.ACUs } -->
+>>>>>>> 080dc6b78ca7ca704f2059d8c35086a080715441
                   <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span></li>
                 <!-- /ko --></ol>
               </li>
@@ -183,15 +189,20 @@
           <!-- The desired configuration will be placed into this template.-->
       </div>
         <div>
+<<<<<<< HEAD
           <button data-bind="click: saveNDFToFile">Save to File</button>
           <button data-bind="click: loadNDF">Load from File</button>
           <button data-bind="click: outputNDF">Console Output NDF</button>
+=======
+          <button class="btn btn-default" data-bind="click: saveNDFToFile">Save to File</button>
+          <button class="btn btn-default" data-bind="click: loadNDF">Load from File</button>
+>>>>>>> 080dc6b78ca7ca704f2059d8c35086a080715441
         </div>
   </script>
 
   <script type="text/html" id="definition_part">
     <!-- ko if: ($data.constructor.name == "NetworkObject") -->
-    <div class="row form-inline">
+    <!--div class="row form-inline">
       <fieldset>
         <legend>Network Configurations:</legend>
         <label>Network ID:</label>
@@ -205,6 +216,7 @@
         <select data-bind="options: $root.pe_algorithms, selectedOptions: network_config.PE_Algorithm" required></select>
       </fieldset>
     </div>
+<<<<<<< HEAD
     <button class="btn btn-primary" data-bind="click: $data.addHub">Add Hub</button>
     <!-- /ko -->
 
@@ -235,11 +247,63 @@
       </tbody>
     </table>
 
+=======
+    <button class="btn btn-primary" data-bind="click: $data.addHub">Add Hub</button-->
+<table class="table table-bordered">
+    <tr>
+        <td><strong>Network ID: </strong></td>
+        <td><input type="text" class="form-control" data-bind="value: network_ID" placeholder="<NETWORK ID>"></td>
+    </tr>
+    <tr>
+        <td><strong>PES Mode: </strong></td>
+				<td>
+                    <label>MANUAL</label><input type="radio" name="optr" value="Manual" data-bind="checked: network_config.PES_Mode">
+                    <label>AUTONOMOUS</label><input type="radio" name="optr" value="Autonomous" data-bind="checked: network_config.PES_Mode">
+				</td>
+    </tr>
+    <tr>
+        <td><strong>PE_Algorithm</strong></td>
+        <td><select data-bind="options: $root.pe_algorithms, selectedOptions: network_config.PE_Algorithm"></select></td>
+    </tr>
+</table>
+<button class="btn btn-primary" data-bind="click: $data.addHub">Add Hub</button>
+    <!-- /ko -->
+
+    <!-- ko if: ($data.constructor.name == "Hub") -->
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <td><strong>HUB ID: </strong></td>
+            <td><input type="text" class="form-control" data-bind="value: id" placeholder="<HUB ID"></td>
+      </tr>
+        <tr>
+            <td><strong>Status:</strong></td>
+				<td>
+                    <label>ONLINE</label><input type="radio" name="optr" value="Online" data-bind="checked: status">
+                    <label>OFFLINE</label><input type="radio" name="optr" value="Offline" data-bind="checked: status">
+				</td>
+      </tr>
+        <tr>
+            <td><strong>Import: </strong></td>
+            <td><input type="text" class="form-control" data-bind="value: hub_config.import" placeholder="<IMPORT>"></td>
+      </tr>
+        <tr>
+            <td><strong>Phrase-relatedness: </strong></td>
+            <td><input type="text" class="form-control" data-bind="value: hub_config.phrase" placeholder="<PHRASE-RELATEDNESS>"></td>
+      </tr>
+    </tbody>
+    </table>
+    <button class="btn btn-primary" data-bind="click: function() {$data.parent.addHub();}">Add Another Hub</button>
+>>>>>>> 080dc6b78ca7ca704f2059d8c35086a080715441
     <button class="btn btn-primary" data-bind="click: addACU">Add ACU</button>
     <button class="btn btn-primary" data-bind="click: function() {$data.parent.removeHub($data);}">Delete This Hub</button>
     <!-- /ko -->
 
+<<<<<<< HEAD
     <!-- ko if: ($data.constructor.name == "ACU") -->
+=======
+    <!-- ko if: ($data.constructor.name == "ACU") -->	
+>>>>>>> 080dc6b78ca7ca704f2059d8c35086a080715441
 	<table class="table table-bordered">
 							<tbody>
 								<tr>
@@ -274,8 +338,8 @@
 										<div class="input-group">
 											<input type="text" class="form-control" placeholder="<Raw State>" data-bind="value: $root.temp[0]">
 											<span class="input-group-btn">
-												<button class="btn btn-default" data-bind="click: function() {add_item(raw_states, 0);}">Add</button>
-												<button class="btn btn-default" data-bind="click: function() {remove_item(raw_states, 0);}">Remove</button>
+												<button class="btn btn-primary" data-bind="click: function() {add_item(raw_states, 0);}">Add</button>
+												<button class="btn btn-primary" data-bind="click: function() {remove_item(raw_states, 0);}">Remove</button>
 											</span>
 										</div>
 									</td>
@@ -292,8 +356,8 @@
 										<div class="input-group">
 											<input type="text" class="form-control" placeholder="<Defined State>" data-bind="value: $root.temp[1]">
 											<span class="input-group-btn">
-												<button class="btn btn-default" data-bind="click: function() {add_item(defined_states, 1);}">Add</button>
-												<button class="btn btn-default" data-bind="click: function() {remove_item(defined_states, 1);}">Remove</button>
+												<button class="btn btn-primary" data-bind="click: function() {add_item(defined_states, 1);}">Add</button>
+												<button class="btn btn-primary" data-bind="click: function() {remove_item(defined_states, 1);}">Remove</button>
 											</span>
 										</div>
 									</td>
@@ -310,9 +374,15 @@
 										<div class="input-group">
 											<input type="text" class="form-control" placeholder="<Action>" data-bind="value: $root.temp[2]">
 											<span class="input-group-btn">
+<<<<<<< HEAD
 
 												<button class="btn btn-default" data-bind="click: function() {add_item(actions, 2);}">Add</button>
 												<button class="btn btn-default" data-bind="click: function() {remove_item(actions, 2);}">Remove</button>
+=======
+												
+												<button class="btn btn-primary" data-bind="click: function() {add_item(actions, 2);}">Add</button>
+												<button class="btn btn-primary" data-bind="click: function() {remove_item(actions, 2);}">Remove</button>
+>>>>>>> 080dc6b78ca7ca704f2059d8c35086a080715441
 											</span>
 										</div>
 									</td>
@@ -329,8 +399,8 @@
 										<div class="input-group">
 											<input type="text" class="form-control" placeholder="<EXECUTE>" data-bind="value: $root.temp[3]">
 											<span class="input-group-btn">
-												<button class="btn btn-default" data-bind="click: function() {add_item(execute, 3);}">Add</button>
-												<button class="btn btn-default" data-bind="click: function() {remove_item(execute, 3);}">Remove</button>
+												<button class="btn btn-primary" data-bind="click: function() {add_item(execute, 3);}">Add</button>
+												<button class="btn btn-primary" data-bind="click: function() {remove_item(execute, 3);}">Remove</button>
 											</span>
 										</div>
 									</td>
@@ -347,8 +417,8 @@
 										<div class="input-group">
 											<input type="text" class="form-control" placeholder="<Semantic Link>" data-bind="value: $root.temp[4]">
 											<span class="input-group-btn">
-												<button class="btn btn-default" data-bind="click: function() {add_item(semantic_links, 4);}">Add</button>
-												<button class="btn btn-default" data-bind="click: function() {remove_item(semantic_links, 4);}">Remove</button>
+												<button class="btn btn-primary" data-bind="click: function() {add_item(semantic_links, 4);}">Add</button>
+												<button class="btn btn-primary" data-bind="click: function() {remove_item(semantic_links, 4);}">Remove</button>
 											</span>
 										</div>
 									</td>
@@ -357,13 +427,22 @@
 								<tr>
 									<td><strong>Interpreter Type:</strong></td>
 									<td>
+<<<<<<< HEAD
 										<label>PUSH  </label><input type="radio" name="optr" value="PUSH" data-bind="checked: interpreter_type">
 										<label>PULL  </label><input type="radio" name="optr" value="PULL" data-bind="checked: interpreter_type">
+=======
+                                        <label>PUSH</label><input type="radio" name="optr" value="PUSH" data-bind="checked: interpreter_type">
+                                        <label>PULL</label><input type="radio" name="optr" value="PULL" data-bind="checked: interpreter_type">
+>>>>>>> 080dc6b78ca7ca704f2059d8c35086a080715441
 									</td>
 								</tr>
 							</tbody>
 						</table>
+<<<<<<< HEAD
 	  <button class="btn btn-primary" data-bind="click: function() {$data.parent.addACU();}">Add Another ACU</button>
+=======
+	<button class="btn btn-primary" data-bind="click: function() {$data.parent.addACU();}">Add Another ACU</button>
+>>>>>>> 080dc6b78ca7ca704f2059d8c35086a080715441
     <button class="btn btn-primary" data-bind="click: function() {$data.parent.removeACU($data);}">Delete This ACU</button>
     <!-- /ko -->
   </script>
