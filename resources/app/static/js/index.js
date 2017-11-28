@@ -7,37 +7,67 @@ var child_process = require('child_process')
 
 const paths = {login:"/login", allNetworks:"/networks/all"}
 
-/*################################### DATA STRUCTURES ##############################
-
-function ACU() {
-	this.id = ko.observable("ACU name");
-	this.location_str = ko.observable("");
-	this.location_gps = ko.observable("");
-	this.classification = ko.observable("");
-	this.guid = ko.observable("");
-	this.interpreter_type = ko.observable("");
-}
-
-function Hub() {
-	this.isActive = ko.observable()
-	this.id = ko.observable("Hub name");
-	this.hub_config = {"middleware" : ko.observable("")}
-	this.ACUs = ko.observableArray([]);
-
-	this.addACU = function() {
-		this.ACUs.push(new ACU())
-	};
-}
-
-function NetworkObject() {
-	this.network_ID = ko.observable("Network Name");
-	this.Network_Config = {"User-ID" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])}
-	this.chosen_algorithm = ko.observable(this.network_config.pe_algorithms()[0]);
-	this.Hubs = ko.observableArray([]);
-}*/
-
 //######################################## VIEWMODEL ########################################
 function Viewmodel() {
+    
+	//============================= Data Bindings & Variables ===============================
+	var self = this;
+	self.current_screen = ko.observable("login_screen"); //single point of update for current screen
+	self.operation_screen = ko.computed(function() { //top-level screen template
+		if(self.current_screen() == "login_screen")
+			return "login_screen";
+		else if(self.current_screen() == "selection_screen")
+			return "selection_screen";
+		else if(self.current_screen() == "map_screen")
+			return "network_frame";
+		else if(self.current_screen() == "informational_screen")
+			return "network_frame";
+		else if(self.current_screen() == "definition_screen_network")
+			return "network_frame";
+		else if(self.current_screen() == "definition_screen_hub")
+			return "network_frame";
+		else if(self.current_screen() == "definition_screen_acu")
+			return "network_frame";
+		else
+			alert("Current Screen Not Recognized");
+	}, self);
+	self.operation_subscreen = ko.computed(function() { //sub-screen template
+		if(self.current_screen() == "map_screen")
+			return "map_subscreen";
+		else if(self.current_screen() == "informational_screen")
+			return "informational_subscreen"
+		else if(self.current_screen() == "definition_screen_network")
+			return "definition_subscreen";
+		else if(self.current_screen() == "definition_screen_hub")
+			return "definition_subscreen";
+		else if(self.current_screen() == "definition_screen_acu")
+			return "definition_subscreen";
+		else
+			return "map_subscreen";
+	}, self);
+
+	self.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+	self.interpreter_types = ko.observableArray(['PUSH', 'PULL']);
+
+	self.networkObject = new NetworkObject();
+	self.selectedItem = ko.observable(self.networkObject);
+	//self.selectedItemDOM = null;
+	self.bonsaidList = null;
+	self.counter = 0; //stopgap to ensure unique hub/ACU names until validation is implemented
+	self.path = path.join(electron.remote.app.getPath('userData'), 'CoMPES_GUI.json');
+	self.temp = [ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable("")];
+	self.index = ko.observable("");
+
+	//============================= Login Page Variables ====================================
+	self.user = ko.observable("");
+	self.pass = ko.observable("");
+	
+	//============================== Map View Variables =====================================
+	self.mapData = null;
+	self.mapMode = ko.observable("architecture");
+
+	//=========================== Definition Screen Variables ===============================
+
 	/*
 	Author: Trenton Nale
 	Contributors: Derek Lause
@@ -147,7 +177,7 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.id = ko.observable("Hub name" + self.counter.toString());
-		this.hub_config = {"middleware" : ko.observable("")};
+		this.hub_config = {"import" : ko.observable(""), "status" : ko.observable(""), "phrase": ko.observable("")};
 		this.ACUs = ko.observableArray([]);
 		this.parent = parent;
 		self.counter += 1;
@@ -203,8 +233,7 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.network_ID = ko.observable("Network Name");
-		this.network_config = {"PES_Mode" : ko.observable("manual"), "PE_Algorithm" : ko.observable(self.pe_algorithms()[0])};
-		this.Network_Config = {"User-ID" : ko.observable(""), "Network_ID": ko.observable("Network Name"), "PES_Mode": ko.observable(""), "PE_Alogrithm": self.pe_algorithms()[0]};
+		this.network_config = {"PES_Mode" : ko.observable(""), "PE_Algorithm" : ko.observable(self.pe_algorithms()[0])};
 		this.Hubs = ko.observableArray([]);
 
 		this.addHub = function() {
@@ -247,6 +276,8 @@ function Viewmodel() {
 				return false;
 		};
 	}
+    
+    /* =========================== End of Data Structures =================================*/
 
 	function replacer(key, value) {
 		/*
@@ -411,65 +442,6 @@ function Viewmodel() {
 				.attr("dy", function(d) { return d.y - radius - 2; });
 		} 
 	}
-
-	//============================= Data Bindings & Variables ===============================
-	var self = this;
-	self.current_screen = ko.observable("login_screen"); //single point of update for current screen
-	self.operation_screen = ko.computed(function() { //top-level screen template
-		if(self.current_screen() == "login_screen")
-			return "login_screen";
-		else if(self.current_screen() == "selection_screen")
-			return "selection_screen";
-		else if(self.current_screen() == "map_screen")
-			return "network_frame";
-		else if(self.current_screen() == "informational_screen")
-			return "network_frame";
-		else if(self.current_screen() == "definition_screen_network")
-			return "network_frame";
-		else if(self.current_screen() == "definition_screen_hub")
-			return "network_frame";
-		else if(self.current_screen() == "definition_screen_acu")
-			return "network_frame";
-		else
-			alert("Current Screen Not Recognized");
-	}, self);
-	self.operation_subscreen = ko.computed(function() { //sub-screen template
-		if(self.current_screen() == "map_screen")
-			return "map_subscreen";
-		else if(self.current_screen() == "informational_screen")
-			return "informational_subscreen"
-		else if(self.current_screen() == "definition_screen_network")
-			return "definition_subscreen";
-		else if(self.current_screen() == "definition_screen_hub")
-			return "definition_subscreen";
-		else if(self.current_screen() == "definition_screen_acu")
-			return "definition_subscreen";
-		else
-			return "map_subscreen";
-	}, self);
-
-	self.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
-	self.interpreter_types = ko.observableArray(['PUSH', 'PULL']);
-
-	self.networkObject = new NetworkObject();
-	self.selectedItem = ko.observable(self.networkObject);
-	//self.selectedItemDOM = null;
-	self.bonsaidList = null;
-	self.counter = 0; //stopgap to ensure unique hub/ACU names until validation is implemented
-	self.path = path.join(electron.remote.app.getPath('userData'), 'CoMPES_GUI.json');
-	self.temp = [ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable("")];
-	self.index = ko.observable("");
-
-	//============================= Login Page Variables ====================================
-	self.user = ko.observable("");
-	self.pass = ko.observable("");
-	
-	//============================== Map View Variables =====================================
-	self.mapData = null;
-	self.mapMode = ko.observable("architecture");
-
-	//=========================== Definition Screen Variables ===============================
-
 
 	//=================================General Functions=====================================
 	self.bonsai = function() {
