@@ -5,6 +5,37 @@ const fs = require('fs');
 var twistedClient;
 var child_process = require('child_process')
 
+const paths = {login:"/login", allNetworks:"/networks/all"}
+
+/*################################### DATA STRUCTURES ##############################
+
+function ACU() {
+	this.id = ko.observable("ACU name");
+	this.location_str = ko.observable("");
+	this.location_gps = ko.observable("");
+	this.classification = ko.observable("");
+	this.guid = ko.observable("");
+	this.interpreter_type = ko.observable("");
+}
+
+function Hub() {
+	this.isActive = ko.observable()
+	this.id = ko.observable("Hub name");
+	this.hub_config = {"middleware" : ko.observable("")}
+	this.ACUs = ko.observableArray([]);
+
+	this.addACU = function() {
+		this.ACUs.push(new ACU())
+	};
+}
+
+function NetworkObject() {
+	this.network_ID = ko.observable("Network Name");
+	this.Network_Config = {"User-ID" : ko.observable(""), "pe_algorithms" : ko.observableArray(['None', 'algorithm1', 'algorithm2'])}
+	this.chosen_algorithm = ko.observable(this.network_config.pe_algorithms()[0]);
+	this.Hubs = ko.observableArray([]);
+}*/
+
 //######################################## VIEWMODEL ########################################
 function Viewmodel() {
 	/*
@@ -20,6 +51,7 @@ function Viewmodel() {
 	function ACU(parent) {
 		/*
 		Author: Trenton Nale
+		Contributors: Derek Lause
 		Description: Representation of a CoMPES ACU and associated data
 		Input: parent - the Hub creating this ACU
 		Output: N/A
@@ -108,6 +140,7 @@ function Viewmodel() {
 	function Hub(parent) {
 		/*
 		Author: Trenton Nale
+		Contributors: Derek Lause
 		Description: Representation of a CoMPES hub and associated data
 		Input: parent - the NetworkObject creating this Hub
 		Output: N/A
@@ -115,7 +148,7 @@ function Viewmodel() {
 		*/
 		this.id = ko.observable("Hub name" + self.counter.toString());
 		this.hub_config = {"middleware" : ko.observable("")};
-		this.acus = ko.observableArray([]);
+		this.ACUs = ko.observableArray([]);
 		this.parent = parent;
 		self.counter += 1;
 
@@ -127,9 +160,9 @@ function Viewmodel() {
 			Output: N/A
 			Notes: N/A
 			*/
-			this.acus.push(new ACU(this));
+			this.ACUs.push(new ACU(this));
 			self.bonsai();
-			self.selectedItem(this.acus.slice(-1)[0]);
+			self.selectedItem(this.ACUs.slice(-1)[0]);
 		};
 
 		this.removeACU = function(acu) {
@@ -141,7 +174,7 @@ function Viewmodel() {
 			Notes: N/A
 			*/
 			self.selectedItem(this);
-			this.acus.remove(acu);
+			this.ACUs.remove(acu);
 			self.bonsai();
 		};
 
@@ -171,8 +204,8 @@ function Viewmodel() {
 		*/
 		this.network_ID = ko.observable("Network Name");
 		this.network_config = {"PES_Mode" : ko.observable("manual"), "PE_Algorithm" : ko.observable(self.pe_algorithms()[0])};
-		//this.chosen_algorithm = ko.observable(self.pe_algorithms()[0]);
-		this.hubs = ko.observableArray([]);
+		this.Network_Config = {"User-ID" : ko.observable(""), "Network_ID": ko.observable("Network Name"), "PES_Mode": ko.observable(""), "PE_Alogrithm": self.pe_algorithms()[0]};
+		this.Hubs = ko.observableArray([]);
 
 		this.addHub = function() {
 			/*
@@ -182,9 +215,9 @@ function Viewmodel() {
 			Output: N/A
 			Notes: N/A
 			*/
-			this.hubs.push(new Hub(this));
+			this.Hubs.push(new Hub(this));
 			self.bonsai();
-			self.selectedItem(this.hubs.slice(-1)[0]);
+			self.selectedItem(this.Hubs.slice(-1)[0]);
 		};
 
 		this.removeHub = function(hub) {
@@ -196,7 +229,7 @@ function Viewmodel() {
 			Notes: N/A
 			*/
 			self.selectedItem(this);
-			this.hubs.remove(hub);
+			this.Hubs.remove(hub);
 			self.bonsai();
 		};
 
@@ -414,7 +447,9 @@ function Viewmodel() {
 		else
 			return "map_subscreen";
 	}, self);
+
 	self.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
+	self.interpreter_types = ko.observableArray(['PUSH', 'PULL']);
 
 	self.networkObject = new NetworkObject();
 	self.selectedItem = ko.observable(self.networkObject);
@@ -434,7 +469,7 @@ function Viewmodel() {
 	self.mapMode = ko.observable("architecture");
 
 	//=========================== Definition Screen Variables ===============================
-	
+
 
 	//=================================General Functions=====================================
 	self.bonsai = function() {
@@ -789,6 +824,10 @@ function Viewmodel() {
 			alert("clickedItem not recognized");
 	}
 
+	self.displayHub = function(hub) {
+		return hub.isActive() ?  "active" : "inactive";
+	}
+
 	self.buildNDF = function() {
 		/*
 		Author: Derek Lause
@@ -826,7 +865,30 @@ function Viewmodel() {
 
 	self.saveNDFToFile = function() {
 		fs.writeFileSync(self.path, ko.toJSON(this.networkObject, replacer));
-	}
+	};
+
+	self.addHub = function() {
+		/*
+		Author: Derek Lause
+		Contributors: Trenton Nale
+		Description: Adds a template form field for a hub to be added on the network wanting to be defined
+		Input: N/A
+		Output: HTML form fields for a new hub to be added
+		Notes: Dynamic form fields need to be accessed properly to define the network correctly
+		*/
+		self.networkObject.Hubs.push(new Hub());
+		self.bonsai();
+	};
+
+    self.hubButton = function() {
+        self.addHub();
+        self.current_screen("definition_screen_hub");
+    }
+
+    self.acuButton = function() {
+        self.networkObject.Hubs().addACU();
+				self.current_screen("definition_screen_acu");
+    }
 
 	//============================Backend============================================
 	/* Template of a communication function using ajax

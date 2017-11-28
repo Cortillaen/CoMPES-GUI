@@ -87,30 +87,30 @@
       <div class="page-header"><h1>Network Selection</h1></div>
 
         <div class="row content">
-    
+
         <div class="col-sm-6 sidenav" style="background-color:rgb(177, 203, 211); border-style:solid;border-radius: 20px;">
-        
-      <p> List of Networks: </p>
-      <button onclick="getNetworkList()" id="list" type="button"> Get List of Networks </button>
-    </div> 
-     
-        
+
+			<p> List of Networks: </p>
+			<button onclick="getNetworkList()" id="list" type="button"> Get List of Networks </button>
+		</div>
+
+
         <div class="col-sm-6" style="background-color:rgb(177, 203, 211); border-style:solid;border-radius: 20px;">
-  
-            <div class="selectedCont">
-      <p> Selected Network Configurations: </p>
-      <form id="selectionForm">
-        Network Name:<br><textarea id="netName" rows="1" cols="35" disabled="disabled"></textarea><br><br>
-        IP Address:<br>  <textarea id="ipaddress" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
-        Number of Hubs:<br>  <textarea id ="numhubs" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
-        Number of ACUs:<br>  <textarea id="numacus" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
-        Location:<br> <textarea id="location" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
-        PES MODE:<br>  <textarea id="pesmode" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
-        Algorithm:<br>  <textarea id="algorithm" rows="1" cols="35" disabled="disabled"></textarea><br><br>
-      
-      </form>
-      <button id="connect" onclick="Connect()" id="list" type="button"> CONNECT </button>
-    </div>
+
+          	<div class="selectedCont">
+			<p> Selected Network Configurations: </p>
+			<form id="selectionForm">
+				Network Name:<br><textarea id="netName" rows="1" cols="35" disabled="disabled"></textarea><br><br>
+				IP Address:<br>  <textarea id="ipaddress" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				Number of Hubs:<br>  <textarea id ="numhubs" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				Number of ACUs:<br>  <textarea id="numacus" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				Location:<br> <textarea id="location" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				PES MODE:<br>  <textarea id="pesmode" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
+				Algorithm:<br>  <textarea id="algorithm" rows="1" cols="35" disabled="disabled"></textarea><br><br>
+
+			</form>
+			<button id="connect" onclick="Connect()" id="list" type="button"> CONNECT </button>
+		</div>
         </div>
     <br>
     <br>
@@ -127,11 +127,11 @@
   <script type="text/html" id="network_frame">
       <div class="col-sm-3 sidenav" style="text-align:left;height:100%;position:absolute;float:right;border-style:solid;border-radius:20px">
         <ol id='network_hierarchy' data-name='test'>
-          <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, css: {selected: $root.networkObject.isActive()}"></span>
-            <ol><!-- ko foreach: { data: networkObject.hubs } -->
-              <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span>
-                <ol><!-- ko foreach: { data: $data.acus } -->
-                  <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span></li>
+          <li><span id='network' data-bind="text: networkObject.Network_Config.Network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, style: {backgroundColor : $root.networkObject.isActive() ? 'green' : 'transparent'}"></span>
+            <ol><!-- ko foreach: { data: networkObject.Hubs } -->
+              <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, style: {backgroundColor : isActive() ? 'green' : 'transparent'}"></span>
+                <ol><!-- ko foreach: { data: $data.ACUs } -->
+                  <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}, style: {backgroundColor : isActive() ? 'green' : 'transparent'}"></span></li>
                 <!-- /ko --></ol>
               </li>
             <!-- /ko --></ol>
@@ -157,17 +157,20 @@
 
   <!-- Informational Screen -->
   <script type="text/html" id="informational_subscreen">
-    <div class="page-header"><h1>Informational Screen</h1></div>
-    <h1>Grid</h1>
-    <div class="row content">
-      <div class="col-sm-12" style="background-color:pink;">
-        Query Area
-      </div>
-      <div class="col-sm-12" style="background-color:red;">
-        Metrics
-      </div>
-      <div class="col-sm-12" style="background-color:orange;">
-        Graphical Analysis
+    <div class="container text-center">
+      <div class="page-header"><h1>Informational Screen</h1></div>
+      <h1>Grid</h1>
+      <div class="row content">
+        <div class="col-sm-12" style="background-color:pink;">
+          <input type="text">test</input>
+          <button type="search">Search</button>
+        </div>
+        <div class="col-sm-12" style="background-color:red;">
+          Metrics
+        </div>
+        <div class="col-sm-12" style="background-color:orange;">
+          Graphical Analysis
+        </div>
       </div>
     </div>
   </script>
@@ -193,14 +196,14 @@
       <fieldset>
         <legend>Network Configurations:</legend>
         <label>Network ID:</label>
-        <input type="text" data-bind="value: network_ID"/><br>
+        <input type="text" data-bind="value: Network_Config.Network_ID"/><br>
         <legend>Policy Control:</legend>
         <label> PES Mode: </label>
-        <input type="radio" name="pes mode" value="manual" data-bind="checked: network_config.pes_mode" checked> Manual
-        <input type="radio" name="pes mode" value="autonomous" data-bind="checked: network_config.pes_mode"> Autonomous<br>
+        <input type="radio" name="pes mode" value="manual" data-bind="checked: Network_Config.PES_Mode" checked> Manual
+        <input type="radio" name="pes mode" value="autonomous" data-bind="checked: Network_Config.PES_Mode"> Autonomous<br>
 
         <label> PE Algorithm: </label>
-        <select data-bind="options: $root.pe_algorithms, selectedOptions: $root.networkObject.network_config['PE_Algorithm']" required></select>
+        <select data-bind="options: $root.pe_algorithms, selectedOptions: Network_Config.PE_Algorithm" required></select>
       </fieldset>
     </div>
     <button data-bind="click: $data.addHub">Add Hub</button>
@@ -209,8 +212,8 @@
     <!-- ko if: ($data.constructor.name == "Hub") -->
     <label>Hub ID: </label>
     <input data-bind="value: id"></input><br><br>
-    <label>Middleware: </label>
-    <input data-bind="value: hub_config.middleware"></input><br><br>
+		<label>Middleware Import: </label>
+		<input placeholder=""data-bind="value: hub_config.middleware"></input><br><br>
     <button data-bind="click: function() {$data.parent.addHub();}">Add Another Hub</button>
     <button data-bind="click: addACU">Add ACU</button>
     <button data-bind="click: function() {$data.parent.removeHub($data);}">Delete This Hub</button>
@@ -220,19 +223,14 @@
 	<!--
     <label>ACU ID: </label>
     <input type="text" data-bind="value: id"></input><br><br>
-	<label>Defined States: </label>
-	<input type="text" data-bind="value: defined_states"></input><br><br>
-    <label>Location: </label>
-    <input type="text" data-bind="value: location_str"></input><br><br>
+    <label>Location </label>
+    <input type="text" data-bind="value: location"></input><br><br>
     <label>Classification: </label>
     <input type="text" data-bind="value: classification"></input><br><br>
     <label>GUID: </label>
     <input type="text" data-bind="value: guid"></input><br><br>
     <label>Interpreter Type: </label>
-    <input type="text" data-bind="value: interpreter_type"></input><br><br>
-    <label>Semantic Links: </label>
-    <input type="text" data-bind="value: semantic_links"></input><br><br>
-	
+    <select data-bind="options: $root.interpreter_types, selectedOptions: interpreter_type"></select><br><br>
     <button data-bind="click: function() {$data.parent.addACU();}">Add Another ACU</button>
     <button data-bind="click: function() {$data.parent.removeACU($data);}">Delete This ACU</button>-->
 	
