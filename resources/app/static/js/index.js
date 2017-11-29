@@ -57,6 +57,8 @@ function Viewmodel() {
 	self.temp = [ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable("")];
 	self.index = ko.observable("");
 	self.numClones = ko.observable(1);
+	self.assocRuleKey = ko.observable("");
+	self.assocRuleVal = ko.observable("");
 
 	//============================= Login Page Variables ====================================
 	self.user = ko.observable("");
@@ -98,6 +100,8 @@ function Viewmodel() {
 		this.execute = ko.observableArray([]);
 		this.interpreter_type = ko.observable("");
 		this.semantic_links = ko.observableArray([]);
+		this.associative_rules = ko.observableArray([]);
+		
 		this.parent = parent;
 		self.counter += 1;
 
@@ -144,13 +148,13 @@ function Viewmodel() {
 			Notes: N/A
 			*/
 			if(self.temp[index]() !== "") {
-			if(list.indexOf(self.temp[index]()) !== -1) {
-				list.remove(self.temp[index]());
-				self.temp[index]("");
+				if(list.indexOf(self.temp[index]()) !== -1) {
+					list.remove(self.temp[index]());
+					self.temp[index]("");
 				}
-			else {alert("State does not exists.");}
-		}
-		else {alert("You must enter a name to remove a state.");}
+				else {alert("State does not exist.");}
+			}
+			else {alert("You must enter a name to remove a state.");}
 		};
 
 		this.fill = function(selected, i) {
@@ -165,6 +169,37 @@ function Viewmodel() {
 			self.temp[i](selected);
 		};
 
+		this.add_assoc_rule = function() {
+			if((self.assocRuleKey() !== "") || (self.assocRuleVal() !== "")) {
+				var tempRule = self.assocRuleKey() + ":" + self.assocRuleVal();
+				if(this.associative_rules.indexOf(tempRule) === -1) {
+					this.associative_rules.push(self.assocRuleKey() + ":" + self.assocRuleVal());
+					self.assocRuleKey("");
+					self.assocRuleVal("");
+				}
+				else {alert("Rule already exists.");}
+			}
+			else {alert("You must enter both the key and action to add a rule.");}
+		};
+
+		this.remove_assoc_rule = function() {
+			if((self.assocRuleKey() !== "") || (self.assocRuleVal() !== "")) {
+				var tempRule = self.assocRuleKey() + ":" + self.assocRuleVal();
+				if(this.associative_rules.indexOf(tempRule) !== -1) {
+					this.associative_rules.remove(tempRule);
+					self.assocRuleKey("");
+					self.assocRuleVal("");
+				}
+				else {alert("Rule does not exist.");}
+			}
+			else {alert("You must enter both the key and action to remove a rule.");}
+		};
+		
+		this.fill_assoc_rule = function(selected) {
+			var temp = selected.split(":");
+			self.assocRuleKey(temp[0]);
+			self.assocRuleVal(temp[1]);
+		};
 	}
 
 	function Hub(parent) {

@@ -366,6 +366,25 @@
 					</tr>
 					
 					<tr>
+						<td><strong>Associative Rules: </strong></td>
+						<td>
+							<div class="well-sm">
+								<ul class="list-inline" data-bind="foreach: associative_rules">
+									<li data-bind="text: $data, click: function(selected) {$parent.fill_assoc_rule(selected);}"></li>
+								</ul>
+							</div>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.assocRuleKey">
+								<input type="text" class="form-control" placeholder="<Action>" data-bind="value: $root.assocRuleVal">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" data-bind="click: add_assoc_rule">Add</button>
+									<button class="btn btn-primary" data-bind="click: remove_assoc_rule">Remove</button>
+								</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
 						<td><strong>Interpreter Type:</strong></td>
 						<td>
               <label>PUSH</label><input type="radio" name="optr" value="PUSH" data-bind="checked: interpreter_type">
