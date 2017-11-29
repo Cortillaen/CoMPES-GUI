@@ -178,7 +178,7 @@ function Viewmodel() {
 		*/
 		this.id = ko.observable("Hub name" + self.counter.toString());
 		this.hub_config = {"import" : ko.observable(""), "status" : ko.observable(""), "phrase": ko.observable("")};
-		this.acus = ko.observableArray([]);
+		this.ACUs = ko.observableArray([]);
 		this.parent = parent;
 		self.counter += 1;
 
@@ -190,9 +190,9 @@ function Viewmodel() {
 			Output: N/A
 			Notes: N/A
 			*/
-			this.acus.push(new ACU(this));
+			this.ACUs.push(new ACU(this));
 			self.bonsai();
-			self.selectedItem(this.acus.slice(-1)[0]);
+			self.selectedItem(this.ACUs.slice(-1)[0]);
 		};
 
 		this.cloneACU = function() {
@@ -242,7 +242,7 @@ function Viewmodel() {
 			Notes: N/A
 			*/
 			self.selectedItem(this);
-			this.acus.remove(acu);
+			this.ACUs.remove(acu);
 			self.bonsai();
 		};
 
@@ -272,7 +272,7 @@ function Viewmodel() {
 		*/
 		this.network_ID = ko.observable("Network Name");
 		this.network_config = {"PES_Mode" : ko.observable(""), "PE_Algorithm" : ko.observable("")};
-		this.hubs = ko.observableArray([]);
+		this.Hubs = ko.observableArray([]);
 
 		this.addHub = function() {
 			/*
@@ -282,9 +282,9 @@ function Viewmodel() {
 			Output: N/A
 			Notes: N/A
 			*/
-			this.hubs.push(new Hub(this));
+			this.Hubs.push(new Hub(this));
 			self.bonsai();
-			self.selectedItem(this.hubs.slice(-1)[0]);
+			self.selectedItem(this.Hubs.slice(-1)[0]);
 		};
 
 		this.removeHub = function(hub) {
@@ -296,7 +296,7 @@ function Viewmodel() {
 			Notes: N/A
 			*/
 			self.selectedItem(this);
-			this.hubs.remove(hub);
+			this.Hubs.remove(hub);
 			self.bonsai();
 		};
 
@@ -531,14 +531,14 @@ function Viewmodel() {
 			alert("PE Algorithm not recognized.");
 		for(var key in info["hubs"]) {
 			self.networkObject.addHub();
-			var hubTemp = self.networkObject.hubs().slice(-1)[0];
+			var hubTemp = self.networkObject.Hubs().slice(-1)[0];
 			hubTemp.id(info["hubs"][key]["id"]);
 			var secondKey = "";
 			for(secondKey in info["hubs"][key]["hub_config"])
 				hubTemp.hub_config[secondKey] = ko.observable(info["hubs"][key]["hub_config"][secondKey]);
 			for(secondKey in info["hubs"][key]["acus"]) {
 				hubTemp.addACU();
-				var acuTemp = hubTemp.acus().slice(-1)[0];
+				var acuTemp = hubTemp.ACUs().slice(-1)[0];
 				acuTemp.id(info["hubs"][key]["acus"][secondKey]["id"]);
 				acuTemp.location_str(info["hubs"][key]["acus"][secondKey]["location_str"]);
 				acuTemp.location_gps(info["hubs"][key]["acus"][secondKey]["location_gps"]);
@@ -706,7 +706,7 @@ function Viewmodel() {
 		//for the network node, build all connected hubs
 		if(self.selectedItem().constructor.name == "NetworkObject") {
 			nodes_data.push({"name": self.networkObject.network_ID(), "type": "network", "data": self.networkObject});
-			self.networkObject.hubs().forEach(function(hub) {
+			self.networkObject.Hubs().forEach(function(hub) {
 				nodes_data.push({"name": hub.id(), "type": "hub", "data": hub});
 				links_data.push({"source": self.networkObject.network_ID(), "target": hub.id(), "type": "architecture"});
 			});
@@ -714,7 +714,7 @@ function Viewmodel() {
 		//for a hub, build all connected ACUs
 		else if(self.selectedItem().constructor.name == "Hub") {
 			nodes_data.push({"name": self.selectedItem().id(), "type": "hub", "data": self.selectedItem});
-			self.selectedItem().acus().forEach(function(acu) {
+			self.selectedItem().ACUs().forEach(function(acu) {
 				nodes_data.push({"name": acu.id(), "type": "acu", "data": acu});
 				links_data.push({"source": self.selectedItem().id(), "target": acu.id(), "type": "architecture"});
 				if((self.mapMode() == "semantic") && (acu.semantic_links().length > 0)) {
@@ -730,7 +730,7 @@ function Viewmodel() {
 			//if in architecture mode, build as though ACU's parent hub was selected
 			if(self.mapMode() == "architecture") {
 				nodes_data.push({"name": self.selectedItem().parent.id(), "type": "hub", "data": self.selectedItem().parent});
-				self.selectedItem().parent.acus().forEach(function(acu) {
+				self.selectedItem().parent.ACUs().forEach(function(acu) {
 					nodes_data.push({"name": acu.id(), "type": "acu", "data": acu});
 					links_data.push({"source": self.selectedItem().parent.id(), "target": acu.id(), "type": "architecture"});
 				});
@@ -743,7 +743,7 @@ function Viewmodel() {
 				if((self.mapMode() == "semantic") && (self.selectedItem().semantic_links().length > 0)) {
 					var semLinks = self.selectedItem().semantic_links().replace(new RegExp(', ', 'g'), ",").split(",");
 					for(var semLink in semLinks) {
-						var semNode = ko.utils.arrayFirst(self.selectedItem().parent.acus(), function(child) {
+						var semNode = ko.utils.arrayFirst(self.selectedItem().parent.ACUs(), function(child) {
 							return child.id() == semLinks[semLink];
 						});
 						nodes_data.push({"name": semLinks[semLink], "type": "acu", "data": semNode});
@@ -872,7 +872,7 @@ function Viewmodel() {
 		};
 
 		//for each hub, add it to the array of hubs
-		ko.utils.arrayForEach(self.networkObject.hubs(), function(hub) {
+		ko.utils.arrayForEach(self.networkObject.Hubs(), function(hub) {
 		    network["Hubs"][hub.id()] = {
 					"Hub Config" : {
 						"STATUS" : hub.hub_config.status(),
@@ -881,7 +881,7 @@ function Viewmodel() {
 		     },
 		     "ACUs" : {}
 		     };
-		ko.utils.arrayForEach(hub.acus(), function(acu) {
+		ko.utils.arrayForEach(hub.ACUs(), function(acu) {
 		     network["Hubs"][hub.id()]["ACUs"][acu.id()] = {
 		                    "Defined States" : self.isEmpty(acu.defined_states()) ? "NA" : acu.defined_states(),
 												"Classification" : acu.classification(),
@@ -922,7 +922,7 @@ function Viewmodel() {
 		Output: HTML form fields for a new hub to be added
 		Notes: Dynamic form fields need to be accessed properly to define the network correctly
 		*/
-		self.networkObject.hubs.push(new Hub());
+		self.networkObject.Hubs.push(new Hub());
 		self.bonsai();
 	};
 
@@ -932,7 +932,7 @@ function Viewmodel() {
     }
 
     self.acuButton = function() {
-        self.networkObject.hubs().addACU();
+        self.networkObject.Hubs().addACU();
 				self.current_screen("definition_screen_acu");
     }
 

@@ -144,7 +144,6 @@
       </ol>
     </div>
     <div class="col-sm-9" id="network_screen_holder" data-bind="template: {name: operation_subscreen}" style="float:right; height:100%;">
-      Interactive visualization of currently-selected level
     </div>
   </div>
   </script>
@@ -188,12 +187,6 @@
     <div id="config-menu" data-bind="template: {name: 'definition_part', data: selectedItem}" class="well well-lg" style="max-height: none; height: -webkit-calc(100% - 212px); width: 100%;">
         <!-- The desired configuration will be placed into this template.-->
     </div>
-    <form class="form-group" data-bind="submit: buildNDF">
-      <div>
-        <button class="btn btn-default" data-bind="click: saveNDFToFile">Save to File</button>
-        <button class="btn btn-default" data-bind="click: loadNDF">Load from File</button>
-      </div>
-    </form>
     <div>
       <button class="btn btn-default" data-bind="click: saveNDFToFile">Save to File</button>
       <button class="btn btn-default" data-bind="click: loadNDF">Load from File</button>
