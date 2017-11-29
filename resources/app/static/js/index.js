@@ -9,7 +9,7 @@ const paths = {login:"/login", allNetworks:"/networks/all"}
 
 //######################################## VIEWMODEL ########################################
 function Viewmodel() {
-    
+
 	//============================= Data Bindings & Variables ===============================
 	var self = this;
 	self.current_screen = ko.observable("login_screen"); //single point of update for current screen
@@ -46,7 +46,6 @@ function Viewmodel() {
 			return "map_subscreen";
 	}, self);
 
-	self.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
 	self.interpreter_types = ko.observableArray(['PUSH', 'PULL']);
 
 	self.networkObject = new NetworkObject();
@@ -61,7 +60,7 @@ function Viewmodel() {
 	//============================= Login Page Variables ====================================
 	self.user = ko.observable("");
 	self.pass = ko.observable("");
-	
+
 	//============================== Map View Variables =====================================
 	self.mapData = null;
 	self.mapMode = ko.observable("architecture");
@@ -177,13 +176,8 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.id = ko.observable("Hub name" + self.counter.toString());
-<<<<<<< HEAD
-		this.hub_config = {"status" : ko.observable(""), "phrase" : ko.observable("")};
-		this.acus = ko.observableArray([]);
-=======
 		this.hub_config = {"import" : ko.observable(""), "status" : ko.observable(""), "phrase": ko.observable("")};
-		this.ACUs = ko.observableArray([]);
->>>>>>> 080dc6b78ca7ca704f2059d8c35086a080715441
+		this.acus = ko.observableArray([]);
 		this.parent = parent;
 		self.counter += 1;
 
@@ -238,13 +232,8 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.network_ID = ko.observable("Network Name");
-<<<<<<< HEAD
-		this.network_config = {"PES_Mode" : ko.observable("manual"), "PE_Algorithm" : ko.observable(self.pe_algorithms()[0])};
+		this.network_config = {"PES_Mode" : ko.observable(""), "PE_Algorithm" : ko.observable("")};
 		this.hubs = ko.observableArray([]);
-=======
-		this.network_config = {"PES_Mode" : ko.observable(""), "PE_Algorithm" : ko.observable(self.pe_algorithms()[0])};
-		this.Hubs = ko.observableArray([]);
->>>>>>> 080dc6b78ca7ca704f2059d8c35086a080715441
 
 		this.addHub = function() {
 			/*
@@ -286,7 +275,7 @@ function Viewmodel() {
 				return false;
 		};
 	}
-    
+
     /* =========================== End of Data Structures =================================*/
 
 	function replacer(key, value) {
@@ -453,68 +442,6 @@ function Viewmodel() {
 		}
 	}
 
-<<<<<<< HEAD
-	//============================= Data Bindings & Variables ===============================
-	var self = this;
-	self.current_screen = ko.observable("login_screen"); //single point of update for current screen
-	self.operation_screen = ko.computed(function() { //top-level screen template
-		if(self.current_screen() == "login_screen")
-			return "login_screen";
-		else if(self.current_screen() == "selection_screen")
-			return "selection_screen";
-		else if(self.current_screen() == "map_screen")
-			return "network_frame";
-		else if(self.current_screen() == "informational_screen")
-			return "network_frame";
-		else if(self.current_screen() == "definition_screen_network")
-			return "network_frame";
-		else if(self.current_screen() == "definition_screen_hub")
-			return "network_frame";
-		else if(self.current_screen() == "definition_screen_acu")
-			return "network_frame";
-		else
-			alert("Current Screen Not Recognized");
-	}, self);
-	self.operation_subscreen = ko.computed(function() { //sub-screen template
-		if(self.current_screen() == "map_screen")
-			return "map_subscreen";
-		else if(self.current_screen() == "informational_screen")
-			return "informational_subscreen"
-		else if(self.current_screen() == "definition_screen_network")
-			return "definition_subscreen";
-		else if(self.current_screen() == "definition_screen_hub")
-			return "definition_subscreen";
-		else if(self.current_screen() == "definition_screen_acu")
-			return "definition_subscreen";
-		else
-			return "map_subscreen";
-	}, self);
-
-	self.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
-	self.interpreter_types = ko.observableArray(['PUSH', 'PULL']);
-
-	self.networkObject = new NetworkObject();
-	self.selectedItem = ko.observable(self.networkObject);
-	//self.selectedItemDOM = null;
-	self.bonsaidList = null;
-	self.counter = 0; //stopgap to ensure unique hub/ACU names until validation is implemented
-	self.path = path.join(electron.remote.app.getPath('userData'), 'CoMPES_GUI.json');
-	self.temp = [ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable("")];
-	self.index = ko.observable("");
-
-	//============================= Login Page Variables ====================================
-	self.user = ko.observable("");
-	self.pass = ko.observable("");
-
-	//============================== Map View Variables =====================================
-	self.mapData = null;
-	self.mapMode = ko.observable("architecture");
-
-	//=========================== Definition Screen Variables ===============================
-
-
-=======
->>>>>>> 080dc6b78ca7ca704f2059d8c35086a080715441
 	//=================================General Functions=====================================
 	self.bonsai = function() {
 		/*
@@ -872,6 +799,17 @@ function Viewmodel() {
 		return hub.isActive() ?  "active" : "inactive";
 	}
 
+	self.isEmpty = function(array) {
+			var isEmpty;
+			if (array.length == 0) {
+				isEmpty = true;
+			}
+			else {
+				isEmpty = false;
+			}
+			return isEmpty;
+	}
+
 	self.buildNDF = function() {
 		/*
 		Author: Derek Lause
@@ -895,20 +833,41 @@ function Viewmodel() {
 		};
 
 		//for each hub, add it to the array of hubs
-		self.networkObject.hubs.foreach(function(hub) {
-			network["Hubs"][hub.id()] = {
-				/*"Hub Config" : {
-					"STATUS" :
-					"Imports" :
-					"Phrase-relatedness" :
-				},*/
-			};
-		});
-		// return ko.toJSON(this.networkObject, replacer);
+		ko.utils.arrayForEach(self.networkObject.hubs(), function(hub) {
+		    network["Hubs"][hub.id()] = {
+					"Hub Config" : {
+						"STATUS" : hub.hub_config.status(),
+						"Imports" : hub.hub_config.import(),
+						"Phrase-relatedness" : hub.hub_config.phrase()
+		     },
+		     "ACUs" : {}
+		     };
+		ko.utils.arrayForEach(hub.acus(), function(acu) {
+		     network["Hubs"][hub.id()]["ACUs"][acu.id()] = {
+		                    "Defined States" : self.isEmpty(acu.defined_states()) ? "NA" : acu.defined_states(),
+												"Classification" : acu.classification(),
+												"GET" : acu.get(),
+												"EXECUTE" : self.isEmpty(acu.execute()) ? "NA" : acu.execute(),
+												"Interpreter Type" : acu.interpreter_type(),
+												"Actions" : self.isEmpty(acu.actions()) ? "NA" : acu.actions(),
+												"Raw States" : self.isEmpty(acu.raw_states()) ? "NA" : acu.raw_states(),
+												"Location" : acu.loc(),
+												//"Full ACU-ID" :
+												"GUID" : acu.guid(),
+												//"Associative Rules" :
+												"Semantic Links" : self.isEmpty(acu.semantic_links()) ? "NA" : acu.semantic_links(),
+		                }
+		            });
+		        });
+
+		return network;
+
 	};
 
 	self.outputNDF = function() {
-		console.log(ko.toJSON(this.networkObject, replacer));
+		var testnet = self.buildNDF();
+		var test = JSON.stringify(testnet);
+		console.log(test);
 	}
 
 	self.saveNDFToFile = function() {
