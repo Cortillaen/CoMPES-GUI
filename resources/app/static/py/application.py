@@ -1,7 +1,7 @@
 """
 Dummy GUI Backend used to test CoMPES
 """
-import sys, ujson
+import sys, ujson, json
 from multiprocessing import Queue
 
 from flask import Flask, request
@@ -87,10 +87,12 @@ class CoMPES_WebSocket_Factory(WebSocketClientFactory):
 		
 
 #===================================Mux Proxy interface=========================
-@app.route('/<opt>')
+@app.route('/<opt>', methods=['GET', 'POST'])
 def multiplexer(opt):
 	#This function builds the web multiplexor for the electron backend
 	message = "Default"
+	requestData = request.get_json()
+	print(requestData)
 	
 	#Connect to CoMPES Provisioning Server
 	if(opt == "connect"):
@@ -98,31 +100,31 @@ def multiplexer(opt):
 			print("Connecting to CoMPES Provisioning Server @: %s" % (CoMPES_address))
 
 			#get username and pass from post body
-			tempJSON = jsonify(json.loads(request.data))
-			userID = tempJSON['User-ID']
-			userPass = tempJSON['User-Password']
+			userID = requestData["User-ID"]
+			userPass = requestData["User-Password"]
 
+			print(userID)
 			buildConnection(CoMPES_address, userID, userPass)
 			connectWS(factory)
 			message = msg_to_mux()
 		except:
-			message = jsonify({'error':'Error: Connection to CoMPES failed'})
+			message = ujson.dumps({'error':'Error: Connection to CoMPES failed'})
 	
 	#Send an NDF to CoMPES	
 	elif(opt == "def-1"):
 		try:
-			request = {}
+			message = {}
 			#Recieve NDF from Post body
 			#-----REPLACE FILE CODE-----
 			infile = open("testUser_testNetwork.ndf")
-			request["Data"] = infile.read()
+			message["Data"] = infile.read()
 			infile.close()
 			#---------------------------
 			
-			#Package request with necessary headers
-			request["Module"] = "Definition"
-			request["Mode"] = "Provision Network"
-			NDF = ujson.dumps(request)
+			#Package message with necessary headers
+			message["Module"] = "Definition"
+			message["Mode"] = "Provision Network"
+			NDF = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
 			#Send recieved NDF to CoMPES
@@ -136,18 +138,18 @@ def multiplexer(opt):
 	#Send an Edited NDF to CoMPES	
 	elif(opt == "def-2"):
 		try:
-			request = {}
+			message = {}
 			#Recieve NDF from Post body
 			#-----REPLACE FILE CODE-----
 			infile = open("testUser_testNetwork.ndf")
-			request["Data"] = infile.read()
+			message["Data"] = infile.read()
 			infile.close()
 			#---------------------------
 			
-			#Package request with necessary headers
-			request["Module"] = "Definition"
-			request["Mode"] = "Edit Network"
-			NDF = ujson.dumps(request)
+			#Package message with necessary headers
+			message["Module"] = "Definition"
+			message["Mode"] = "Edit Network"
+			NDF = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
 			#Send recieved NDF to CoMPES
@@ -161,86 +163,86 @@ def multiplexer(opt):
 	#Remove a network
 	elif(opt == "def-3"):
 		try:
-			request = {}
+			message = {}
 			#Recieve net-ID from Post body
 			#-----REPLACE FILE CODE-----
-			request["Data"] = ujson.dumps({"Network-ID" : "testNetwork", "User-ID" : "testUser"})
+			message["Data"] = ujson.dumps({"Network-ID" : "testNetwork", "User-ID" : "testUser"})
 			#---------------------------
 			
-			#Package request with necessary headers
-			request["Module"] = "Definition"
-			request["Mode"] = "Delete Network"
-			request = ujson.dumps(request)
+			#Package message with necessary headers
+			message["Module"] = "Definition"
+			message["Mode"] = "Delete Network"
+			message = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
-			#Send recieved request to CoMPES
-			putMSG("mux_to_ws", request)
+			#Send recieved message to CoMPES
+			putMSG("mux_to_ws", message)
 			
 			#message from server
 			message = msg_to_mux()
 		except:
-			message = "Error: Failed to send request to delete network."
+			message = "Error: Failed to send message to delete network."
 			
 	#Toggle Policy Mode
 	elif(opt == "int-1"):
 		try:
-			request = {}
+			message = {}
 			#-----REPLACE FILE CODE-----
-			request["Data"] = ujson.dumps({})
+			message["Data"] = ujson.dumps({})
 			#---------------------------
 			
-			#Package request with necessary headers
-			request["Module"] = "Interaction"
-			request["Mode"] = "Policy"
-			request = ujson.dumps(request)
+			#Package message with necessary headers
+			message["Module"] = "Interaction"
+			message["Mode"] = "Policy"
+			message = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
-			#Send recieved request to CoMPES
-			putMSG("mux_to_ws", request)
+			#Send recieved message to CoMPES
+			putMSG("mux_to_ws", message)
 			
 			#message from server
 			message = msg_to_mux()
 		except:
-			message = "Error: Failed to send policy mode request"
+			message = "Error: Failed to send policy mode message"
 	
 	#Toggle Manual mode
 	elif(opt == "int-2"):
 		try:
-			request = {}
+			message = {}
 			#-----REPLACE FILE CODE-----
-			request["Data"] = ujson.dumps({})
+			message["Data"] = ujson.dumps({})
 			#---------------------------
 			
-			#Package request with necessary headers
-			request["Module"] = "Interaction"
-			request["Mode"] = "Manual"
-			request = ujson.dumps(request)
+			#Package message with necessary headers
+			message["Module"] = "Interaction"
+			message["Mode"] = "Manual"
+			message = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
-			#Send recieved request to CoMPES
-			putMSG("mux_to_ws", request)
+			#Send recieved message to CoMPES
+			putMSG("mux_to_ws", message)
 			
 			#message from server
 			message = msg_to_mux()
 		except:
-			repsonse = "Error: Failed to send a manual mode request"
+			repsonse = "Error: Failed to send a manual mode message"
 			
 	#Send Command
 	elif(opt == "int-3"):
 		try:
-			request = {}
+			message = {}
 			#-----REPLACE FILE CODE-----
-			request["Data"] = ujson.dumps({"ACU-ID": "fan", "Hub-ID" : "cheek213A", "Net-ID": "testNetwork", "Action" : "Turn on"})
+			message["Data"] = ujson.dumps({"ACU-ID": "fan", "Hub-ID" : "cheek213A", "Net-ID": "testNetwork", "Action" : "Turn on"})
 			#---------------------------
 			
-			#Package request with necessary headers
-			request["Module"] = "Interaction"
-			request["Mode"] = "Command"
-			request = ujson.dumps(request)
+			#Package message with necessary headers
+			message["Module"] = "Interaction"
+			message["Mode"] = "Command"
+			message = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
 			#Send recieved command to CoMPES
-			putMSG("mux_to_ws", request)
+			putMSG("mux_to_ws", message)
 			
 			#message from server
 			message = msg_to_mux()
@@ -250,24 +252,24 @@ def multiplexer(opt):
 	#Get an NDF
 	elif(opt == "obs-1"):
 		try:
-			#request = {}
+			#message = {}
 			#-----REPLACE FILE CODE-----
-			#request["Data"] = ujson.dumps({"User-ID": "testUser", "Network-ID" : "testNetwork"})
+			#message["Data"] = ujson.dumps({"User-ID": "testUser", "Network-ID" : "testNetwork"})
 			#---------------------------
-			#requestData = ujson.dumps(request.data)
+			#messageData = ujson.dumps(message.data)
 
-			receivedData = jsonify(json.loads(request.data))
-			request = {}
-			request["Data"] = ujson.dumps({"User-ID":receivedData["User-ID"], "Network-ID":receivedData["Network-ID"]})
+			receivedData = jsonify(json.loads(message.data))
+			message = {}
+			message["Data"] = ujson.dumps({"User-ID":receivedData["User-ID"], "Network-ID":receivedData["Network-ID"]})
 			
-			#Package request with necessary headers
-			request["Module"] = "Observation"
-			request["Mode"] = "NDF"
-			request = ujson.dumps(request)
+			#Package message with necessary headers
+			message["Module"] = "Observation"
+			message["Mode"] = "NDF"
+			message = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
 			#Send recieved NDF to client
-			putMSG("mux_to_ws", request)
+			putMSG("mux_to_ws", message)
 			
 			#message from server
 			message = msg_to_mux()
@@ -277,19 +279,19 @@ def multiplexer(opt):
 	#Get a CVO
 	elif(opt == "obs-2"):
 		try:
-			request = {}
+			message = {}
 			#-----REPLACE FILE CODE-----
-			request["Data"] = ujson.dumps({"Hub-ID" : "testHub", "Net-ID": "testNetwork", "User-ID" : "testUser"})
+			message["Data"] = ujson.dumps({"Hub-ID" : "testHub", "Net-ID": "testNetwork", "User-ID" : "testUser"})
 			#---------------------------
 			
-			#Package request with necessary headers
-			request["Module"] = "Observation"
-			request["Mode"] = "Hub"
-			request = ujson.dumps(request)
+			#Package message with necessary headers
+			message["Module"] = "Observation"
+			message["Mode"] = "Hub"
+			message = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
-			#Send recieved request to CoMPES
-			putMSG("mux_to_ws", request)
+			#Send recieved message to CoMPES
+			putMSG("mux_to_ws", message)
 			
 			#message from server
 			message = msg_to_mux()
@@ -299,19 +301,19 @@ def multiplexer(opt):
 	#Get a collection of ACUs
 	elif(opt == "obs-3"):
 		try:
-			request = {}
+			message = {}
 			#-----REPLACE FILE CODE-----
-			request["Data"] = ujson.dumps({"Collection": {}, "Net-ID": "testNetwork", "User-ID" : "testUser"})
+			message["Data"] = ujson.dumps({"Collection": {}, "Net-ID": "testNetwork", "User-ID" : "testUser"})
 			#---------------------------
 			
-			#Package request with necessary headers
-			request["Module"] = "Observation"
-			request["Mode"] = "Collection"
-			request = ujson.dumps(request)
+			#Package message with necessary headers
+			message["Module"] = "Observation"
+			message["Mode"] = "Collection"
+			message = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
-			#Send recieved request to CoMPES
-			putMSG("mux_to_ws", request)
+			#Send recieved message to CoMPES
+			putMSG("mux_to_ws", message)
 			
 			#message from server
 			message = msg_to_mux()
@@ -321,19 +323,19 @@ def multiplexer(opt):
 	#Fetching an ACU
 	elif(opt == "obs-4"):
 		try:
-			request = {}
+			message = {}
 			#-----REPLACE FILE CODE-----
-			request["Data"] = ujson.dumps({"ACU-ID": "fan", "Hub-ID" : "cheek213A", "Net-ID": "testNetwork"})
+			message["Data"] = ujson.dumps({"ACU-ID": "fan", "Hub-ID" : "cheek213A", "Net-ID": "testNetwork"})
 			#---------------------------
 			
-			#Package request with necessary headers
-			request["Module"] = "Observation"
-			request["Mode"] = "ACU"
-			request = ujson.dumps(request)
+			#Package message with necessary headers
+			message["Module"] = "Observation"
+			message["Mode"] = "ACU"
+			message = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
-			#Send recieved request to CoMPES
-			putMSG("mux_to_ws", request)
+			#Send recieved message to CoMPES
+			putMSG("mux_to_ws", message)
 			
 			#message from server
 			message = msg_to_mux()
@@ -343,19 +345,19 @@ def multiplexer(opt):
 	#Get the network status
 	elif(opt == "obs-5"):
 		try:
-			request = {}
+			message = {}
 			#-----REPLACE FILE CODE-----
-			request["Data"] = ujson.dumps({"Network-ID" : "testNetwork", "User-ID" : "testUser"})
+			message["Data"] = ujson.dumps({"Network-ID" : "testNetwork", "User-ID" : "testUser"})
 			#---------------------------
 			
-			#Package request with necessary headers
-			request["Module"] = "Observation"
-			request["Mode"] = "Network Status"
-			request = ujson.dumps(request)
+			#Package message with necessary headers
+			message["Module"] = "Observation"
+			message["Mode"] = "Network Status"
+			message = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
-			#Send recieved request to CoMPES
-			putMSG("mux_to_ws", request)
+			#Send recieved message to CoMPES
+			putMSG("mux_to_ws", message)
 			
 			#message from server
 			message = msg_to_mux()

@@ -59,6 +59,7 @@ function Viewmodel() {
 	self.numClones = ko.observable(1);
 	self.assocRuleKey = ko.observable("");
 	self.assocRuleVal = ko.observable("");
+	self.networkList = ko.observableArray([]);
 
 	//============================= Login Page Variables ====================================
 	self.user = ko.observable("");
@@ -653,7 +654,7 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		self.current_screen("selection_screen");
-		self.getNetworkList(); //for testing purposes
+		//self.getNetworkList(); //for testing purposes
 		self.bonsaidList = null;
 	}
 
@@ -1002,12 +1003,12 @@ function Viewmodel() {
 		Notes: This function will have to wait on the Mux to pass the message on to CoMPES, get a
 			   response, and send the response back here before continuing
 		*/
-		//alert("http://127.0.0.1:8080/" + routing);
 		$.ajax({url: "http://127.0.0.1:8080/" + routing,
-				type: 'get',
-				contentType: 'application/json',
+				type: 'POST',
+				contentType: 'application/json; charset=UTF-8',
 				data: message,
 				dataType: 'json',
+				processData: false,
 				success: successFunc,
 				error: errorFunc
 		});
@@ -1021,13 +1022,20 @@ function Viewmodel() {
 		Output: N/A
 		Notes: If the ID and password are accepted, transitions to the Network Selection screen.
 			   If not, notifies the user to try again.
+			   If the login is successful, the success function receives a list of networks
+			   associated with this user.
 		*/
-		var message = JSON.stringify({"userID":name, "userPass":pass});
+		var message = JSON.stringify('{"User-ID":name, "User-Password":pass}');
+		alert("start");
 		self.sendMessage("connect", message,
-						 function() { alert("login success"); self.gotoSelection(); },
-						 function() {
-							alert("Username and/or password not recognized.\nPlease try again.");
-						 });
+			function(response) {
+				if(response["error"]) {
+					alert("Login failed");
+				}
+				else alert("success: " + JSON.stringify(response));},
+			function(response, stat, disc) {alert("Error: " + disc);}
+		);
+		alert("finish");
 	};
 
 	self.sendRegister = function(name, pass) {
@@ -1043,28 +1051,6 @@ function Viewmodel() {
 		self.sendMessage(jsonParam,
 						 function() {},
 						 function() {});
-	};
-
-	self.getNetworkList = function() {
-		/*
-		Author: Trenton Nale
-		Discription: Requests a list of networks from CoMPES, calls selectionFillList on the response
-		Input: N/A
-		Output: N/A
-		Notes: If the request fails, logs the error information to the console
-		var jsonParam = JSON.stringify({'rest-method':'get', 'path':paths['allNetworks'], 'data':[]});
-		this.sendMessage(jsonParam,
-						 function(response) { alert(response); },
-						 function(response, stat, description) {
-							console.log("Requesting network list failed because: " + response +
-							", and " + stat + ", and " + description);
-						 });
-		*/
-		var message = JSON.stringify({'User-ID':self.user(), 'User-Password':self.pass()});
-		self.sendMessage("connect", message,
-			function (response) {alert("success: " + response);},
-			function(response, stat, disc) {alert("Error: " + disc);}
-		);
 	};
 
 	self.connectToNetwork = function(selectedNetwork) {
