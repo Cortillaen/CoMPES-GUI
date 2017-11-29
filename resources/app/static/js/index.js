@@ -5,7 +5,7 @@ const fs = require('fs');
 var twistedClient;
 var child_process = require('child_process')
 
-const paths = {login:"/login", allNetworks:"/networks/all"}
+//const paths = {login:"/login", allNetworks:"/networks/all"}
 
 //######################################## VIEWMODEL ########################################
 function Viewmodel() {
@@ -57,6 +57,7 @@ function Viewmodel() {
 	self.path = path.join(electron.remote.app.getPath('userData'), 'CoMPES_GUI.json');
 	self.temp = [ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable("")];
 	self.index = ko.observable("");
+	self.numClones = ko.observable(1);
 
 	//============================= Login Page Variables ====================================
 	self.user = ko.observable("");
@@ -193,6 +194,44 @@ function Viewmodel() {
 			this.ACUs.push(new ACU(this));
 			self.bonsai();
 			self.selectedItem(this.ACUs.slice(-1)[0]);
+		};
+
+		this.cloneACU = function() {
+
+			var source = self.selectedItem();
+			for(var i = 0; i < self.numClones(); i++) {
+				this.ACUs.push(new ACU(this));
+				self.selectedItem(this.ACUs.slice(-1)[0]);
+				//self.selectedItem().id(source.id() + self.counter);
+				self.selectedItem().loc(source.loc());
+				self.selectedItem().classification(source.classification());
+				self.selectedItem().guid(source.guid());
+				self.selectedItem().get(source.get());
+				self.selectedItem().raw_states = ko.observableArray([]);
+				for(var j = 0; j < source.raw_states().length; j++) {
+					self.selectedItem().raw_states.push(source.raw_states()[j]);
+				}
+				self.selectedItem().defined_states = ko.observableArray([]);
+				for(var j = 0; j < source.defined_states().length; j++) {
+					self.selectedItem().defined_states.push(source.defined_states()[j]);
+				}
+				self.selectedItem().actions = ko.observableArray([]);
+				for(var j = 0; j < source.actions().length; j++) {
+					self.selectedItem().actions.push(source.actions()[j]);
+				}
+				self.selectedItem().execute = ko.observableArray([]);
+				for(var j = 0; j < source.execute().length; j++) {
+					self.selectedItem().execute.push(source.execute()[j]);
+				}
+				self.selectedItem().interpreter_type = ko.observable("");
+				self.selectedItem().semantic_links = ko.observableArray([]);
+				for(var j = 0; j < source.semantic_links().length; j++) {
+					self.selectedItem().semantic_links.push(source.semantic_links()[j]);
+				}
+				self.selectedItem().parent = source.parent;
+			}
+			self.selectedItem(self.selectedItem());
+			self.bonsai();
 		};
 
 		this.removeACU = function(acu) {

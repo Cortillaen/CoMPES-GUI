@@ -90,7 +90,7 @@ class CoMPES_WebSocket_Factory(WebSocketClientFactory):
 @app.route('/<opt>')
 def multiplexer(opt):
 	#This function builds the web multiplexor for the electron backend
-	response = "Default"
+	message = "Default"
 	
 	#Connect to CoMPES Provisioning Server
 	if(opt == "connect"):
@@ -104,9 +104,9 @@ def multiplexer(opt):
 
 			buildConnection(CoMPES_address, userID, userPass)
 			connectWS(factory)
-			response = msg_to_mux()
+			message = msg_to_mux()
 		except:
-			response = jsonify({'error':'Error: Connection to CoMPES failed'})
+			message = jsonify({'error':'Error: Connection to CoMPES failed'})
 	
 	#Send an NDF to CoMPES	
 	elif(opt == "def-1"):
@@ -128,10 +128,10 @@ def multiplexer(opt):
 			#Send recieved NDF to CoMPES
 			putMSG("mux_to_ws", NDF)
 			
-			#Response from server
-			response = msg_to_mux()
+			#message from server
+			message = msg_to_mux()
 		except:
-			response = "Error: Failed to send the NDF"
+			message = "Error: Failed to send the NDF"
 	
 	#Send an Edited NDF to CoMPES	
 	elif(opt == "def-2"):
@@ -153,10 +153,10 @@ def multiplexer(opt):
 			#Send recieved NDF to CoMPES
 			putMSG("mux_to_ws", NDF)
 			
-			#Response from server
-			response = msg_to_mux()
+			#message from server
+			message = msg_to_mux()
 		except:
-			response = "Error: Failed to send the edited NDF"
+			message = "Error: Failed to send the edited NDF"
 			
 	#Remove a network
 	elif(opt == "def-3"):
@@ -176,10 +176,10 @@ def multiplexer(opt):
 			#Send recieved request to CoMPES
 			putMSG("mux_to_ws", request)
 			
-			#Response from server
-			response = msg_to_mux()
+			#message from server
+			message = msg_to_mux()
 		except:
-			response = "Error: Failed to send request to delete network."
+			message = "Error: Failed to send request to delete network."
 			
 	#Toggle Policy Mode
 	elif(opt == "int-1"):
@@ -198,10 +198,10 @@ def multiplexer(opt):
 			#Send recieved request to CoMPES
 			putMSG("mux_to_ws", request)
 			
-			#Response from server
-			response = msg_to_mux()
+			#message from server
+			message = msg_to_mux()
 		except:
-			response = "Error: Failed to send policy mode request"
+			message = "Error: Failed to send policy mode request"
 	
 	#Toggle Manual mode
 	elif(opt == "int-2"):
@@ -220,8 +220,8 @@ def multiplexer(opt):
 			#Send recieved request to CoMPES
 			putMSG("mux_to_ws", request)
 			
-			#Response from server
-			response = msg_to_mux()
+			#message from server
+			message = msg_to_mux()
 		except:
 			repsonse = "Error: Failed to send a manual mode request"
 			
@@ -242,10 +242,10 @@ def multiplexer(opt):
 			#Send recieved command to CoMPES
 			putMSG("mux_to_ws", request)
 			
-			#Response from server
-			response = msg_to_mux()
+			#message from server
+			message = msg_to_mux()
 		except:
-			response = "Error: Failed to send command"
+			message = "Error: Failed to send command"
 	
 	#Get an NDF
 	elif(opt == "obs-1"):
@@ -269,10 +269,10 @@ def multiplexer(opt):
 			#Send recieved NDF to client
 			putMSG("mux_to_ws", request)
 			
-			#Response from server
-			response = msg_to_mux()
+			#message from server
+			message = msg_to_mux()
 		except:
-			response = "Error: Failed to fetch an NDF"
+			message = "Error: Failed to fetch an NDF"
 	
 	#Get a CVO
 	elif(opt == "obs-2"):
@@ -291,10 +291,10 @@ def multiplexer(opt):
 			#Send recieved request to CoMPES
 			putMSG("mux_to_ws", request)
 			
-			#Response from server
-			response = msg_to_mux()
+			#message from server
+			message = msg_to_mux()
 		except:
-			response = "Error: Failed to fetch a CVO"
+			message = "Error: Failed to fetch a CVO"
 	
 	#Get a collection of ACUs
 	elif(opt == "obs-3"):
@@ -313,10 +313,10 @@ def multiplexer(opt):
 			#Send recieved request to CoMPES
 			putMSG("mux_to_ws", request)
 			
-			#Response from server
-			response = msg_to_mux()
+			#message from server
+			message = msg_to_mux()
 		except:
-			response = "Error: Failed to fetch the Collection"
+			message = "Error: Failed to fetch the Collection"
 			
 	#Fetching an ACU
 	elif(opt == "obs-4"):
@@ -335,10 +335,10 @@ def multiplexer(opt):
 			#Send recieved request to CoMPES
 			putMSG("mux_to_ws", request)
 			
-			#Response from server
-			response = msg_to_mux()
+			#message from server
+			message = msg_to_mux()
 		except:
-			response = "Error: Failed to fetch an ACU"
+			message = "Error: Failed to fetch an ACU"
 	
 	#Get the network status
 	elif(opt == "obs-5"):
@@ -357,22 +357,22 @@ def multiplexer(opt):
 			#Send recieved request to CoMPES
 			putMSG("mux_to_ws", request)
 			
-			#Response from server
-			response = msg_to_mux()
+			#message from server
+			message = msg_to_mux()
 		except:
-			response = "Error: Failed to get the network status"
+			message = "Error: Failed to get the network status"
 	
 	#Disconnect from CoMPES
 	elif(opt == "disconnect"):
 		try:
 			factory.closeCoMPESConnection()
-			response = "Disconnected from CoMPES"
+			message = "Disconnected from CoMPES"
 			username = ""
 		except:
-			response = "Error: Failed to connect to CoMPES"
+			message = "Error: Failed to connect to CoMPES"
 	
-	#Send the response back to the client
-	return response
+	#Send the message back to the client
+	return message
 
 
 #====================================Mux Proxy==================================

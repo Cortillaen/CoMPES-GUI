@@ -11,6 +11,7 @@
 			font-family: 'Effra', "Helvetica Neue",Arial,sans-serif;
 			background-image: url("../images/background3.png");
 			font-size: 1.2em;
+			height: 100%;
 		}
 		h1 {
 			font-family: 'Effra',"Helvetica Neue",Arial,sans-serif;
@@ -216,4 +217,17 @@ ol > li > span {
 
 #graphArea {
 	text-align: center;
+}
+
+#cloneSpinner {
+	width: 80px;
+}
+
+.pagePanel {
+	height: -webkit-calc(100% - 50px);
+	background-color: transparent;
+}
+
+html {
+	height: 100%;
 }

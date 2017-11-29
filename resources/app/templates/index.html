@@ -41,7 +41,7 @@
       </div>
     </nav>
 
-    <div id="screen_holder" data-bind="template: {name: operation_screen}">
+    <div id="screen_holder" data-bind="template: {name: operation_screen}" style="height: -webkit-calc(100% - 52px);">
       <!-- This div is where each "screen" slots in when selected to display to the user.
       -->
     </div>
@@ -58,6 +58,7 @@
 
   <!-- Login Screen -->
   <script type="text/html" id="login_screen">
+  <div class="pagePanel">
     <div class="page-header"><h1> Login to CoMPES </h1></div>
     <div class="loginCont">
       <form id="form-group">
@@ -78,11 +79,13 @@
     <div>
       <img class="center-block" src="../static/images/logoBigE.png">
     </div>
+  </div>
   </script>
   <!-- End of Login Screen -->
 
   <!-- Network Selection Screen -->
   <script type="text/html" id="selection_screen">
+  <div class="pagePanel">
     <div class="container text-center">
       <div class="page-header"><h1>Network Selection</h1></div>
 
@@ -119,29 +122,31 @@
     </div>
       </div>
     </div>
+  </div>
   </script>
   <!-- End of Network Selection Screen -->
 
   <!-- Network Frame - includes a sidebar displaying the network structure and an area for the main part
        of each screen. -->
   <script type="text/html" id="network_frame">
-      <div class="col-sm-3 sidenav" style="text-align:left;height:100%;position:absolute;float:right;border-style:solid;border-radius:20px">
-        <ol id='network_hierarchy' data-name='test'>
-          <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, css: {selected: $root.networkObject.isActive()}"></span>
-            <ol><!-- ko foreach: { data: networkObject.Hubs } -->
-              <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span>
-                <ol><!-- ko foreach: { data: $data.ACUs } -->
-                  <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span></li>
-                <!-- /ko --></ol>
-              </li>
-            <!-- /ko --></ol>
-          </li>
-        </ol>
-      </div>
-      <div class="col-sm-9" id="network_screen_holder" data-bind="template: {name: operation_subscreen}" style="float:right;">
-        Interactive visualization of currently-selected level
-      </div>
-
+  <div class="pagePanel" style="height: 100%;">
+    <div class="col-sm-3 sidenav" style="text-align:left;height:-webkit-calc(100% - 52px);position:absolute;float:right;border-style:solid;border-radius:20px">
+      <ol id='network_hierarchy' data-name='test'>
+        <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, css: {selected: $root.networkObject.isActive()}"></span>
+          <ol><!-- ko foreach: { data: networkObject.Hubs } -->
+            <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span>
+              <ol><!-- ko foreach: { data: $data.ACUs } -->
+                <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span></li>
+              <!-- /ko --></ol>
+            </li>
+          <!-- /ko --></ol>
+        </li>
+      </ol>
+    </div>
+    <div class="col-sm-9" id="network_screen_holder" data-bind="template: {name: operation_subscreen}" style="float:right; height:100%;">
+      Interactive visualization of currently-selected level
+    </div>
+  </div>
   </script>
   <!-- End of Network Frame -->
 
@@ -178,16 +183,17 @@
 
   <!-- Network Definition Screen -->
   <script type="text/html" id="definition_subscreen">
-      <div class="page-header"><h1>Network Definition</h1></div>
-      <div id="config-menu" data-bind="template: {name: 'definition_part', data: selectedItem}" class="well well-lg">
-          <!-- The desired configuration will be placed into this template.-->
+  <div style="height: 100%;float: right;width: 100%;">
+    <div class="page-header"><h1>Network Definition</h1></div>
+    <div id="config-menu" data-bind="template: {name: 'definition_part', data: selectedItem}" class="well well-lg" style="max-height: none; height: -webkit-calc(100% - 212px); width: 100%;">
+        <!-- The desired configuration will be placed into this template.-->
+    </div>
+    <form class="form-group" data-bind="submit: buildNDF">
+      <div>
+        <button class="btn btn-default" data-bind="click: saveNDFToFile">Save to File</button>
+        <button class="btn btn-default" data-bind="click: loadNDF">Load from File</button>
       </div>
-      <form class="form-group" data-bind="submit: buildNDF">
-        <div>
-          <button class="btn btn-default" data-bind="click: saveNDFToFile">Save to File</button>
-          <button class="btn btn-default" data-bind="click: loadNDF">Load from File</button>
-        </div>
-      </form>
+    </form>
   </script>
 
   <script type="text/html" id="definition_part">
@@ -207,7 +213,7 @@
       </fieldset>
     </div>
     <button class="btn btn-primary" data-bind="click: $data.addHub">Add Hub</button-->
-<table class="table table-bordered">
+  <table class="table table-bordered">
     <tr>
         <td><strong>Network ID: </strong></td>
         <td><input type="text" class="form-control" data-bind="value: network_ID" placeholder="<NETWORK ID>"></td>
@@ -223,12 +229,12 @@
         <td><strong>PE_Algorithm</strong></td>
         <td><select data-bind="options: $root.pe_algorithms, selectedOptions: network_config.PE_Algorithm"></select></td>
     </tr>
-</table>
-<button class="btn btn-primary" data-bind="click: $data.addHub">Add Hub</button>
+  </table>
+  <button class="btn btn-primary" data-bind="click: $data.addHub">Add Hub</button>
     <!-- /ko -->
 
     <!-- ko if: ($data.constructor.name == "Hub") -->
-<table class="table table-bordered">
+  <table class="table table-bordered">
     <tbody>
         <tr>
             <td><strong>HUB ID: </strong></td>
@@ -257,132 +263,136 @@
     <!-- /ko -->
 
     <!-- ko if: ($data.constructor.name == "ACU") -->	
-	<table class="table table-bordered">
-							<tbody>
-								<tr>
-									<td><strong>ACU ID: </strong></td>
-									<td><input type="text" class="form-control" data-bind="value: id" placeholder="<ACU ID>"> </td>
-								</tr>
-								<tr>
-									<td><strong>Location: </strong></td>
-									<td><input type="text" class="form-control" data-bind="value: loc" placeholder="<Location>"> </td>
-								</tr>
-								<tr>
-									<td><strong>GUID: </strong></td>
-									<td><input type="text" class="form-control" data-bind="value: guid" placeholder="<GUID>"> </td>
-								</tr>
-								<tr>
-									<td><strong>Classification: </strong></td>
-									<td><input type="text" class="form-control" data-bind="value: classification" placeholder="<Classification>"> </td>
-								</tr>
-								<tr>
-									<td><strong>GET: </strong></td>
-									<td><input type="text" class="form-control" data-bind="value: get" placeholder="<GET>"> </td>
-								</tr>
-								
-								<tr>
-									<td><strong>Raw States: </strong></td>
-									<td>
-										<div class="well-sm">
-											<ul class="list-inline" data-bind="foreach: raw_states">
-												<li data-bind="text: $data, click: function(data) {$parent.fill(data, 0)}"></li>
-											</ul>
-										</div>
-										<div class="input-group">
-											<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[0]">
-											<span class="input-group-btn">
-												<button class="btn btn-primary" data-bind="click: function() {add_item(raw_states, 0);}">Add</button>
-												<button class="btn btn-primary" data-bind="click: function() {remove_item(raw_states, 0);}">Remove</button>
-											</span>
-										</div>
-									</td>
-								</tr>
-								
-								<tr>
-									<td><strong>Defined States: </strong></td>
-									<td>
-										<div class="well-sm">
-											<ul class="list-inline" data-bind="foreach: defined_states">
-												<li data-bind="text: $data, click: function(selected) {$parent.fill(selected, 1);}"></li>
-											</ul>
-										</div>
-										<div class="input-group">
-											<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[1]">
-											<span class="input-group-btn">
-												<button class="btn btn-primary" data-bind="click: function() {add_item(defined_states, 1);}">Add</button>
-												<button class="btn btn-primary" data-bind="click: function() {remove_item(defined_states, 1);}">Remove</button>
-											</span>
-										</div>
-									</td>
-								</tr>
-								
-								<tr>
-									<td><strong>Actions: </strong></td>
-									<td>
-										<div class="well-sm">
-											<ul class="list-inline" data-bind="foreach: actions">
-												<li data-bind="text: $data, click: function(selected) {$parent.fill(selected, 2);}"></li>
-											</ul>
-										</div>
-										<div class="input-group">
-											<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[2]">
-											<span class="input-group-btn">
-												
-												<button class="btn btn-primary" data-bind="click: function() {add_item(actions, 2);}">Add</button>
-												<button class="btn btn-primary" data-bind="click: function() {remove_item(actions, 2);}">Remove</button>
-											</span>
-										</div>
-									</td>
-								</tr>
-								
-								<tr>
-									<td><strong>EXECUTE: </strong></td>
-									<td>
-										<div class="well-sm">
-											<ul class="list-inline" data-bind="foreach: execute">
-												<li data-bind="text: $data, click: function(selected) {$parent.fill(selected, 3);}"></li>
-											</ul>
-										</div>
-										<div class="input-group">
-											<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[3]">
-											<span class="input-group-btn">
-												<button class="btn btn-primary" data-bind="click: function() {add_item(execute, 3);}">Add</button>
-												<button class="btn btn-primary" data-bind="click: function() {remove_item(execute, 3);}">Remove</button>
-											</span>
-										</div>
-									</td>
-								</tr>
-								
-								<tr>
-									<td><strong>Semantic Links: </strong></td>
-									<td>
-										<div class="well-sm">
-											<ul class="list-inline" data-bind="foreach: semantic_links">
-												<li data-bind="text: $data, click: function(selected) {$parent.fill(selected, 4);}"></li>
-											</ul>
-										</div>
-										<div class="input-group">
-											<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[4]">
-											<span class="input-group-btn">
-												<button class="btn btn-primary" data-bind="click: function() {add_item(semantic_links, 4);}">Add</button>
-												<button class="btn btn-primary" data-bind="click: function() {remove_item(semantic_links, 4);}">Remove</button>
-											</span>
-										</div>
-									</td>
-								</tr>
-								
-								<tr>
-									<td><strong>Interpreter Type:</strong></td>
-									<td>
-                                        <label>PUSH</label><input type="radio" name="optr" value="PUSH" data-bind="checked: interpreter_type">
-                                        <label>PULL</label><input type="radio" name="optr" value="PULL" data-bind="checked: interpreter_type">
-									</td>
-								</tr>
-							</tbody>
-						</table>
-	<button class="btn btn-primary" data-bind="click: function() {$data.parent.addACU();}">Add Another ACU</button>
-    <button class="btn btn-primary" data-bind="click: function() {$data.parent.removeACU($data);}">Delete This ACU</button>
+      <table class="table table-bordered">
+  			<tbody>
+  				<tr>
+  					<td><strong>ACU ID: </strong></td>
+  					<td><input type="text" class="form-control" data-bind="value: id" placeholder="<ACU ID>"> </td>
+  				</tr>
+  				<tr>
+  					<td><strong>Location: </strong></td>
+  					<td><input type="text" class="form-control" data-bind="value: loc" placeholder="<Location>"> </td>
+					</tr>
+					<tr>
+						<td><strong>GUID: </strong></td>
+						<td><input type="text" class="form-control" data-bind="value: guid" placeholder="<GUID>"> </td>
+					</tr>
+					<tr>
+						<td><strong>Classification: </strong></td>
+						<td><input type="text" class="form-control" data-bind="value: classification" placeholder="<Classification>"> </td>
+					</tr>
+					<tr>
+						<td><strong>GET: </strong></td>
+						<td><input type="text" class="form-control" data-bind="value: get" placeholder="<GET>"> </td>
+					</tr>
+					
+					<tr>
+						<td><strong>Raw States: </strong></td>
+						<td>
+							<div class="well-sm">
+								<ul class="list-inline" data-bind="foreach: raw_states">
+									<li data-bind="text: $data, click: function(data) {$parent.fill(data, 0)}"></li>
+								</ul>
+							</div>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[0]">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" data-bind="click: function() {add_item(raw_states, 0);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {remove_item(raw_states, 0);}">Remove</button>
+								</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td><strong>Defined States: </strong></td>
+						<td>
+							<div class="well-sm">
+								<ul class="list-inline" data-bind="foreach: defined_states">
+									<li data-bind="text: $data, click: function(selected) {$parent.fill(selected, 1);}"></li>
+								</ul>
+							</div>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[1]">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" data-bind="click: function() {add_item(defined_states, 1);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {remove_item(defined_states, 1);}">Remove</button>
+								</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td><strong>Actions: </strong></td>
+						<td>
+							<div class="well-sm">
+								<ul class="list-inline" data-bind="foreach: actions">
+									<li data-bind="text: $data, click: function(selected) {$parent.fill(selected, 2);}"></li>
+								</ul>
+							</div>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[2]">
+								<span class="input-group-btn">
+									
+									<button class="btn btn-primary" data-bind="click: function() {add_item(actions, 2);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {remove_item(actions, 2);}">Remove</button>
+								</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td><strong>EXECUTE: </strong></td>
+						<td>
+							<div class="well-sm">
+								<ul class="list-inline" data-bind="foreach: execute">
+									<li data-bind="text: $data, click: function(selected) {$parent.fill(selected, 3);}"></li>
+								</ul>
+							</div>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[3]">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" data-bind="click: function() {add_item(execute, 3);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {remove_item(execute, 3);}">Remove</button>
+								</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td><strong>Semantic Links: </strong></td>
+						<td>
+							<div class="well-sm">
+								<ul class="list-inline" data-bind="foreach: semantic_links">
+									<li data-bind="text: $data, click: function(selected) {$parent.fill(selected, 4);}"></li>
+								</ul>
+							</div>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[4]">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" data-bind="click: function() {add_item(semantic_links, 4);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {remove_item(semantic_links, 4);}">Remove</button>
+								</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td><strong>Interpreter Type:</strong></td>
+						<td>
+              <label>PUSH</label><input type="radio" name="optr" value="PUSH" data-bind="checked: interpreter_type">
+              <label>PULL</label><input type="radio" name="optr" value="PULL" data-bind="checked: interpreter_type">
+  					</td>
+  				</tr>
+  			</tbody>
+  		</table>
+    	<button class="btn btn-primary" data-bind="click: function() {$data.parent.addACU();}">Add Another ACU</button>
+      <button class="btn btn-primary" data-bind="click: function() {$data.parent.removeACU($data);}">Delete This ACU</button>
+      <label>&nbsp&nbsp&nbsp&nbsp</label>
+      <button class="btn btn-primary" data-bind="click: function() {$data.parent.cloneACU();}">Clone This ACU</button>
+      <label>Clones:&nbsp</label><input type="number" id="cloneSpinner" min="1" step="1" value="1" data-bind="value: $root.numClones">
     <!-- /ko -->
+    </div>
   </script>
 
   <!-- End of Network Definition Page -->
