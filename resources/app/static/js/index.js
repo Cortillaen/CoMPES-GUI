@@ -9,7 +9,7 @@ var child_process = require('child_process')
 
 //######################################## VIEWMODEL ########################################
 function Viewmodel() {
-    
+
 	//============================= Data Bindings & Variables ===============================
 	var self = this;
 	self.current_screen = ko.observable("login_screen"); //single point of update for current screen
@@ -46,7 +46,6 @@ function Viewmodel() {
 			return "map_subscreen";
 	}, self);
 
-	self.pe_algorithms = ko.observableArray(['None', 'algorithm1', 'algorithm2']);
 	self.interpreter_types = ko.observableArray(['PUSH', 'PULL']);
 
 	self.networkObject = new NetworkObject();
@@ -62,7 +61,7 @@ function Viewmodel() {
 	//============================= Login Page Variables ====================================
 	self.user = ko.observable("");
 	self.pass = ko.observable("");
-	
+
 	//============================== Map View Variables =====================================
 	self.mapData = null;
 	self.mapMode = ko.observable("architecture");
@@ -115,7 +114,7 @@ function Viewmodel() {
 			else
 				return false;
 		};
-		
+
 		this.add_item = function(list, index) {
 			/*
 			Author: Derek Lause
@@ -134,7 +133,7 @@ function Viewmodel() {
 		}
 		else {alert("You must enter a name to add a state.");}
 		};
-		
+
 		this.remove_item = function(list, index) {
 			/*
 			Author: Trenton Nale
@@ -153,7 +152,7 @@ function Viewmodel() {
 		}
 		else {alert("You must enter a name to remove a state.");}
 		};
-		
+
 		this.fill = function(selected, i) {
 			/*
 			Author: Trenton Nale
@@ -165,7 +164,7 @@ function Viewmodel() {
 			*/
 			self.temp[i](selected);
 		};
-	
+
 	}
 
 	function Hub(parent) {
@@ -179,7 +178,7 @@ function Viewmodel() {
 		*/
 		this.id = ko.observable("Hub name" + self.counter.toString());
 		this.hub_config = {"import" : ko.observable(""), "status" : ko.observable(""), "phrase": ko.observable("")};
-		this.ACUs = ko.observableArray([]);
+		this.acus = ko.observableArray([]);
 		this.parent = parent;
 		self.counter += 1;
 
@@ -191,9 +190,9 @@ function Viewmodel() {
 			Output: N/A
 			Notes: N/A
 			*/
-			this.ACUs.push(new ACU(this));
+			this.acus.push(new ACU(this));
 			self.bonsai();
-			self.selectedItem(this.ACUs.slice(-1)[0]);
+			self.selectedItem(this.acus.slice(-1)[0]);
 		};
 
 		this.cloneACU = function() {
@@ -243,7 +242,7 @@ function Viewmodel() {
 			Notes: N/A
 			*/
 			self.selectedItem(this);
-			this.ACUs.remove(acu);
+			this.acus.remove(acu);
 			self.bonsai();
 		};
 
@@ -272,8 +271,8 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.network_ID = ko.observable("Network Name");
-		this.network_config = {"PES_Mode" : ko.observable(""), "PE_Algorithm" : ko.observable(self.pe_algorithms()[0])};
-		this.Hubs = ko.observableArray([]);
+		this.network_config = {"PES_Mode" : ko.observable(""), "PE_Algorithm" : ko.observable("")};
+		this.hubs = ko.observableArray([]);
 
 		this.addHub = function() {
 			/*
@@ -283,9 +282,9 @@ function Viewmodel() {
 			Output: N/A
 			Notes: N/A
 			*/
-			this.Hubs.push(new Hub(this));
+			this.hubs.push(new Hub(this));
 			self.bonsai();
-			self.selectedItem(this.Hubs.slice(-1)[0]);
+			self.selectedItem(this.hubs.slice(-1)[0]);
 		};
 
 		this.removeHub = function(hub) {
@@ -297,7 +296,7 @@ function Viewmodel() {
 			Notes: N/A
 			*/
 			self.selectedItem(this);
-			this.Hubs.remove(hub);
+			this.hubs.remove(hub);
 			self.bonsai();
 		};
 
@@ -315,7 +314,7 @@ function Viewmodel() {
 				return false;
 		};
 	}
-    
+
     /* =========================== End of Data Structures =================================*/
 
 	function replacer(key, value) {
@@ -330,7 +329,7 @@ function Viewmodel() {
 		if (key == "parent") return undefined;
 		else return value;
 	}
-	
+
 	function d3Data(nodesInput, linksInput) {
 		/*
 		Author: Tim Roth
@@ -344,12 +343,12 @@ function Viewmodel() {
 		var svg = d3.select("svg");
 		var width = +svg.attr("width");
 		var height = +svg.attr("height");
-		
+
 		var radius = 15;
-		
+
 		var nodes_data = nodesInput;
 		var links_data = linksInput;
-		
+
 		var simulation = d3.forceSimulation().nodes(nodes_data);
 		var link_force = d3.forceLink(links_data).id(function(d) {return d.name;});
 		var charge_force = d3.forceManyBody().strength(-1400);
@@ -358,25 +357,25 @@ function Viewmodel() {
 			.force("charge_force", charge_force)
 			.force("center_force", center_force)
 			.force("link", link_force);
-		
-		var div = d3.select("body").append("div")   
+
+		var div = d3.select("body").append("div")
 		    .attr("class", "tooltip")
 		    .style("opacity", 0);
-		
-		//add tick instructions: 
+
+		//add tick instructions:
 		simulation.on("tick", tickActions );
 
-		//add encompassing group for the zoom 
+		//add encompassing group for the zoom
 		var g = svg.append("g")
 			.attr("class", "everything");
 
-		//draw lines for the links 
+		//draw lines for the links
 		var links = g.selectAll("links")
 			.data(links_data)
 			.enter()
 			.append("line")
 			.attr("stroke-width", 2)
-			.style("stroke", linkColour);        
+			.style("stroke", linkColour);
 
 		var gnodes = g.selectAll("gnode")
 		    .data(nodes_data)
@@ -384,7 +383,7 @@ function Viewmodel() {
 		    .append("g")
 		    .classed("gnode", true);
 
-		//draw circles for the nodes 
+		//draw circles for the nodes
 		var node = gnodes.append("circle")
 			.attr("class", "node")
 			.attr("r", radius)
@@ -402,17 +401,17 @@ function Viewmodel() {
             .attr("text-anchor", "middle")
             .style("font-size", "100%")
     		.text(function(d) { return d.name; });
-		 
-		/*//add drag capabilities  
+
+		/*//add drag capabilities
 		var drag_handler = d3.drag()
 			.on("start", drag_start)
 			.on("drag", drag_drag)
-			.on("end", drag_end);	
-			
+			.on("end", drag_end);
+
 		drag_handler(node);*/
 
 
-		//add zoom capabilities 
+		//add zoom capabilities
 		var zoom_handler = d3.zoom()
 			.on("zoom", zoom_actions);
 
@@ -438,8 +437,8 @@ function Viewmodel() {
 				return "orange";
 		}
 
-		/*//Drag functions 
-		//d is the node 
+		/*//Drag functions
+		//d is the node
 		function drag_start(d) {
 		 if (!d3.event.active) simulation.alphaTarget(0.3).restart();
 			d.fx = d.x;
@@ -458,18 +457,18 @@ function Viewmodel() {
 		  d.fy = null;
 		}*/
 
-		//Zoom functions 
+		//Zoom functions
 		function zoom_actions(){
 			g.attr("transform", d3.event.transform)
 		}
 
 		function tickActions() {
-			//update circle positions each tick of the simulation 
+			//update circle positions each tick of the simulation
 			node
 				.attr("cx", function(d) { return d.x; })
 				.attr("cy", function(d) { return d.y; });
-				
-			//update link positions 
+
+			//update link positions
 			links
 				.attr("x1", function(d) { return d.source.x; })
 				.attr("y1", function(d) { return d.source.y; })
@@ -479,7 +478,7 @@ function Viewmodel() {
 			label
 				.attr("dx", function(d) { return d.x; })
 				.attr("dy", function(d) { return d.y - radius - 2; });
-		} 
+		}
 	}
 
 	//=================================General Functions=====================================
@@ -671,7 +670,7 @@ function Viewmodel() {
 		*/
 		self.setupMap();
 	}
-	
+
 	self.switchMapMode = function() {
 		/*
 		Author: Trenton Nale
@@ -681,12 +680,12 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		self.mapMode((self.mapMode() == "architecture") ? "semantic" : "architecture");
-		
+
 		// CLEAR MAP
-		
+
 		self.setupMap();
 	}
-	
+
 	self.setupMap = function() {
 		/*
 		Author: Trenton Nale
@@ -698,7 +697,7 @@ function Viewmodel() {
 		*/
 		var nodes_data = [];
 		var links_data = [];
-		
+
 		//clear map if it's already drawn
 		if(self.mapData) {
 			d3.selectAll("svg > *").remove();
@@ -756,7 +755,7 @@ function Viewmodel() {
 		self.mapData = new d3Data(nodes_data, links_data);
 		//return([nodes_data, links_data]);
 	}
-	
+
 	/*self.setupMap = function() {
 		/*
 		Author: Trenton Nale
@@ -768,7 +767,7 @@ function Viewmodel() {
 		var graphData = self.makeGraphData();
 		self.mapData = new d3Data(graphData[0], graphData[1]);
 	}*/
-	
+
 	//-------------------------------- Informational View ------------------------
 	self.gotoInformational = function() {
 		/*
@@ -839,6 +838,17 @@ function Viewmodel() {
 		return hub.isActive() ?  "active" : "inactive";
 	}
 
+	self.isEmpty = function(array) {
+			var isEmpty;
+			if (array.length == 0) {
+				isEmpty = true;
+			}
+			else {
+				isEmpty = false;
+			}
+			return isEmpty;
+	}
+
 	self.buildNDF = function() {
 		/*
 		Author: Derek Lause
@@ -850,7 +860,7 @@ function Viewmodel() {
 			Otherwise, the HTML fields will be blank and the filled out information will be sent to CoMPES
 		*/
 		//network configs and empty hub set
-		var network = 
+		var network =
 		{
 			"Network Config": {
 				"User-ID": self.user(),
@@ -860,19 +870,44 @@ function Viewmodel() {
 			},
 			"Hubs":{}
 		};
-		
+
 		//for each hub, add it to the array of hubs
-		self.networkObject.hubs.foreach(function(hub) {
-			network[Hubs][hub.id()] = {
-				/*"Hub Config" : {
-					"STATUS" : 
-					"Imports" :
-					"Phrase-relatedness" : 
-				}*/
-			};
-		});
-		// return ko.toJSON(this.networkObject, replacer);
+		ko.utils.arrayForEach(self.networkObject.hubs(), function(hub) {
+		    network["Hubs"][hub.id()] = {
+					"Hub Config" : {
+						"STATUS" : hub.hub_config.status(),
+						"Imports" : hub.hub_config.import(),
+						"Phrase-relatedness" : hub.hub_config.phrase()
+		     },
+		     "ACUs" : {}
+		     };
+		ko.utils.arrayForEach(hub.acus(), function(acu) {
+		     network["Hubs"][hub.id()]["ACUs"][acu.id()] = {
+		                    "Defined States" : self.isEmpty(acu.defined_states()) ? "NA" : acu.defined_states(),
+												"Classification" : acu.classification(),
+												"GET" : acu.get(),
+												"EXECUTE" : self.isEmpty(acu.execute()) ? "NA" : acu.execute(),
+												"Interpreter Type" : acu.interpreter_type(),
+												"Actions" : self.isEmpty(acu.actions()) ? "NA" : acu.actions(),
+												"Raw States" : self.isEmpty(acu.raw_states()) ? "NA" : acu.raw_states(),
+												"Location" : acu.loc(),
+												//"Full ACU-ID" :
+												"GUID" : acu.guid(),
+												//"Associative Rules" :
+												"Semantic Links" : self.isEmpty(acu.semantic_links()) ? "NA" : acu.semantic_links(),
+		                }
+		            });
+		        });
+
+		return network;
+
 	};
+
+	self.outputNDF = function() {
+		var testnet = self.buildNDF();
+		var test = JSON.stringify(testnet);
+		console.log(test);
+	}
 
 	self.saveNDFToFile = function() {
 		fs.writeFileSync(self.path, ko.toJSON(this.networkObject, replacer));
@@ -887,7 +922,7 @@ function Viewmodel() {
 		Output: HTML form fields for a new hub to be added
 		Notes: Dynamic form fields need to be accessed properly to define the network correctly
 		*/
-		self.networkObject.Hubs.push(new Hub());
+		self.networkObject.hubs.push(new Hub());
 		self.bonsai();
 	};
 
@@ -897,7 +932,7 @@ function Viewmodel() {
     }
 
     self.acuButton = function() {
-        self.networkObject.Hubs().addACU();
+        self.networkObject.hubs().addACU();
 				self.current_screen("definition_screen_acu");
     }
 
