@@ -61,6 +61,7 @@ function Viewmodel() {
 	self.assocRuleVal = ko.observable("");
 	self.loggedIn = false;
 	self.creationMode = null;
+	self.offlineMode = false;
 	self.networkList = ko.observableArray([]);
 
 	//============================= Login Page Variables ====================================

@@ -36,11 +36,11 @@
           <li><a data-bind="click: gotoDefinition">Definition Screen</a></li>
 		  
         </ul>
-        <ul class="nav navbar-nav navbar-right" style="padding-right: 15px">
+        <!--<ul class="nav navbar-nav navbar-right" style="padding-right: 15px">
 		<li><button id="myBtn" class="btn btn-danger navbar-btn">Register Now!</button></li>
 		</ul>
 		<div class="divider">
-		</div>
+		</div>-->
 		 <ul class="nav navbar-nav navbar-right" style="padding-right: 15px">
          <li><button class="btn btn-danger navbar-btn" data-bind="click: gotoLogin">Login</button></li>
         </ul>
@@ -86,7 +86,7 @@
 
 </div>
 
-<script>
+<script>/*
 // Get the modal
 var modal = document.getElementById('myModal');
 
@@ -111,7 +111,7 @@ window.onclick = function(event) {
     if (event.target == modal) {
         modal.style.display = "none";
     }
-}
+}*/
 </script>
       </div>
     </nav>
@@ -146,17 +146,17 @@ window.onclick = function(event) {
     <div class="loginCont">
       <form id="form-group">
         <div class="form-group">
-          <span class = "glyphicon glyphicon-user"></span><label>:</label>
+          <span class = "glyphicon glyphicon-user"></span><label>User ID:</label>
           <input type="text" id="username" name="usr" value="" class="form-control">
         </div>
         <div class="form-group">
-          <span class = "glyphicon glyphicon-lock"></span><label>:</label>
+          <span class = "glyphicon glyphicon-lock"></span><label>Password:</label>
           <input type="password" id="password" name="pw" value="" class="form-control">
         </div>
       </form>
       <div class="btn-group">
-        <button id="register" type="button" data-bind="click: register" class="btn btn-primary">Register Now!</button>
-        <button id="login" type="button" data-bind="click: signIn" class ="btn btn-primary">Login to GUI</button><br/>
+        <button id="login" type="button" data-bind="click: signIn" class ="btn btn-primary">Login</button>
+        <button id="register" type="button" data-bind="click: register" class="btn btn-primary">Add User</button><br/>
         <input type="checkbox" name="offline" data-bind="checked: offlineMode">Run in Offline Mode
       </div>
 		</div>
@@ -175,7 +175,6 @@ window.onclick = function(event) {
 	Input: N/A
 	Output: 
 	Notes: N/A
-			*/
 			-->
   <script type="text/html" id="selection_screen">
   <div class="pagePanel">
@@ -222,8 +221,10 @@ window.onclick = function(event) {
   </script>
   <!-- End of Network Selection Screen -->
 
-  <!-- Network Frame - includes a sidebar displaying the network structure and an area for the main part
-       of each screen. -->
+  <!-- Network Frame
+       Author: Trenton Nale
+       Description: A sidebar displaying the network structure and an area for the main part of each screen.
+  -->
   <script type="text/html" id="network_frame">
   <div class="pagePanel" style="height: 100%;">
     <div class="col-sm-3 sidenav" style="text-align:left;height:-webkit-calc(100% - 52px);position:absolute;float:right;border-style:solid;border-radius:20px">
@@ -245,7 +246,10 @@ window.onclick = function(event) {
   </script>
   <!-- End of Network Frame -->
 
-  <!-- Map Screen -->
+  <!-- Map Screen
+       Author: Trenton Nale
+       Description: Displays graph representation of selected network
+  -->
   <script type="text/html" id="map_subscreen">
     <div class="page-header"><h1>Map View</h1>
     <div><label>Current mode: </label><label data-bind="text: mapMode"/><button data-bind="click: switchMapMode">Switch map mode</button></div></div>
@@ -278,11 +282,8 @@ window.onclick = function(event) {
 
   <!-- Network Definition Screen
 		Author: Carey James, Josue Portillo
-		Contributor: Trenton Nale, Derek Lause
+		Contributors: Trenton Nale, Derek Lause
 		Description: Add a Network form, Add a Hub form, Add an ACU form
-		Input: Network ID, Hub ID, ACU ID, etc. 
-		Output: N/A
-		Notes: N/A
 			  -->
   <script type="text/html" id="definition_subscreen">
   <div style="height: 100%;float: right;width: 100%;">
@@ -509,7 +510,7 @@ window.onclick = function(event) {
   <!-- End of Network Definition Page -->
 
   <script>
-    // You can also require other files to run in this process
+    // Other files required to run in this process
     require('../static/js/renderer.js')
   </script>
 </html>
