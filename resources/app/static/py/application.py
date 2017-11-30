@@ -116,16 +116,17 @@ def multiplexer(opt):
 			infile = open("testUser_testNetwork.ndf")
 			message["Data"] = infile.read()
 			infile.close()
+			#message["Data"] = requestData
 			#---------------------------
 			
 			#Package message with necessary headers
 			message["Module"] = "Definition"
 			message["Mode"] = "Provision Network"
-			NDF = ujson.dumps(message)
+			message = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
 			#Send recieved NDF to CoMPES
-			putMSG("mux_to_ws", NDF)
+			putMSG("mux_to_ws", message)
 			
 			#message from server
 			message = msg_to_mux()
@@ -133,7 +134,7 @@ def multiplexer(opt):
 			message = "Error: Failed to send the NDF"
 	
 	#Send an Edited NDF to CoMPES	
-	elif(opt == "alterNetwork"):
+	elif(opt == "updateNetwork"):
 		try:
 			message = {}
 			#Recieve NDF from Post body

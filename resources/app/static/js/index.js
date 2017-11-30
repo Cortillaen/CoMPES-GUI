@@ -666,6 +666,7 @@ function Viewmodel() {
 			self.current_screen("selection_screen");
 			//self.getNetworkList(); //for testing purposes
 			self.bonsaidList = null;
+			self.creationMode = null;
 		}
 	};
 
@@ -1045,7 +1046,7 @@ function Viewmodel() {
 			   If the login is successful, the success function receives a list of networks
 			   associated with this user.
 		*/
-		var message = JSON.stringify('{"User-ID":"' + name + '", "User-Password":"' + pass + '", "Register":' + register + '}');
+		var message = JSON.stringify('{"User-ID":"' + name + '", "User-Password":"' + pass + '", "Register":"' + register + '"}');
 		self.sendMessage("connect", message,
 			function(response) {
 				if(response["error"]) {
@@ -1063,7 +1064,7 @@ function Viewmodel() {
 		);
 	};
 
-	self.connectToNetwork = function(selectedNetwork) {
+	//self.connectToNetwork = function(selectedNetwork) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends connection request to CoMPES for the selected network
@@ -1071,12 +1072,12 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		var message = JSON.stringify('{"User-ID":"' + name + '", "Network-ID":' + selectedNetwork + '}');
-		sendMessage("connect", message,
+		/*var message = JSON.stringify('{"User-ID":"' + name + '", "Network-ID":' + selectedNetwork + '}');
+		self.sendMessage("connect", message,
 			function (response) {selectionFillList(response);},
 			function(response, stat, disc) {alert("Error: " + disc);}
 		);
-	};
+	};*/
 
 	self.sendNetwork = function(networkDefinitionFile) {
 		/*
@@ -1086,7 +1087,12 @@ function Viewmodel() {
 		Output: N/A
 		Notes: the NDF should be properly formatted and checked for errors before being passed to this
 		*/
-		alert("This doesn't work yet, but you are in " + (self.creationMode ? "Creation" : "Update") + " Mode.");
+		//alert("This doesn't work yet, but you are in " + (self.creationMode ? "Creation" : "Update") + " Mode.");
+		var message = JSON.stringify('{"User-ID":"' + name + '", "Network-ID":"' + networkDefinitionFile + '"}');
+		self.sendMessage("createNetwork", message,
+			function (response) {alert("No problem here, boss.");},
+			function(response, stat, disc) {alert("Error: " + disc);}
+		);
 	};
 
 	self.removeNetwork = function(networkID) {

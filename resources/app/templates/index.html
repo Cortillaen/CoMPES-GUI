@@ -73,7 +73,8 @@
       </form>
       <div class="btn-group">
         <button id="register" type="button" data-bind="click: register" class="btn btn-primary">Add new user</button>
-        <button id="login" type="button" data-bind="click: signIn" class ="btn btn-primary">Login to GUI</button>
+        <button id="login" type="button" data-bind="click: signIn" class ="btn btn-primary">Login to GUI</button><br/>
+        <input type="checkbox" name="offline" data-bind="checked: offlineMode">Run in Offline Mode
       </div>
     </div>
     <div>
@@ -216,9 +217,9 @@
     <tr>
         <td><strong>PE_Algorithm</strong></td>
         <td>
-          <label>N/A</label><input type="radio" name="optr" value="NA" data-bind="checked: network_config.PE_Algorithm" required>
-          <label>ALGORITHM 1</label><input type="radio" name="optr" value="Algorithm1" data-bind="checked: network_config.PE_Algorithm">
-          <label>ALGORITHM 2</label><input type="radio" name="optr" value="Algorithm2" data-bind="checked: network_config.PE_Algorithm">
+          <label>N/A</label><input type="radio" name="pea" value="NA" data-bind="checked: network_config.PE_Algorithm" required>
+          <label>ALGORITHM 1</label><input type="radio" name="pea" value="Algorithm1" data-bind="checked: network_config.PE_Algorithm">
+          <label>ALGORITHM 2</label><input type="radio" name="pea" value="Algorithm2" data-bind="checked: network_config.PE_Algorithm">
         </td>
     </tr>
   </table>
