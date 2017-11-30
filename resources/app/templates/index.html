@@ -7,10 +7,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="shortcut icon" type="image/x-icon" href="../static/images/logoPicE.png"/>
-	<link rel="stylesheet" href="../static/css/index.css">
+	
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
     <link rel="stylesheet" href="../static/css/jquery.bonsai.css">
-
+	<link rel="stylesheet" href="../static/css/index.css">
 
     <script type="text/javascript">window.$=window.jQuery=require("../static/js/jquery-3.2.1.js"); </script>
     <script src="../static/js/bootstrap.min.js" type="text/javascript"></script>
@@ -37,41 +37,49 @@
 		  
         </ul>
         <ul class="nav navbar-nav navbar-right" style="padding-right: 15px">
-		<li><button id="myBtn" class="btn btn-danger navbar-btn">Add New User</button></li>
+		<li><button id="myBtn" class="btn btn-danger navbar-btn">Register Now!</button></li>
 		</ul>
 		<div class="divider">
 		</div>
 		 <ul class="nav navbar-nav navbar-right" style="padding-right: 15px">
          <li><button class="btn btn-danger navbar-btn" data-bind="click: gotoLogin">Login</button></li>
         </ul>
-<!-- Trigger/Open The Modal -->
+<!--
+	Author: Josue Portillo
+	Contributor: Derek Lause
+	Description: Registation Modal
+	Input: N/A
+	Output: Form with input for a username, password, re-type password
+	Notes: N/A
+			-->
 
-
-<!-- The Modal -->
-<div id="myModal" class="modal">
+	<div id="myModal" class="modal">
 
   <!-- Modal content -->
-  <div class="modal-content">
-    <span class="close">&times;</span>
-	 <h1> Register </h1>
-	<div class="registerCont">
-          <form id="form-group">
+		<div class="modal-content">
+			<span class="close">&times;</span>
+			<h1> Register </h1>
+			<div class="registerCont">
+				<form id="form-group">
         <div class="form-group">
           <label for="username"> Username: </label>
           <input type="text" id="username" name="usr" value="" class="form-control">
         </div>
         <div class="form-group">
           <label for="password"> Password: </label>
-          <input type="text" id="password" name="pw" value="" class="form-control">
+          <input type="password" id="password" name="pw" value="" class="form-control">
         </div>
 		  <div class="form-group">
           <label for="retype-password"> Re-type Password: </label>
-          <input type="text" id="retype-password" name="pw" value="" class="form-control">
+          <input type="password" id="retype-password" name="pw" value="" class="form-control">
         </div>
       
   
 	</form>
-	    <button id ="submit" type="button" class ="btn btn-primary" style="width:100%">Submit</button>
+	    <button id ="submit" type="button" class ="btn btn-primary" style="width:100%; background-color:rgba(0, 128, 0, 0.66);">Submit</button> 
+		<div class="divider"> 
+		</div>
+		<button id ="cancel" type="button" class ="btn btn-primary" style="width:100%; background-color:rgba(255, 0, 0, 0.72);">Cancel</button>
   </div>
 
   </div>
@@ -123,7 +131,14 @@ window.onclick = function(event) {
   <!-- ===========================================Screen Templates=============================================================
     Each screen should be built inside its own script tag so that the resources are loaded but not displayed until needed -->
 
-  <!-- Login Screen -->
+  <!-- Login Screen 
+	Author: Carey James
+	Contributor: Josue Portillo
+	Description: Login Form
+	Input: N/A
+	Output: Boolean response
+	Notes: updated with glyphicon and button sizes. Placed Registration button on navigation bar. -Josue Portillo 
+			 -->
   <script type="text/html" id="login_screen">
 
     <div class="page-header"><h1> Welcome to the CoMPES GUI! </h1></div>
@@ -131,25 +146,18 @@ window.onclick = function(event) {
     <div class="loginCont">
       <form id="form-group">
         <div class="form-group">
-		
           <span class = "glyphicon glyphicon-user"></span><label>:</label>
           <input type="text" id="username" name="usr" value="" class="form-control">
         </div>
         <div class="form-group">
           <span class = "glyphicon glyphicon-lock"></span><label>:</label>
-          <input type="text" id="password" name="pw" value="" class="form-control">
+          <input type="password" id="password" name="pw" value="" class="form-control">
         </div>
       </form>
       <div class="btn-group">
-
-
         <button id="login" type="button" data-bind="click: signIn" class ="btn btn-primary" style="width:500%;position:relative;right:120px;">Login</button>
       </div>
-	 
-	
-
 		</div>
-
     <div>
       <img class="center-block" src="../static/images/logoBigE.png">
     </div>
@@ -158,7 +166,15 @@ window.onclick = function(event) {
   <!-- End of Login Screen -->
 
 
-  <!-- Network Selection Screen -->
+  <!-- Network Selection Screen 
+	Author: Josue Portillo
+	Contributor: 
+	Description: Network selection form
+	Input: N/A
+	Output: 
+	Notes: N/A
+			*/
+			-->
   <script type="text/html" id="selection_screen">
   <div class="pagePanel">
     <div class="container text-center">
@@ -255,7 +271,14 @@ window.onclick = function(event) {
   </script -->
     <!-- End of Informational Screen -->
 
-  <!-- Network Definition Screen -->
+  <!-- Network Definition Screen
+		Author: Carey James, Josue Portillo
+		Contributor: Trenton Nale, Derek Lause
+		Description: Add a Network form, Add a Hub form, Add an ACU form
+		Input: Network ID, Hub ID, ACU ID, etc. 
+		Output: N/A
+		Notes: N/A
+			  -->
   <script type="text/html" id="definition_subscreen">
   <div style="height: 100%;float: right;width: 100%;">
     <div class="page-header"><h1>Network Definition</h1></div>
