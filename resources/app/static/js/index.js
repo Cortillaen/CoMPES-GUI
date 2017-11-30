@@ -104,7 +104,7 @@ function Viewmodel() {
 		this.interpreter_type = ko.observable("");
 		this.semantic_links = ko.observableArray([]);
 		this.associative_rules = ko.observableArray([]);
-		
+
 		this.parent = parent;
 		self.counter += 1;
 
@@ -197,7 +197,7 @@ function Viewmodel() {
 			}
 			else {alert("You must enter both the key and action to remove a rule.");}
 		};
-		
+
 		this.fill_assoc_rule = function(selected) {
 			var temp = selected.split(":");
 			self.assocRuleKey(temp[0]);
@@ -941,9 +941,9 @@ function Viewmodel() {
 												"Actions" : self.isEmpty(acu.actions()) ? "NA" : acu.actions(),
 												"Raw States" : self.isEmpty(acu.raw_states()) ? "NA" : acu.raw_states(),
 												"Location" : acu.loc(),
-												//"Full ACU-ID" :
+												"Full ACU-ID" : "NA",
 												"GUID" : acu.guid(),
-												//"Associative Rules" :
+												"Associative Rules" : self.isEmpty(acu.associative_rules()) ? "NA" : acu.associative_rules(),
 												"Semantic Links" : self.isEmpty(acu.semantic_links()) ? "NA" : acu.semantic_links(),
 		                }
 		            });
