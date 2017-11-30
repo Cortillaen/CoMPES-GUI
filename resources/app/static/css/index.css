@@ -11,6 +11,7 @@
 			font-family: 'Effra', "Helvetica Neue",Arial,sans-serif;
 			background-image: url("../images/background3.png");
 			font-size: 1.2em;
+			height: 100%;
 		}
 		h1 {
 			font-family: 'Effra',"Helvetica Neue",Arial,sans-serif;
@@ -23,6 +24,15 @@
 			
 			border-radius: 8px;
 		}
+		.links line {
+      stroke: #999;
+      stroke-opacity: 0.6;
+    }
+
+    .nodes circle {
+      stroke: black ;
+      stroke-width: 0px;
+    }
 		.loginCont {
 			background: rgba(66, 139, 152, 0.27);
 			border: .25em #5e5e5e;
@@ -141,7 +151,7 @@
 
 		.sidenav {
 			padding-top: 20px;
-			background-color: yellow;
+			background-color: rgba(11, 222, 230, 0.85);
 			height: 100%;
 		}
 
@@ -159,6 +169,17 @@
 				padding: 15px;
 			}
 			.row.content {height:auto;}
+		}
+		
+		div.tooltip {    
+			padding: 4px;             
+			font: 12px sans-serif;        
+			background: lightsteelblue;   
+			border: 1px;      
+			border-radius: 8px;
+    		font-size: 200%;
+    		color: black;
+    		background-color: white;
 		}
 		
 .selectedCont {
@@ -256,3 +277,29 @@ label{
 
 }
 
+ol > li > span {
+	font-size: 120%;
+	padding: 2px 5px 2px 5px;
+}
+
+.selected {
+	border-left-style: solid;
+	border-right-style: solid;
+}
+
+#graphArea {
+	text-align: center;
+}
+
+#cloneSpinner {
+	width: 80px;
+}
+
+.pagePanel {
+	height: -webkit-calc(100% - 50px);
+	background-color: transparent;
+}
+
+html {
+	height: 100%;
+}
