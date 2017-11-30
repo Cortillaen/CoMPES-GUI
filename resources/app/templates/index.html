@@ -53,7 +53,7 @@
   </footer>
   -->
 
-  <!-- ===========================================Screen Templates=============================================================
+  <!-- ========================================== Screen Templates =========================================================
     Each screen should be built inside its own script tag so that the resources are loaded but not displayed until needed -->
 
   <!-- Login Screen -->
@@ -72,7 +72,7 @@
         </div>
       </form>
       <div class="btn-group">
-        <button id="register" type="button" class="btn btn-primary">Add new user</button>
+        <button id="register" type="button" data-bind="click: register" class="btn btn-primary">Add new user</button>
         <button id="login" type="button" data-bind="click: signIn" class ="btn btn-primary">Login to GUI</button>
       </div>
     </div>
@@ -94,7 +94,9 @@
         <div class="col-sm-6 sidenav" style="background-color:rgb(177, 203, 211); border-style:solid;border-radius: 20px;">
 
 			<p> List of Networks: </p>
-			<button onclick="getNetworkList()" id="list" type="button"> Get List of Networks </button>
+      <!-- ko foreach: { data: networkList } -->
+        <p data-bind="text: $data, click: function() {$root.getNetwork($data);}"></p>
+      <!-- /ko -->
 		</div>
 
 
@@ -112,7 +114,8 @@
 				Algorithm:<br>  <textarea id="algorithm" rows="1" cols="35" disabled="disabled"></textarea><br><br>
 
 			</form>
-			<button id="connect" onclick="Connect()" id="list" type="button"> CONNECT </button>
+			<button id="connect" data-bind="click: connect" id="list" type="button"> CONNECT </button>
+      <button id="connect" data-bind="click: create" id="list" type="button"> CREATE NEW </button>
 		</div>
         </div>
     <br>
@@ -190,6 +193,7 @@
     <div>
       <button class="btn btn-default" data-bind="click: saveNDFToFile">Save to File</button>
       <button class="btn btn-default" data-bind="click: loadNDF">Load from File</button>
+      <button class="btn btn-default" data-bind="click: submitNetwork, text: creationMode ? 'Create Network' : 'Update Network'"></button>
       <button class="btn btn-default" data-bind="click: outputNDF">Test network variable</button>
     </div>
   </script>

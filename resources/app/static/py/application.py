@@ -41,12 +41,9 @@ def msg_to_mux():
 def putMSG(queue, msg):
 	queues[queue].put(msg, False)
 	
-def buildConnection(CoMPES_address, userID="", userPass=""):
+def buildConnection(CoMPES_address, userID="", userPass="", reg="false"):
 	global factory
-	if((userID == "") or (userPass == "")):
-		header = {'user-id':'testUser', 'password': 'testtest', 'register':'True'}
-	else:
-		header = {'user-id':userID, 'password':userPass, 'register':'True'}
+	header = {'user-id':userID, 'password':userPass, 'register':reg}
 	factory = CoMPES_WebSocket_Factory(CoMPES_address, header)
 	
 #==================================CoMPES Websocket==============================
@@ -91,8 +88,7 @@ class CoMPES_WebSocket_Factory(WebSocketClientFactory):
 def multiplexer(opt):
 	#This function builds the web multiplexor for the electron backend
 	message = "Default"
-	requestData = request.get_json()
-	print(requestData)
+	requestData = ujson.loads(request.get_json())
 	
 	#Connect to CoMPES Provisioning Server
 	if(opt == "connect"):
@@ -102,16 +98,17 @@ def multiplexer(opt):
 			#get username and pass from post body
 			userID = requestData["User-ID"]
 			userPass = requestData["User-Password"]
+			registerFlag = requestData["Register"]
 
-			print(userID)
-			buildConnection(CoMPES_address, userID, userPass)
-			connectWS(factory)
+			#buildConnection(CoMPES_address, userID, userPass)
+			buildConnection(CoMPES_address, userID, userPass, registerFlag)
+			print(connectWS(factory))
 			message = msg_to_mux()
 		except:
 			message = ujson.dumps({'error':'Error: Connection to CoMPES failed'})
 	
 	#Send an NDF to CoMPES	
-	elif(opt == "def-1"):
+	elif(opt == "createNetwork"):
 		try:
 			message = {}
 			#Recieve NDF from Post body
@@ -136,7 +133,7 @@ def multiplexer(opt):
 			message = "Error: Failed to send the NDF"
 	
 	#Send an Edited NDF to CoMPES	
-	elif(opt == "def-2"):
+	elif(opt == "alterNetwork"):
 		try:
 			message = {}
 			#Recieve NDF from Post body
@@ -161,7 +158,7 @@ def multiplexer(opt):
 			message = "Error: Failed to send the edited NDF"
 			
 	#Remove a network
-	elif(opt == "def-3"):
+	elif(opt == "deleteNetwork"):
 		try:
 			message = {}
 			#Recieve net-ID from Post body
@@ -250,7 +247,7 @@ def multiplexer(opt):
 			message = "Error: Failed to send command"
 	
 	#Get an NDF
-	elif(opt == "obs-1"):
+	elif(opt == "getNDF"):
 		try:
 			#message = {}
 			#-----REPLACE FILE CODE-----
@@ -277,7 +274,7 @@ def multiplexer(opt):
 			message = "Error: Failed to fetch an NDF"
 	
 	#Get a CVO
-	elif(opt == "obs-2"):
+	elif(opt == "getCVO"):
 		try:
 			message = {}
 			#-----REPLACE FILE CODE-----
@@ -299,7 +296,7 @@ def multiplexer(opt):
 			message = "Error: Failed to fetch a CVO"
 	
 	#Get a collection of ACUs
-	elif(opt == "obs-3"):
+	elif(opt == "getCollection"):
 		try:
 			message = {}
 			#-----REPLACE FILE CODE-----
@@ -321,7 +318,7 @@ def multiplexer(opt):
 			message = "Error: Failed to fetch the Collection"
 			
 	#Fetching an ACU
-	elif(opt == "obs-4"):
+	elif(opt == "getACU"):
 		try:
 			message = {}
 			#-----REPLACE FILE CODE-----
@@ -343,7 +340,7 @@ def multiplexer(opt):
 			message = "Error: Failed to fetch an ACU"
 	
 	#Get the network status
-	elif(opt == "obs-5"):
+	elif(opt == "getNetworkStatus"):
 		try:
 			message = {}
 			#-----REPLACE FILE CODE-----

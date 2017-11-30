@@ -59,6 +59,8 @@ function Viewmodel() {
 	self.numClones = ko.observable(1);
 	self.assocRuleKey = ko.observable("");
 	self.assocRuleVal = ko.observable("");
+	self.loggedIn = false;
+	self.creationMode = null;
 	self.networkList = ko.observableArray([]);
 
 	//============================= Login Page Variables ====================================
@@ -201,7 +203,7 @@ function Viewmodel() {
 			self.assocRuleKey(temp[0]);
 			self.assocRuleVal(temp[1]);
 		};
-	}
+	};
 
 	function Hub(parent) {
 		/*
@@ -295,7 +297,7 @@ function Viewmodel() {
 			else
 				return false;
 		};
-	}
+	};
 
 	function NetworkObject() {
 		/*
@@ -349,7 +351,7 @@ function Viewmodel() {
 			else
 				return false;
 		};
-	}
+	};
 
     /* =========================== End of Data Structures =================================*/
 
@@ -364,7 +366,7 @@ function Viewmodel() {
 		*/
 		if (key == "parent") return undefined;
 		else return value;
-	}
+	};
 
 	function d3Data(nodesInput, linksInput) {
 		/*
@@ -515,7 +517,7 @@ function Viewmodel() {
 				.attr("dx", function(d) { return d.x; })
 				.attr("dy", function(d) { return d.y - radius - 2; });
 		}
-	}
+	};
 
 	//=================================General Functions=====================================
 	self.bonsai = function() {
@@ -536,7 +538,7 @@ function Viewmodel() {
 			self.bonsaidList.update();
 			self.bonsaidList.expandAll();
 		}
-	}
+	};
 
 	self.loadNDF = function(ndf) {
 		/*
@@ -585,7 +587,7 @@ function Viewmodel() {
 			}
 		}
 		self.selectedItem(self.networkObject);
-	}
+	};
 
 	//==================================== Front-End ========================================
 	self.sidebarClick = function(clickedItem) {
@@ -606,7 +608,7 @@ function Viewmodel() {
 			self.informationalSidebarClick(clickedItem);
 		else if(self.operation_subscreen() == "definition_subscreen")
 			self.definitionSidebarClick(clickedItem);
-	}
+	};
 
 	//-------------------------------------- Login -------------------------------
 	self.gotoLogin = function() {
@@ -621,7 +623,9 @@ function Viewmodel() {
 		self.current_screen("login_screen");
 		twistedClient.stdout.end();
 		self.bonsaidList = null;
-	}
+		self.creationMode = null;
+		self.loggedIn = false;
+	};
 
 	self.signIn = function() {
 		/*
@@ -631,18 +635,23 @@ function Viewmodel() {
 					 Network Selection screen
 		Input: N/A
 		Output: N/A
-		Notes: Gets the username and password from their fields on the page and compares
-			   them against dummy values for now.
+		Notes: N/A
 		*/
 		self.sendLogin(self.user(), self.pass());
-		if (self.user() == "admin1" && self.pass() == "test") {
-			alert("Login success! Moving to network selection...")
+	};
+
+	self.register = function() {
+		/*
+		Author: Trenton Nale
+		Description: Sends login data with registration flag true
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
+		self.sendLogin(self.user(), self.pass(), true);
+		if(self.loggedIn)
 			self.gotoSelection();
-		}
-		else {
-			alert("Login failed. Try again.");
-		}
-	}
+	};
 
 	//-------------------------------- Network Selection -------------------------
 	self.gotoSelection = function() {
@@ -653,33 +662,32 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		self.current_screen("selection_screen");
-		//self.getNetworkList(); //for testing purposes
-		self.bonsaidList = null;
-	}
+		if(self.loggedIn) {
+			self.current_screen("selection_screen");
+			//self.getNetworkList(); //for testing purposes
+			self.bonsaidList = null;
+		}
+	};
 
-	self.loadNetwork = function() {
-		/*
-		Author: Derek Lause
-		Description: Transitions to the Network Selection screen
-		Input: N/A
-		Output: The desired network will be loaded into the networkObject variable
-			and then will load the desired network into the Map View
-		Notes: Parse the JSON object
-		*/
-	}
-
-	self.selectionFillList = function(networkList) {
+	self.loadNetwork = function(networkDetails) {
 		/*
 		Author: Trenton Nale
-		Description: Attempts to fill the list of networks with information from the
-					 received list
-		Input: networkList - a JSON object containing all networks on the CoMPES server
+		Contributor: Derek Lause
+		Description: Loads network details received from CoMPES into the networkObject
+		Input: networkDetails - JSON: the network info from CoMPES
 		Output: N/A
-		Notes: N/A
+		Notes: Parse the JSON object
 		*/
-		alert("Trying to fill the network list that doesn't exist.");
-	}
+	};
+
+	self.connect = function() {
+		;
+	};
+
+	self.create = function() {
+		self.creationMode = true;
+		self.gotoDefinition();
+	};
 
 	//------------------------------------ Map View ------------------------------
 	self.gotoMap = function() {
@@ -690,11 +698,13 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		self.current_screen("map_screen");
-		self.bonsai();
-		self.selectedItem(self.networkObject);
-		self.setupMap();
-	}
+		if(self.loggedIn && self.creationMode === false) {
+			self.current_screen("map_screen");
+			self.bonsai();
+			self.selectedItem(self.networkObject);
+			self.setupMap();
+		}
+	};
 
 	self.mapSidebarClick = function(clickedItem) {
 		/*
@@ -705,7 +715,7 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		self.setupMap();
-	}
+	};
 
 	self.switchMapMode = function() {
 		/*
@@ -720,7 +730,7 @@ function Viewmodel() {
 		// CLEAR MAP
 
 		self.setupMap();
-	}
+	};
 
 	self.setupMap = function() {
 		/*
@@ -790,7 +800,7 @@ function Viewmodel() {
 		}
 		self.mapData = new d3Data(nodes_data, links_data);
 		//return([nodes_data, links_data]);
-	}
+	};
 
 	/*self.setupMap = function() {
 		/*
@@ -813,9 +823,11 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		self.current_screen("informational_screen");
-		self.bonsai();
-	}
+		if(self.loggedIn && self.creationMode === false) {
+			self.current_screen("informational_screen");
+			self.bonsai();
+		}
+	};
 
 	self.informationalSidebarClick = function(clickedItem) {
 		/*
@@ -826,7 +838,7 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		alert("You clicked on " + clickedItem.id() + " on the Informational Screen.");
-	}
+	};
 
 	//-------------------------------- Network Definition ------------------------
 	self.gotoDefinition = function(networkObject) {
@@ -843,9 +855,11 @@ function Viewmodel() {
 			   will start empty and submitting the network will instruct CoMPES to
 			   create a new network.
 		*/
-		self.current_screen("definition_screen_network");
-		self.bonsai();
-	}
+		if(self.loggedIn && self.creationMode !== null) {
+			self.current_screen("definition_screen_network");
+			self.bonsai();
+		}
+	};
 
 	self.definitionSidebarClick = function(clickedItem) {
 		/*
@@ -868,11 +882,11 @@ function Viewmodel() {
 		}
 		else
 			alert("clickedItem not recognized");
-	}
+	};
 
 	self.displayHub = function(hub) {
 		return hub.isActive() ?  "active" : "inactive";
-	}
+	};
 
 	self.isEmpty = function(array) {
 			var isEmpty;
@@ -883,7 +897,7 @@ function Viewmodel() {
 				isEmpty = false;
 			}
 			return isEmpty;
-	}
+	};
 
 	self.buildNDF = function() {
 		/*
@@ -939,11 +953,15 @@ function Viewmodel() {
 
 	};
 
+	self.submitNetwork = function() {
+		self.sendNetwork(self.buildNDF(), true);
+	}
+
 	self.outputNDF = function() {
 		var testnet = self.buildNDF();
 		var test = JSON.stringify(testnet);
 		console.log(test);
-	}
+	};
 
 	self.saveNDFToFile = function() {
 		fs.writeFileSync(self.path, ko.toJSON(this.networkObject, replacer));
@@ -965,12 +983,12 @@ function Viewmodel() {
     self.hubButton = function() {
         self.addHub();
         self.current_screen("definition_screen_hub");
-    }
+    };
 
     self.acuButton = function() {
         self.networkObject.Hubs().addACU();
 				self.current_screen("definition_screen_acu");
-    }
+    };
 
 	//============================Backend============================================
 	/* Template of a communication function using ajax
@@ -1014,43 +1032,35 @@ function Viewmodel() {
 		});
 	};
 
-	self.sendLogin = function(name, pass) {
+	self.sendLogin = function(name, pass, register=false) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends login attempt to CoMPES and reacts to the response.
-		Input: name - username; pass - password
+		Input: name - string: username
+			   pass - string: password
+			   register - boolean: true for register and login, false for just login
 		Output: N/A
 		Notes: If the ID and password are accepted, transitions to the Network Selection screen.
 			   If not, notifies the user to try again.
 			   If the login is successful, the success function receives a list of networks
 			   associated with this user.
 		*/
-		var message = JSON.stringify('{"User-ID":name, "User-Password":pass}');
-		alert("start");
+		var message = JSON.stringify('{"User-ID":"' + name + '", "User-Password":"' + pass + '", "Register":' + register + '}');
 		self.sendMessage("connect", message,
 			function(response) {
 				if(response["error"]) {
-					alert("Login failed");
+					alert("Login failed: " + response["error"]);
+					self.loggedIn = false;
 				}
-				else alert("success: " + JSON.stringify(response));},
-			function(response, stat, disc) {alert("Error: " + disc);}
+				else {
+					alert("Login successful");
+					self.loggedIn = true;
+					self.networkList = response;
+					self.gotoSelection();
+				}
+			},
+			function(response, stat, disc) {alert("Connection error: " + disc);}
 		);
-		alert("finish");
-	};
-
-	self.sendRegister = function(name, pass) {
-		/*
-		Author: Trenton Nale
-		Discription: Sends user registration to CoMPES and reacts to the response.
-		Input: name - username; pass - password
-		Output: N/A
-		Notes: If the registration is accepted, logs in and transitions to the Network Selection screen.
-			   If not, notifies the user to try again.
-		*/
-		var jsonParam = JSON.stringify({'rest-method':'post', 'path':paths['login'], 'data':[name, pass]});
-		self.sendMessage(jsonParam,
-						 function() {},
-						 function() {});
 	};
 
 	self.connectToNetwork = function(selectedNetwork) {
@@ -1061,14 +1071,14 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		var message = JSON.stringify({'User-ID':self.user(), 'Network-ID':selectedNetwork});
+		var message = JSON.stringify('{"User-ID":"' + name + '", "Network-ID":' + selectedNetwork + '}');
 		sendMessage("connect", message,
-			function (response) {alert("success: " + response);},
+			function (response) {selectionFillList(response);},
 			function(response, stat, disc) {alert("Error: " + disc);}
 		);
 	};
 
-	self.submitNetwork = function(networkDefinitionFile) {
+	self.sendNetwork = function(networkDefinitionFile) {
 		/*
 		Author: Trenton Nale
 		Discription: Sends request to provision a new network
@@ -1076,26 +1086,7 @@ function Viewmodel() {
 		Output: N/A
 		Notes: the NDF should be properly formatted and checked for errors before being passed to this
 		*/
-		var jsonParam = JSON.stringify({'rest-method':'post', 'path':paths['networks'],
-										'data':[networkDefinitionFile]});
-		self.sendMessage(jsonParam,
-						 function() {},
-						 function() {});
-	};
-
-	self.updateNetwork = function(networkDefinitionFile) {
-		/*
-		Author: Trenton Nale
-		Discription: Sends request to update a network with new details
-		Input: networkDefinitionFile - an associative array containing the network's details
-		Output: N/A
-		Notes: The NDF should be properly formatted and checked for errors before being passed to this
-		*/
-		var jsonParam = JSON.stringify({'rest-method':'patch', 'path':paths['networks'],
-										'data':[networkDefinitionFile]});
-		self.sendMessage(jsonParam,
-						 function() {},
-						 function() {});
+		alert("This doesn't work yet, but you are in " + (self.creationMode ? "Creation" : "Update") + " Mode.");
 	};
 
 	self.removeNetwork = function(networkID) {
@@ -1184,18 +1175,17 @@ $(document).ready(function(){
 	var file_path = path.join(path.join(path.join(path.dirname(__dirname),'static' ), 'py'), 'application.py');
 
 	//Spawn twisted subprocess
-	/*twistedClient = child_process.spawn("python",  [file_path]);
+	twistedClient = child_process.spawn("python",  [file_path]);
 
 	//Register handelers for input/output streams
 	//This is the handeler for when the client exits
 	twistedClient.on('exit', function (code, signal) {
-	  console.log('The Twisted Client exited with ' +
-				  `code ${code} and signal ${signal}`);
+	  console.log('The Twisted Client exited with code ${code} and signal ${signal}');
 	});
 
 	//This handeler reads error data from the Client
 	twistedClient.stderr.on('data', function(data) {console.log(data.toString()); alert("Error:" + data.toString());});
-	*/
+	
 });
 
 $(window).on("unload", function() {
