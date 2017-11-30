@@ -912,6 +912,7 @@ function Viewmodel() {
 			Otherwise, the HTML fields will be blank and the filled out information will be sent to CoMPES
 		*/
 		//network configs and empty hub set
+		console.log("UserID: " + self.user());
 		var network =
 		{
 			"Network Config": {
@@ -950,13 +951,17 @@ function Viewmodel() {
 		                }
 		            });
 		        });
-
+		
+		console.log(typeof(network["Network Config"]["Network-ID"]));
+		console.log(network["Network Config"]["Network-ID"]);
 		return network;
 
 	};
 
 	self.submitNetwork = function() {
-		self.sendNetwork(self.buildNDF(), true);
+		var sendingNet = JSON.stringify(self.buildNDF());
+		console.log(sendingNet);
+		self.sendNetwork(sendingNet);
 	}
 
 	self.outputNDF = function() {
@@ -1047,7 +1052,7 @@ function Viewmodel() {
 			   If the login is successful, the success function receives a list of networks
 			   associated with this user.
 		*/
-		var message = JSON.stringify('{"User-ID":"' + name + '", "User-Password":"' + pass + '", "Register":"' + register + '"}');
+		var message = JSON.stringify('{"User-ID":"' + name + '", "User-Password":"' + pass + '", "Register":' + register + '}');
 		self.sendMessage("connect", message,
 			function(response) {
 				if(response["error"]) {
@@ -1089,8 +1094,8 @@ function Viewmodel() {
 		Notes: the NDF should be properly formatted and checked for errors before being passed to this
 		*/
 		//alert("This doesn't work yet, but you are in " + (self.creationMode ? "Creation" : "Update") + " Mode.");
-		var message = JSON.stringify('{"User-ID":"' + name + '", "Network-ID":"' + networkDefinitionFile + '"}');
-		self.sendMessage("createNetwork", message,
+		var message = JSON.stringify(networkDefinitionFile);
+		self.sendMessage((self.creationMode ? "createNetwork" : "updateNetwork"), message,
 			function (response) {alert("No problem here, boss.");},
 			function(response, stat, disc) {alert("Error: " + disc);}
 		);
