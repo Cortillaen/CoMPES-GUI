@@ -128,7 +128,7 @@ window.onclick = function(event) {
   </footer>
   -->
 
-  <!-- ===========================================Screen Templates=============================================================
+  <!-- ========================================== Screen Templates =========================================================
     Each screen should be built inside its own script tag so that the resources are loaded but not displayed until needed -->
 
   <!-- Login Screen 
@@ -155,7 +155,9 @@ window.onclick = function(event) {
         </div>
       </form>
       <div class="btn-group">
-        <button id="login" type="button" data-bind="click: signIn" class ="btn btn-primary" style="width:500%;position:relative;right:120px;">Login</button>
+        <button id="register" type="button" data-bind="click: register" class="btn btn-primary">Register Now!</button>
+        <button id="login" type="button" data-bind="click: signIn" class ="btn btn-primary">Login to GUI</button><br/>
+        <input type="checkbox" name="offline" data-bind="checked: offlineMode">Run in Offline Mode
       </div>
 		</div>
     <div>
@@ -185,7 +187,9 @@ window.onclick = function(event) {
         <div class="col-sm-6 sidenav" style="background-color:rgb(177, 203, 211); border-style:solid;border-radius: 20px;">
 
 			<p> List of Networks: </p>
-			<button onclick="getNetworkList()" id="list" type="button"> Get List of Networks </button>
+      <!-- ko foreach: { data: networkList } -->
+        <p data-bind="text: $data, click: function() {$root.getNetwork($data);}"></p>
+      <!-- /ko -->
 		</div>
 
 
@@ -203,7 +207,8 @@ window.onclick = function(event) {
 				Algorithm:<br>  <textarea id="algorithm" rows="1" cols="35" disabled="disabled"></textarea><br><br>
 
 			</form>
-			<button id="connect" onclick="Connect()" id="list" type="button"> CONNECT </button>
+			<button id="connect" data-bind="click: connect" id="list" type="button"> CONNECT </button>
+      <button id="connect" data-bind="click: create" id="list" type="button"> CREATE NEW </button>
 		</div>
         </div>
     <br>
@@ -288,6 +293,7 @@ window.onclick = function(event) {
     <div>
       <button class="btn btn-default" data-bind="click: saveNDFToFile">Save to File</button>
       <button class="btn btn-default" data-bind="click: loadNDF">Load from File</button>
+      <button class="btn btn-default" data-bind="click: submitNetwork, text: creationMode ? 'Create Network' : 'Update Network'"></button>
       <button class="btn btn-default" data-bind="click: outputNDF">Test network variable</button>
     </div>
   </script>
@@ -310,9 +316,9 @@ window.onclick = function(event) {
     <tr>
         <td><strong>PE_Algorithm</strong></td>
         <td>
-          <label>N/A</label><input type="radio" name="optr" value="NA" data-bind="checked: network_config.PE_Algorithm" required>
-          <label>ALGORITHM 1</label><input type="radio" name="optr" value="Algorithm1" data-bind="checked: network_config.PE_Algorithm">
-          <label>ALGORITHM 2</label><input type="radio" name="optr" value="Algorithm2" data-bind="checked: network_config.PE_Algorithm">
+          <label>N/A</label><input type="radio" name="pea" value="NA" data-bind="checked: network_config.PE_Algorithm" required>
+          <label>ALGORITHM 1</label><input type="radio" name="pea" value="Algorithm1" data-bind="checked: network_config.PE_Algorithm">
+          <label>ALGORITHM 2</label><input type="radio" name="pea" value="Algorithm2" data-bind="checked: network_config.PE_Algorithm">
         </td>
     </tr>
   </table>
