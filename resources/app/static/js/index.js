@@ -54,7 +54,7 @@ function Viewmodel() {
 	self.bonsaidList = null;
 	self.counter = 0; //stopgap to ensure unique hub/ACU names until validation is implemented
 	self.path = path.join(electron.remote.app.getPath('userData'), 'CoMPES_GUI.json');
-	self.temp = [ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable("")];
+	self.temp = [ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable("")];
 	self.index = ko.observable("");
 	self.numClones = ko.observable(1);
 	self.assocRuleKey = ko.observable("");
@@ -123,56 +123,6 @@ function Viewmodel() {
 				return false;
 		};
 
-		this.add_item = function(list, index) {
-			/*
-			Author: Derek Lause
-			Contributor: Trenton Nale
-			Description: Adds an item on the ACU page for the specific field
-			Input: N/A
-			Output: N/A
-			Notes: N/A
-			*/
-			if(self.temp[index]() !== "") {
-			if(list.indexOf(self.temp[index]()) === -1) {
-				list.push(self.temp[index]());
-				self.temp[index]("");
-				}
-			else {alert("State already exists.");}
-		}
-		else {alert("You must enter a name to add a state.");}
-		};
-
-		this.remove_item = function(list, index) {
-			/*
-			Author: Trenton Nale
-			Contributor: Derek Lause
-			Description: Removes an item on the ACU page for the specific field
-			Input: N/A
-			Output: N/A
-			Notes: N/A
-			*/
-			if(self.temp[index]() !== "") {
-				if(list.indexOf(self.temp[index]()) !== -1) {
-					list.remove(self.temp[index]());
-					self.temp[index]("");
-				}
-				else {alert("State does not exist.");}
-			}
-			else {alert("You must enter a name to remove a state.");}
-		};
-
-		this.fill = function(selected, i) {
-			/*
-			Author: Trenton Nale
-			Contributor: Derek Lause
-			Description: Returns whether this ACU is the selectedItem
-			Input: N/A
-			Output: Boolean response
-			Notes: N/A
-			*/
-			self.temp[i](selected);
-		};
-
 		this.add_assoc_rule = function() {
 			if((self.assocRuleKey() !== "") || (self.assocRuleVal() !== "")) {
 				var tempRule = self.assocRuleKey() + ":" + self.assocRuleVal();
@@ -216,7 +166,7 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		this.id = ko.observable("Hub name" + self.counter.toString());
-		this.hub_config = {"import" : ko.observable(""), "status" : ko.observable(""), "phrase": ko.observable("")};
+		this.hub_config = {"import" : ko.observableArray([]), "status" : ko.observable("Offline"), "phrase": ko.observable("")};
 		this.ACUs = ko.observableArray([]);
 		this.parent = parent;
 		self.counter += 1;
@@ -590,6 +540,56 @@ function Viewmodel() {
 		self.selectedItem(self.networkObject);
 	};
 
+	self.add_item = function(list, index) {
+		/*
+		Author: Derek Lause
+		Contributor: Trenton Nale
+		Description: Adds an item on the ACU page for the specific field
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
+		if(self.temp[index]() !== "") {
+			if(list.indexOf(self.temp[index]()) === -1) {
+				list.push(self.temp[index]());
+				self.temp[index]("");
+				}
+			else {alert("State already exists.");}
+		}
+		else {alert("You must enter a name to add a state.");}
+	};
+
+	self.remove_item = function(list, index) {
+		/*
+		Author: Trenton Nale
+		Contributor: Derek Lause
+		Description: Removes an item on the ACU page for the specific field
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
+		if(self.temp[index]() !== "") {
+			if(list.indexOf(self.temp[index]()) !== -1) {
+				list.remove(self.temp[index]());
+				self.temp[index]("");
+			}
+			else {alert("State does not exist.");}
+		}
+		else {alert("You must enter a name to remove a state.");}
+	};
+
+	self.fill = function(selected, i) {
+		/*
+		Author: Trenton Nale
+		Contributor: Derek Lause
+		Description: Returns whether this ACU is the selectedItem
+		Input: N/A
+		Output: Boolean response
+		Notes: N/A
+		*/
+		self.temp[i](selected);
+	};
+
 	//==================================== Front-End ========================================
 	self.sidebarClick = function(clickedItem) {
 		/*
@@ -916,7 +916,7 @@ function Viewmodel() {
 		console.log("UserID: " + self.user());
 		var network =
 		{
-			"Network Config": {
+			"Network Info": {
 				"User-ID": self.user(),
 				"Network-ID": self.networkObject.network_ID(),
 				"PES_Mode": self.networkObject.network_config.PES_Mode(),
@@ -928,9 +928,9 @@ function Viewmodel() {
 		//for each hub, add it to the array of hubs
 		ko.utils.arrayForEach(self.networkObject.Hubs(), function(hub) {
 		    network["Hubs"][hub.id()] = {
-				"Hub Config" : {
+				"Hub Info" : {
 					"STATUS" : hub.hub_config.status(),
-					"Imports" : hub.hub_config.import(),
+					"Imports" : hub.hub_config['import'](),
 					"Phrase-relatedness" : hub.hub_config.phrase()
 				},
 				"ACUs" : {}
@@ -958,8 +958,8 @@ function Viewmodel() {
 		    });
 		});
 		
-		console.log(typeof(network["Network Config"]["Network-ID"]));
-		console.log(network["Network Config"]["Network-ID"]);
+		console.log(typeof(network["Network Info"]["Network-ID"]));
+		console.log(network["Network Info"]["Network-ID"]);
 		return network;
 
 	};
@@ -1069,6 +1069,7 @@ function Viewmodel() {
 					alert("Login successful");
 					self.loggedIn = true;
 					self.networkList = response;
+					console.log(response);
 					self.gotoSelection();
 				}
 			},
@@ -1102,7 +1103,7 @@ function Viewmodel() {
 		//alert("This doesn't work yet, but you are in " + (self.creationMode ? "Creation" : "Update") + " Mode.");
 		var message = JSON.stringify(networkDefinitionFile);
 		self.sendMessage((self.creationMode ? "createNetwork" : "updateNetwork"), message,
-			function (response) {alert("No problem here, boss.");},
+			function (response) {alert("CoMPES Response: " + response);},
 			function(response, stat, disc) {alert("Error: " + disc);}
 		);
 	};

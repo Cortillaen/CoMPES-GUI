@@ -88,13 +88,14 @@ class CoMPES_WebSocket_Factory(WebSocketClientFactory):
 def multiplexer(opt):
 	#This function builds the web multiplexor for the electron backend
 	message = "Default"
-	requestData = ujson.loads(request.get_json())
+	requestData = request.get_json()
 	
 	#Connect to CoMPES Provisioning Server
 	if(opt == "connect"):
 		try:
 			print("Connecting to CoMPES Provisioning Server @: %s" % (CoMPES_address))
 
+			requestData = ujson.loads(requestData)
 			#get username and pass from post body
 			userID = requestData["User-ID"]
 			userPass = requestData["User-Password"]
@@ -113,10 +114,11 @@ def multiplexer(opt):
 			message = {}
 			#Recieve NDF from Post body
 			#-----REPLACE FILE CODE-----
-			infile = open("testUser_testNetwork.ndf")
-			message["Data"] = infile.read()
-			infile.close()
-			#message["Data"] = ujson.dumps(requestData)
+			print("Sending a fake network")
+			#infile = open("testUser_testNetwork.ndf")
+			#message["Data"] = infile.read()
+			#infile.close()
+			message["Data"] = requestData
 			#---------------------------
 			
 			#Package message with necessary headers
@@ -147,11 +149,11 @@ def multiplexer(opt):
 			#Package message with necessary headers
 			message["Module"] = "Definition"
 			message["Mode"] = "Edit Network"
-			NDF = ujson.dumps(message)
+			message = ujson.dumps(message)
 			
 			#Note: Must be text before being put into the queue
 			#Send recieved NDF to CoMPES
-			putMSG("mux_to_ws", NDF)
+			putMSG("mux_to_ws", message)
 			
 			#message from server
 			message = msg_to_mux()

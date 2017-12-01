@@ -336,14 +336,26 @@ window.onclick = function(event) {
         <tr>
             <td><strong>Status:</strong></td>
 				<td>
-                    <label>ONLINE</label><input type="radio" name="optr" value="Online" data-bind="checked: hub_config.status" required>
-                    <label>OFFLINE</label><input type="radio" name="optr" value="Offline" data-bind="checked: hub_config.status">
+					<span class="label" data-bind="css: hub_config['status']=='Online' ? 'label-success' : 'label-danger', text: hub_config['status']"></span>
 				</td>
       </tr>
         <tr>
-            <td><strong>Import: </strong></td>
-            <td><input type="text" class="form-control" data-bind="value: hub_config.import" placeholder="<IMPORT>"></td>
-      </tr>
+			<td><strong>Imports: </strong></td>
+			<td>
+				<div class="well-sm">
+					<ul class="list-inline" data-bind="foreach: hub_config['import']">
+						<li data-bind="text: $data, click: function(data) {$root.fill(data, 5)}"></li>
+					</ul>
+				</div>
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="<Import Statement>" data-bind="value: $root.temp[5]">
+					<span class="input-group-btn">
+						<button class="btn btn-primary" data-bind="click: function() {$root.add_item(hub_config['import'], 5);}">Add</button>
+						<button class="btn btn-primary" data-bind="click: function() {$root.remove_item(hub_config['import'], 5);}">Remove</button>
+					</span>
+				</div>
+			</td>
+		</tr>
         <tr>
             <td><strong>Phrase-relatedness: </strong></td>
             <td><input type="text" class="form-control" data-bind="value: hub_config.phrase" placeholder="<PHRASE-RELATEDNESS>"></td>
@@ -384,14 +396,14 @@ window.onclick = function(event) {
 						<td>
 							<div class="well-sm">
 								<ul class="list-inline" data-bind="foreach: raw_states">
-									<li data-bind="text: $data, click: function(data) {$parent.fill(data, 0)}"></li>
+									<li data-bind="text: $data, click: function(data) {$root.fill(data, 0)}"></li>
 								</ul>
 							</div>
 							<div class="input-group">
 								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[0]">
 								<span class="input-group-btn">
-									<button class="btn btn-primary" data-bind="click: function() {add_item(raw_states, 0);}">Add</button>
-									<button class="btn btn-primary" data-bind="click: function() {remove_item(raw_states, 0);}">Remove</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.add_item(raw_states, 0);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.remove_item(raw_states, 0);}">Remove</button>
 								</span>
 							</div>
 						</td>
@@ -402,14 +414,14 @@ window.onclick = function(event) {
 						<td>
 							<div class="well-sm">
 								<ul class="list-inline" data-bind="foreach: defined_states">
-									<li data-bind="text: $data, click: function(selected) {$parent.fill(selected, 1);}"></li>
+									<li data-bind="text: $data, click: function(selected) {$root.fill(selected, 1);}"></li>
 								</ul>
 							</div>
 							<div class="input-group">
 								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[1]">
 								<span class="input-group-btn">
-									<button class="btn btn-primary" data-bind="click: function() {add_item(defined_states, 1);}">Add</button>
-									<button class="btn btn-primary" data-bind="click: function() {remove_item(defined_states, 1);}">Remove</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.add_item(defined_states, 1);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.remove_item(defined_states, 1);}">Remove</button>
 								</span>
 							</div>
 						</td>
@@ -420,15 +432,15 @@ window.onclick = function(event) {
 						<td>
 							<div class="well-sm">
 								<ul class="list-inline" data-bind="foreach: actions">
-									<li data-bind="text: $data, click: function(selected) {$parent.fill(selected, 2);}"></li>
+									<li data-bind="text: $data, click: function(selected) {$root.fill(selected, 2);}"></li>
 								</ul>
 							</div>
 							<div class="input-group">
 								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[2]">
 								<span class="input-group-btn">
 									
-									<button class="btn btn-primary" data-bind="click: function() {add_item(actions, 2);}">Add</button>
-									<button class="btn btn-primary" data-bind="click: function() {remove_item(actions, 2);}">Remove</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.add_item(actions, 2);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.remove_item(actions, 2);}">Remove</button>
 								</span>
 							</div>
 						</td>
@@ -439,14 +451,14 @@ window.onclick = function(event) {
 						<td>
 							<div class="well-sm">
 								<ul class="list-inline" data-bind="foreach: execute">
-									<li data-bind="text: $data, click: function(selected) {$parent.fill(selected, 3);}"></li>
+									<li data-bind="text: $data, click: function(selected) {$root.fill(selected, 3);}"></li>
 								</ul>
 							</div>
 							<div class="input-group">
 								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[3]">
 								<span class="input-group-btn">
-									<button class="btn btn-primary" data-bind="click: function() {add_item(execute, 3);}">Add</button>
-									<button class="btn btn-primary" data-bind="click: function() {remove_item(execute, 3);}">Remove</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.add_item(execute, 3);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.remove_item(execute, 3);}">Remove</button>
 								</span>
 							</div>
 						</td>
@@ -457,14 +469,14 @@ window.onclick = function(event) {
 						<td>
 							<div class="well-sm">
 								<ul class="list-inline" data-bind="foreach: semantic_links">
-									<li data-bind="text: $data, click: function(selected) {$parent.fill(selected, 4);}"></li>
+									<li data-bind="text: $data, click: function(selected) {$root.fill(selected, 4);}"></li>
 								</ul>
 							</div>
 							<div class="input-group">
 								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.temp[4]">
 								<span class="input-group-btn">
-									<button class="btn btn-primary" data-bind="click: function() {add_item(semantic_links, 4);}">Add</button>
-									<button class="btn btn-primary" data-bind="click: function() {remove_item(semantic_links, 4);}">Remove</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.add_item(semantic_links, 4);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.remove_item(semantic_links, 4);}">Remove</button>
 								</span>
 							</div>
 						</td>
