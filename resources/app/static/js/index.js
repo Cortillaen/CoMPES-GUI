@@ -904,10 +904,11 @@ function Viewmodel() {
 	self.buildNDF = function() {
 		/*
 		Author: Derek Lause
-		Description: This function will take in the data from the HTML form fields and
-			create a JSON object. This JSON object will then be written to a file.
-		Input: HTML form fields for the defined network
-		Output: Network Definition File
+		Contributors: Trenton Nale
+		Description: This function takes data from the HTML form fields and
+			creates a JSON object.
+		Input: N/A
+		Output: Network Definition File as an associative array
 		Notes: If networkObject is not null, load the network onto the screen displayed into the correct areas for editing
 			Otherwise, the HTML fields will be blank and the filled out information will be sent to CoMPES
 		*/
@@ -927,30 +928,35 @@ function Viewmodel() {
 		//for each hub, add it to the array of hubs
 		ko.utils.arrayForEach(self.networkObject.Hubs(), function(hub) {
 		    network["Hubs"][hub.id()] = {
-					"Hub Config" : {
-						"STATUS" : hub.hub_config.status(),
-						"Imports" : hub.hub_config.import(),
-						"Phrase-relatedness" : hub.hub_config.phrase()
-		     },
-		     "ACUs" : {}
-		     };
-		ko.utils.arrayForEach(hub.ACUs(), function(acu) {
-		     network["Hubs"][hub.id()]["ACUs"][acu.id()] = {
-		                    "Defined States" : self.isEmpty(acu.defined_states()) ? "NA" : acu.defined_states(),
-												"Classification" : acu.classification(),
-												"GET" : acu.get(),
-												"EXECUTE" : self.isEmpty(acu.execute()) ? "NA" : acu.execute(),
-												"Interpreter Type" : acu.interpreter_type(),
-												"Actions" : self.isEmpty(acu.actions()) ? "NA" : acu.actions(),
-												"Raw States" : self.isEmpty(acu.raw_states()) ? "NA" : acu.raw_states(),
-												"Location" : acu.loc(),
-												"Full ACU-ID" : "NA",
-												"GUID" : acu.guid(),
-												"Associative Rules" : self.isEmpty(acu.associative_rules()) ? "NA" : acu.associative_rules(),
-												"Semantic Links" : self.isEmpty(acu.semantic_links()) ? "NA" : acu.semantic_links(),
-		                }
-		            });
-		        });
+				"Hub Config" : {
+					"STATUS" : hub.hub_config.status(),
+					"Imports" : hub.hub_config.import(),
+					"Phrase-relatedness" : hub.hub_config.phrase()
+				},
+				"ACUs" : {}
+		    };
+			ko.utils.arrayForEach(hub.ACUs(), function(acu) {
+				network["Hubs"][hub.id()]["ACUs"][acu.id()] = {
+		            "Defined States" : self.isEmpty(acu.defined_states()) ? "NA" : acu.defined_states(),
+					"Classification" : acu.classification(),
+					"GET" : acu.get(),
+					"EXECUTE" : self.isEmpty(acu.execute()) ? "NA" : acu.execute(),
+					"Interpreter Type" : acu.interpreter_type(),
+					"Actions" : self.isEmpty(acu.actions()) ? "NA" : acu.actions(),
+					"Raw States" : self.isEmpty(acu.raw_states()) ? "NA" : acu.raw_states(),
+					"Location" : acu.loc(),
+					"Full ACU-ID" : "NA",
+					"GUID" : acu.guid(),
+					"Associative Rules" : self.isEmpty(acu.associative_rules()) ? "NA" : {},
+					"Semantic Links" : self.isEmpty(acu.semantic_links()) ? "NA" : {}
+				};
+				console.log(network["Hubs"][hub.id()]["ACUs"][acu.id()]["Associative Rules"]);
+				ko.utils.arrayForEach(acu.associative_rules(), function(rule) {
+					var splitRule = rule.split(":");
+					network["Hubs"][hub.id()]["ACUs"][acu.id()]["Associative Rules"][splitRule[0]] = splitRule[1];
+				});
+		    });
+		});
 		
 		console.log(typeof(network["Network Config"]["Network-ID"]));
 		console.log(network["Network Config"]["Network-ID"]);

@@ -84,7 +84,7 @@ class CoMPES_WebSocket_Factory(WebSocketClientFactory):
 		
 
 #===================================Mux Proxy interface=========================
-@app.route('/<opt>', methods=['GET', 'POST'])
+@app.route('/<opt>', methods=['POST'])
 def multiplexer(opt):
 	#This function builds the web multiplexor for the electron backend
 	message = "Default"
@@ -105,7 +105,7 @@ def multiplexer(opt):
 			print(connectWS(factory))
 			message = msg_to_mux()
 		except:
-			message = ujson.dumps({'error':'Error: Connection to CoMPES failed'})
+			message = ujson.dumps({"error":"Error: Connection to CoMPES failed"})
 	
 	#Send an NDF to CoMPES	
 	elif(opt == "createNetwork"):
@@ -116,7 +116,7 @@ def multiplexer(opt):
 			infile = open("testUser_testNetwork.ndf")
 			message["Data"] = infile.read()
 			infile.close()
-			#message["Data"] = requestData
+			#message["Data"] = ujson.dumps(requestData)
 			#---------------------------
 			
 			#Package message with necessary headers
