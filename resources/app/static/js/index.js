@@ -61,7 +61,7 @@ function Viewmodel() {
 	self.assocRuleVal = ko.observable("");
 	self.loggedIn = false;
 	self.creationMode = null;
-	self.offlineMode = false;
+	self.offlineMode = ko.observable(false);
 	self.networkList = ko.observableArray([]);
 
 	//============================= Login Page Variables ====================================
@@ -491,53 +491,84 @@ function Viewmodel() {
 		}
 	};
 
-	self.loadNDF = function(ndf) {
+	self.loadNetwork = function(ndf) {
 		/*
 		Author: Trenton Nale
-		Description: Builds an NDF into the networkObject either from one passed in or from a local file
-		Input: ndf - the NDF to use, or undefined if building from local file
+		Description: Builds the networkObject from an NDF; either from one passed in or from a local file
+		Input: ndf - String : the NDF to use, or undefined if building from local file
 		Output: N/A
 		Notes: Currently, the local build only looks at a set file
 		*/
-		var info; //storage for the JSON data to be used in building the networkObject
-		if(ndf["network_ID"]) info = ndf;
-		//if an NDF was passed, use that; otherwise read in from local file
-		else {
+		//if an NDF was not passed, read in from local file
+		if(!ndf["Network Info"]) {
 			try {
-				info = JSON.parse(fs.readFileSync(self.path));
+				ndf = fs.readFileSync(self.path);
 			} catch(error) {
 				alert("No file found to load.")
 			}
 		}
-		//move through the JSON representation and copy all of its data into the networkObject
-		self.networkObject.network_ID(info["network_ID"]);
-		for (var key in info["network_config"])
-			self.networkObject.network_config[key] = ko.observable(info.network_config[key]);
-		var temp = self.pe_algorithms().indexOf(info["chosen_algorithm"]);
-		if(temp > -1)
-			self.networkObject.chosen_algorithm(self.pe_algorithms()[temp]);
-		else
-			alert("PE Algorithm not recognized.");
-		for(var key in info["hubs"]) {
-			self.networkObject.addHub();
-			var hubTemp = self.networkObject.Hubs().slice(-1)[0];
-			hubTemp.id(info["hubs"][key]["id"]);
-			var secondKey = "";
-			for(secondKey in info["hubs"][key]["hub_config"])
-				hubTemp.hub_config[secondKey] = ko.observable(info["hubs"][key]["hub_config"][secondKey]);
-			for(secondKey in info["hubs"][key]["acus"]) {
-				hubTemp.addACU();
-				var acuTemp = hubTemp.ACUs().slice(-1)[0];
-				acuTemp.id(info["hubs"][key]["acus"][secondKey]["id"]);
-				acuTemp.location_str(info["hubs"][key]["acus"][secondKey]["location_str"]);
-				acuTemp.location_gps(info["hubs"][key]["acus"][secondKey]["location_gps"]);
-				acuTemp.classification(info["hubs"][key]["acus"][secondKey]["classification"]);
-				acuTemp.guid(info["hubs"][key]["acus"][secondKey]["guid"]);
-				acuTemp.interpreter_type(info["hubs"][key]["acus"][secondKey]["interpreter_type"]);
-				acuTemp.semantic_links(info["hubs"][key]["acus"][secondKey]["semantic_links"]);
+		ndf = JSON.parse(ndf);
+		if(ndf["Network Info"]) {
+			self.networkObject.Hubs([]);
+			console.log("building");
+			//move through the JSON representation and copy all of its data into the networkObject
+			self.networkObject.network_ID(ndf["Network Info"]["Network-ID"]);
+			self.networkObject.network_config["PES_Mode"](ndf["Network Info"]["PES_Mode"]);
+			self.networkObject.network_config["PE_Algorithm"](ndf["Network Info"]["PE_Algorithm"]);
+
+			for(var hubKey in ndf["Hubs"]) {
+				self.networkObject.Hubs.push(new Hub(self.networkObject));
+				var hub = self.networkObject.Hubs.slice(-1)[0];
+				hub.id(hubKey);
+				hub.hub_config["import"](ndf["Hubs"][hubKey]["Hub Info"]["Imports"]);
+				hub.hub_config["phrase"](ndf["Hubs"][hubKey]["Hub Info"]["Phrase-relatedness"]);
+				if(ndf["Hubs"][hubKey]["Hub Info"]["STATUS"])
+					hub.hub_config["status"](ndf["Hubs"][hubKey]["Hub Info"]["STATUS"]);
+
+				for(var acuKey in ndf["Hubs"][hubKey]["ACUs"]) {
+					hub.ACUs.push(new ACU(hub));
+					var acu = hub.ACUs.slice(-1)[0];
+					acu.id(acuKey);
+					acu.loc(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Location"]);
+					acu.classification(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Classification"]);
+					acu.guid(ndf["Hubs"][hubKey]["ACUs"][acuKey]["GUID"]);
+					acu.get(ndf["Hubs"][hubKey]["ACUs"][acuKey]["GET"]);
+					acu.interpreter_type(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Interpreter Type"]);
+					if(typeof(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Raw States"]) === "object") {
+						for(var listKey in ndf["Hubs"][hubKey]["ACUs"][acuKey]["Raw States"])
+							acu.raw_states.push(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Raw States"][listKey]);
+					}
+					if(typeof(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Defined States"]) === "object") {
+						for(var listKey in ndf["Hubs"][hubKey]["ACUs"][acuKey]["Defined States"])
+							acu.defined_states.push(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Defined States"][listKey]);
+					}
+					if(typeof(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Actions"]) === "object") {
+						for(var listKey in ndf["Hubs"][hubKey]["ACUs"][acuKey]["Actions"])
+							acu.actions.push(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Actions"][listKey]);
+					}
+					if(typeof(ndf["Hubs"][hubKey]["ACUs"][acuKey]["EXECUTE"]) === "object") {
+						for(var listKey in ndf["Hubs"][hubKey]["ACUs"][acuKey]["EXECUTE"])
+							acu.execute.push(ndf["Hubs"][hubKey]["ACUs"][acuKey]["EXECUTE"][listKey]);
+					}
+					if(typeof(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Interpreter Type"]) === "object") {
+						for(var listKey in ndf["Hubs"][hubKey]["ACUs"][acuKey]["Interpreter Type"])
+							acu.interpreter_type.push(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Interpreter Type"][listKey]);
+					}
+					if(typeof(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Semantic Links"]) === "object") {
+						for(var listKey in ndf["Hubs"][hubKey]["ACUs"][acuKey]["Semantic Links"])
+							acu.semantic_links.push(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Semantic Links"][listKey]);
+					}
+					if(typeof(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Associative Rules"]) === "object") {
+						for(var listKey in ndf["Hubs"][hubKey]["ACUs"][acuKey]["Associative Rules"])
+							acu.associative_rules().push(listKey + ":" + ndf["Hubs"][hubKey]["ACUs"][acuKey]["Associative Rules"][listKey]);
+					}
+				}
 			}
+			self.selectedItem(self.networkObject);
+			self.bonsai();
 		}
-		self.selectedItem(self.networkObject);
+		else
+			alert("NDF from file or CoMPES server is empty or corrupted.");
 	};
 
 	self.add_item = function(list, index) {
@@ -638,7 +669,12 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		self.sendLogin(self.user(), self.pass());
+		if(!self.offlineMode())
+			self.sendLogin(self.user(), self.pass());
+		else {
+
+			self.gotoDefinition();
+		}
 	};
 
 	self.register = function() {
@@ -649,9 +685,13 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		self.sendLogin(self.user(), self.pass(), true);
-		if(self.loggedIn)
-			self.gotoSelection();
+		if(!self.offlineMode()) {
+			self.sendLogin(self.user(), self.pass(), true);
+			if(self.loggedIn)
+				self.gotoSelection();
+		}
+		else
+			alert("Registration of new users cannot be performed in Offline Mode.");
 	};
 
 	//-------------------------------- Network Selection -------------------------
@@ -663,27 +703,14 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		if(self.loggedIn) {
+		if(!self.offlineMode()) {
 			self.current_screen("selection_screen");
 			//self.getNetworkList(); //for testing purposes
 			self.bonsaidList = null;
 			self.creationMode = null;
 		}
-	};
-
-	self.loadNetwork = function(networkDetails) {
-		/*
-		Author: Trenton Nale
-		Contributor: Derek Lause
-		Description: Loads network details received from CoMPES into the networkObject
-		Input: networkDetails - JSON: the network info from CoMPES
-		Output: N/A
-		Notes: Parse the JSON object
-		*/
-	};
-
-	self.connect = function() {
-		;
+		else
+			alert("Remote networks cannot be selected in Offline Mode.");
 	};
 
 	self.create = function() {
@@ -700,7 +727,7 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		if(self.loggedIn && self.creationMode === false) {
+		if((self.loggedIn && self.creationMode === false) || self.offlineMode()) {
 			self.current_screen("map_screen");
 			self.bonsai();
 			self.selectedItem(self.networkObject);
@@ -825,7 +852,7 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		if(self.loggedIn && self.creationMode === false) {
+		if((self.loggedIn && self.creationMode === false) || self.offlineMode()) {
 			self.current_screen("informational_screen");
 			self.bonsai();
 		}
@@ -857,7 +884,7 @@ function Viewmodel() {
 			   will start empty and submitting the network will instruct CoMPES to
 			   create a new network.
 		*/
-		if(self.loggedIn && self.creationMode !== null) {
+		if((self.loggedIn && self.creationMode !== null) || self.offlineMode()) {
 			self.current_screen("definition_screen_network");
 			self.bonsai();
 		}
@@ -905,15 +932,14 @@ function Viewmodel() {
 		/*
 		Author: Derek Lause
 		Contributors: Trenton Nale
-		Description: This function takes data from the HTML form fields and
-			creates a JSON object.
+		Description: Builds an NDF as a string in format from the current NetworkObject
 		Input: N/A
-		Output: Network Definition File as an associative array
-		Notes: If networkObject is not null, load the network onto the screen displayed into the correct areas for editing
-			Otherwise, the HTML fields will be blank and the filled out information will be sent to CoMPES
+		Output: String : Network Definition File in JSON format
+		Notes: N/A
 		*/
 		//network configs and empty hub set
 		console.log("UserID: " + self.user());
+		console.log(self.networkObject.network_ID());
 		var network =
 		{
 			"Network Info": {
@@ -945,12 +971,12 @@ function Viewmodel() {
 					"Actions" : self.isEmpty(acu.actions()) ? "NA" : acu.actions(),
 					"Raw States" : self.isEmpty(acu.raw_states()) ? "NA" : acu.raw_states(),
 					"Location" : acu.loc(),
-					"Full ACU-ID" : "NA",
+					"Full ACU-ID" : (self.networkObject.network_ID() + "\\" + hub.id() + "\\" + acu.id()),
 					"GUID" : acu.guid(),
 					"Associative Rules" : self.isEmpty(acu.associative_rules()) ? "NA" : {},
-					"Semantic Links" : self.isEmpty(acu.semantic_links()) ? "NA" : {}
+					"Semantic Links" : self.isEmpty(acu.semantic_links()) ? "NA" : acu.semantic_links()
 				};
-				console.log(network["Hubs"][hub.id()]["ACUs"][acu.id()]["Associative Rules"]);
+				//console.log(network["Hubs"][hub.id()]["ACUs"][acu.id()]["Associative Rules"]);
 				ko.utils.arrayForEach(acu.associative_rules(), function(rule) {
 					var splitRule = rule.split(":");
 					network["Hubs"][hub.id()]["ACUs"][acu.id()]["Associative Rules"][splitRule[0]] = splitRule[1];
@@ -960,12 +986,12 @@ function Viewmodel() {
 		
 		console.log(typeof(network["Network Info"]["Network-ID"]));
 		console.log(network["Network Info"]["Network-ID"]);
-		return network;
+		return JSON.stringify(network);
 
 	};
 
 	self.submitNetwork = function() {
-		var sendingNet = JSON.stringify(self.buildNDF());
+		var sendingNet = self.buildNDF();
 		console.log(sendingNet);
 		self.sendNetwork(sendingNet);
 	}
@@ -977,7 +1003,7 @@ function Viewmodel() {
 	};
 
 	self.saveNDFToFile = function() {
-		fs.writeFileSync(self.path, ko.toJSON(this.networkObject, replacer));
+		fs.writeFileSync(self.path, self.buildNDF());
 	};
 
 	self.addHub = function() {

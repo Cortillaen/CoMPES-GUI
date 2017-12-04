@@ -293,9 +293,11 @@ window.onclick = function(event) {
     </div>
     <div>
       <button class="btn btn-default" data-bind="click: saveNDFToFile">Save to File</button>
-      <button class="btn btn-default" data-bind="click: loadNDF">Load from File</button>
-      <button class="btn btn-default" data-bind="click: submitNetwork, text: creationMode ? 'Create Network' : 'Update Network'"></button>
-      <button class="btn btn-default" data-bind="click: outputNDF">Test network variable</button>
+      <button class="btn btn-default" data-bind="click: loadNetwork">Load from File</button>
+      <!-- ko ifnot: (offlineMode) -->
+        <button class="btn btn-default" data-bind="click: submitNetwork, text: creationMode ? 'Create Network' : 'Update Network'"></button>
+        <!--<button class="btn btn-default" data-bind="click: outputNDF">Test network variable</button>-->
+      <!-- /ko -->
     </div>
   </script>
 
