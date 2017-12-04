@@ -41,9 +41,15 @@
 		</ul>
 		<div class="divider">
 		</div>-->
-		 <ul class="nav navbar-nav navbar-right" style="padding-right: 15px">
-         <li><button class="btn btn-danger navbar-btn" data-bind="click: gotoLogin">Login</button></li>
+		<ul class="nav navbar-nav navbar-right" style="padding-right: 15px">
+		<li data-bind="template: {name: showLogout}"></li>
         </ul>
+		
+		<script type="text/html" id="logoutButton">
+			<button class='btn btn-danger navbar-btn' data-bind='click: gotoLogin'>Logout</button>
+		</script>
+		<script type="text/html" id="empty">
+		</script>
 <!--
 	Author: Josue Portillo
 	Contributor: Derek Lause
@@ -155,7 +161,7 @@ window.onclick = function(event) {
         </div>
       </form>
       <div class="btn-group">
-        <button id="login" type="button" data-bind="click: signIn" class ="btn btn-primary">Login</button>
+        <button id="login" type="submit" data-bind="click: signIn" class ="btn btn-primary">Login</button>
         <button id="register" type="button" data-bind="click: register" class="btn btn-primary">Add User</button><br/>
         <input type="checkbox" name="offline" data-bind="checked: offlineMode">Run in Offline Mode
       </div>
@@ -197,13 +203,13 @@ window.onclick = function(event) {
           	<div class="selectedCont">
 			<p> Selected Network Configurations: </p>
 			<form id="selectionForm">
-				Network Name:<br> <textarea id="netName" rows="1" cols="35" disabled="disabled"></textarea><br><br>
-				IP Address:<br>  <textarea id="ipaddress" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
-				Number of Hubs:<br>  <textarea id ="numhubs" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
-				Number of ACUs:<br>  <textarea id="numacus" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
-				Location:<br> <textarea id="location" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
-				PES MODE:<br>  <textarea id="pesmode" rows="1" cols="35" disabled="disabled"></textarea> <br><br>
-				Algorithm:<br>  <textarea id="algorithm" rows="1" cols="35" disabled="disabled"></textarea><br><br>
+				Network Name:<br> <label class="netSelectLabel" data-bind="text: selectionName"></label><br><br>
+				IP Address:<br>  <label class="netSelectLabel">N/A</label> <br><br>
+				Number of Hubs:<br>  <label class="netSelectLabel" data-bind="text: selectionNumHubs"></label> <br><br>
+				Number of ACUs:<br>  <label class="netSelectLabel" data-bind="text: selectionNumACUs"></label> <br><br>
+				Location:<br> <label class="netSelectLabel">N/A</label> <br><br>
+				PES MODE:<br>  <label class="netSelectLabel" data-bind="text: selectionPESMode"></label> <br><br>
+				Algorithm:<br>  <label class="netSelectLabel" data-bind="text: selectionPEAlg"></label><br><br>
 
 			</form>
 			<button id="connect" data-bind="click: connect" id="list" type="button"> CONNECT </button>
@@ -252,7 +258,7 @@ window.onclick = function(event) {
   -->
   <script type="text/html" id="map_subscreen">
     <div class="page-header"><h1>Map View</h1>
-    <div><label>Current mode: </label><label data-bind="text: mapMode"/><button data-bind="click: switchMapMode">Switch map mode</button></div></div>
+    <div><label id="mapModeLabel">Current mode:&nbsp</label><label id="mapModeLabel" data-bind="text: mapMode"/>&nbsp<button data-bind="click: switchMapMode">Switch map mode</button></div></div>
     <div class="row content" id="graphArea">
       <svg class="well" width="1100" height="700"></svg>
     </div>
@@ -293,7 +299,7 @@ window.onclick = function(event) {
     </div>
     <div>
       <button class="btn btn-default" data-bind="click: saveNDFToFile">Save to File</button>
-      <button class="btn btn-default" data-bind="click: loadNetwork">Load from File</button>
+      <button class="btn btn-default" data-bind="click: loadNetworkFromFile">Load from File</button>
       <!-- ko ifnot: (offlineMode) -->
         <button class="btn btn-default" data-bind="click: submitNetwork, text: creationMode ? 'Create Network' : 'Update Network'"></button>
         <!--<button class="btn btn-default" data-bind="click: outputNDF">Test network variable</button>-->

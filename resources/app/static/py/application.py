@@ -112,14 +112,9 @@ def multiplexer(opt):
 	elif(opt == "createNetwork"):
 		try:
 			message = {}
+			
 			#Recieve NDF from Post body
-			#-----REPLACE FILE CODE-----
-			print("Sending a fake network")
-			#infile = open("testUser_testNetwork.ndf")
-			#message["Data"] = infile.read()
-			#infile.close()
 			message["Data"] = requestData
-			#---------------------------
 			
 			#Package message with necessary headers
 			message["Module"] = "Definition"
@@ -139,12 +134,9 @@ def multiplexer(opt):
 	elif(opt == "updateNetwork"):
 		try:
 			message = {}
+			
 			#Recieve NDF from Post body
-			#-----REPLACE FILE CODE-----
-			infile = open("testUser_testNetwork.ndf")
-			message["Data"] = infile.read()
-			infile.close()
-			#---------------------------
+			message["Data"] = requestData
 			
 			#Package message with necessary headers
 			message["Module"] = "Definition"
@@ -164,10 +156,9 @@ def multiplexer(opt):
 	elif(opt == "deleteNetwork"):
 		try:
 			message = {}
+			
 			#Recieve net-ID from Post body
-			#-----REPLACE FILE CODE-----
-			message["Data"] = ujson.dumps({"Network-ID" : "testNetwork", "User-ID" : "testUser"})
-			#---------------------------
+			message["Data"] = requestData;
 			
 			#Package message with necessary headers
 			message["Module"] = "Definition"
@@ -252,20 +243,15 @@ def multiplexer(opt):
 	#Get an NDF
 	elif(opt == "getNDF"):
 		try:
-			#message = {}
-			#-----REPLACE FILE CODE-----
-			#message["Data"] = ujson.dumps({"User-ID": "testUser", "Network-ID" : "testNetwork"})
-			#---------------------------
-			#messageData = ujson.dumps(message.data)
-
-			receivedData = jsonify(json.loads(message.data))
 			message = {}
-			message["Data"] = ujson.dumps({"User-ID":receivedData["User-ID"], "Network-ID":receivedData["Network-ID"]})
+			
+			message["Data"] = requestData;
 			
 			#Package message with necessary headers
 			message["Module"] = "Observation"
 			message["Mode"] = "NDF"
 			message = ujson.dumps(message)
+			print(message)
 			
 			#Note: Must be text before being put into the queue
 			#Send recieved NDF to client
