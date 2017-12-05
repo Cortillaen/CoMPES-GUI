@@ -43,7 +43,7 @@ def putMSG(queue, msg):
 	
 def buildConnection(CoMPES_address, userID="", userPass="", reg="false"):
 	global factory
-	header = {'user-id':userID, 'password':userPass, 'register':reg}
+	header = {'user-id':userID, 'password':userPass, 'register':reg, 'ui-key':'csc450_fall17'}
 	factory = CoMPES_WebSocket_Factory(CoMPES_address, header)
 	
 #==================================CoMPES Websocket==============================
