@@ -657,6 +657,14 @@ function Viewmodel() {
 		else
 			alert("NDF from file or CoMPES server is empty or corrupted.");
 	};
+	
+	self.clear_network = function() {
+		self.networkObject.network_ID("Network Name");
+		self.networkObject.network_config["PES_Mode"]("");
+		self.networkObject.network_config["PE_Algorithm"]("");
+		self.networkObject.Hubs([]);
+		self.receivedNDF("");
+	}
 
 	self.add_item = function(list, index) {
 		/*
@@ -743,6 +751,7 @@ function Viewmodel() {
 		self.bonsaidList = null;
 		self.creationMode(null);
 		self.loggedIn(false);
+		self.clear_network();
 	};
 
 	self.signIn = function() {
@@ -792,11 +801,7 @@ function Viewmodel() {
 				self.current_screen("selection_screen");
 				self.bonsaidList = null;
 				self.creationMode(null);
-				
-				self.networkObject.network_ID("Network Name");
-				self.networkObject.network_config["PES_Mode"]("");
-				self.networkObject.network_config["PE_Algorithm"]("");
-				self.networkObject.Hubs([]);
+				self.clear_network();
 			}
 			else
 				alert("Remote networks cannot be selected in Offline Mode.");
@@ -842,7 +847,7 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		if(self.loggedIn() && ((self.creationMode() === false) || self.offlineMode())) {
+		if(self.loggedIn()) {
 			self.current_screen("map_screen");
 			self.bonsai();
 			self.selectedItem(self.networkObject);
@@ -1319,10 +1324,12 @@ function Viewmodel() {
 		Notes: the NDF should be properly formatted and checked for errors before being passed to this
 		*/
 		var message = JSON.stringify(networkDefinitionFile);
+		console.log("sending " + (self.creationMode() ? "createNetwork" : "updateNetwork"));
 		self.sendMessage((self.creationMode() ? "createNetwork" : "updateNetwork"), message,
 			function (response) {alert("CoMPES Response: " + response); self.creationMode(false);},
 			function(response, stat, disc) {alert("Error: " + disc);}
 		);
+		console.log("sent " + self.creationMode());
 	};
 
 	self.removeNetwork = function(networkID) {
