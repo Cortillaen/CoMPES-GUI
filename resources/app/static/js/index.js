@@ -5,12 +5,20 @@ const fs = require('fs');
 var twistedClient;
 var child_process = require('child_process')
 
-//const paths = {login:"/login", allNetworks:"/networks/all"}
-
 //######################################## VIEWMODEL ########################################
 function Viewmodel() {
+	/*
+	Author: Trenton Nale
+	Contributors: Derek Lause
+	Description: Implements Knockout.js data bindings.  This includes all functions needed to operate
+				 the forward-facing portion of the GUI app.
+	Input: N/A
+	Output: N/A
+	Notes: Calling one of these functions must be done with `self.<functionName>(<params>);`
+	*/
 
 	//============================= Data Bindings & Variables ===============================
+	//--------------------------------- General Variables -----------------------------------
 	var self = this;
 	self.current_screen = ko.observable("login_screen"); //single point of update for current screen
 	self.operation_screen = ko.computed(function() { //top-level screen template
@@ -46,19 +54,11 @@ function Viewmodel() {
 			return "map_subscreen";
 	}, self);
 
-	self.interpreter_types = ko.observableArray(['PUSH', 'PULL']);
-
 	self.networkObject = new NetworkObject();
 	self.selectedItem = ko.observable(self.networkObject);
-	//self.selectedItemDOM = null;
-	self.bonsaidList = null;
+	self.bonsaidList = null; //holds data relating to the hierarchical tree sidebar
 	self.counter = 0; //stopgap to ensure unique hub/ACU names until validation is implemented
 	self.path = path.join(electron.remote.app.getPath('userData'), 'CoMPES_GUI.json');
-	self.temp = [ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable("")];
-	self.index = ko.observable("");
-	self.numClones = ko.observable(1);
-	self.assocRuleKey = ko.observable("");
-	self.assocRuleVal = ko.observable("");
 	self.loggedIn = ko.observable(false);
 	self.showLogout = ko.computed(function() {
 		if(self.loggedIn())
@@ -68,6 +68,12 @@ function Viewmodel() {
 	}, this);
 	self.creationMode = null;
 	self.offlineMode = ko.observable(false);
+
+	//----------------------------- Login Page Variables ------------------------------------
+	self.user = ko.observable("");
+	self.pass = ko.observable("");
+
+	//-------------------------- Network Selection Variables --------------------------------
 	self.networkList = ko.observableArray([]);
 	self.receivedNDF = ko.observable("");
 	self.selectionName = ko.computed(function() {
@@ -108,26 +114,17 @@ function Viewmodel() {
 			return("");
 	}, this);
 
-	//============================= Login Page Variables ====================================
-	self.user = ko.observable("");
-	self.pass = ko.observable("");
-
-	//============================== Map View Variables =====================================
+	//------------------------------- Map View Variables ------------------------------------
 	self.mapData = null;
 	self.mapMode = ko.observable("Architecture");
 
-	//=========================== Definition Screen Variables ===============================
+	//-------------------------- Network Definition Variables -------------------------------
+	self.ACUListInputs = [ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable(""), ko.observable("")];
+	self.numClones = ko.observable(1);
+	self.assocRuleKey = ko.observable("");
+	self.assocRuleVal = ko.observable("");
 
-	/*
-	Author: Trenton Nale
-	Contributors: Derek Lause
-	Description: Implements Knockout.js data bindings.  This includes all functions needed to operate
-				 the forward-facing portion of the GUI app.
-	Input: N/A
-	Output: N/A
-	Notes: Calling one of these functions must be done with `this.<functionName>(<params>);`
-	*/
-	//================================ Data Structures ======================================
+	//-------------------------------- Data Structures --------------------------------------
 	function ACU(parent) {
 		/*
 		Author: Trenton Nale
@@ -168,6 +165,13 @@ function Viewmodel() {
 		};
 
 		this.add_assoc_rule = function() {
+			/*
+			Author: Trenton Nale
+			Description: Copies the associative rule inputs into the ACU's list
+			Input: 2 sides of the associative rule to add
+			Output: N/A
+			Notes: N/A
+			*/
 			if((self.assocRuleKey() !== "") || (self.assocRuleVal() !== "")) {
 				var tempRule = self.assocRuleKey() + ":" + self.assocRuleVal();
 				if(this.associative_rules.indexOf(tempRule) === -1) {
@@ -181,6 +185,13 @@ function Viewmodel() {
 		};
 
 		this.remove_assoc_rule = function() {
+			/*
+			Author: Trenton Nale
+			Description: Finds an associative rule in the ACU's list matching the inputs and deletes it
+			Input: 2 sides of the associative rule to remove
+			Output: N/A
+			Notes: N/A
+			*/
 			if((self.assocRuleKey() !== "") || (self.assocRuleVal() !== "")) {
 				var tempRule = self.assocRuleKey() + ":" + self.assocRuleVal();
 				if(this.associative_rules.indexOf(tempRule) !== -1) {
@@ -194,6 +205,13 @@ function Viewmodel() {
 		};
 
 		this.fill_assoc_rule = function(selected) {
+			/*
+			Author: Trenton Nale
+			Description: Copies the clicked rule into the input boxes
+			Input: selected - string : the text of the selected rule
+			Output: N/A
+			Notes: N/A
+			*/
 			var temp = selected.split(":");
 			self.assocRuleKey(temp[0]);
 			self.assocRuleVal(temp[1]);
@@ -205,7 +223,7 @@ function Viewmodel() {
 		Author: Trenton Nale
 		Contributors: Derek Lause
 		Description: Representation of a CoMPES hub and associated data
-		Input: parent - the NetworkObject creating this Hub
+		Input: parent - NetworkObject : the network this Hub belongs to
 		Output: N/A
 		Notes: N/A
 		*/
@@ -229,12 +247,17 @@ function Viewmodel() {
 		};
 
 		this.cloneACU = function() {
-
+			/*
+			Author: Trenton Nale
+			Description: Creates a number of clones of the currently-selected ACU in that ACU's Hub
+			Input: the selected ACU and the number of clones
+			Output: N/A
+			Notes: The clones are identical to their source in every aspect except for id
+			*/
 			var source = self.selectedItem();
 			for(var i = 0; i < self.numClones(); i++) {
 				this.ACUs.push(new ACU(this));
 				self.selectedItem(this.ACUs.slice(-1)[0]);
-				//self.selectedItem().id(source.id() + self.counter);
 				self.selectedItem().loc(source.loc());
 				self.selectedItem().classification(source.classification());
 				self.selectedItem().guid(source.guid());
@@ -266,7 +289,7 @@ function Viewmodel() {
 				}
 				self.selectedItem().parent = source.parent;
 			}
-			self.selectedItem(self.selectedItem());
+			self.selectedItem(self.selectedItem()); //fixes an update glitch
 			self.bonsai();
 		};
 
@@ -274,7 +297,7 @@ function Viewmodel() {
 			/*
 			Author: Trenton Nale
 			Description: Removes a specified ACU from this Hub
-			Input: acu - ACU to remove
+			Input: acu - ACU : the ACU to remove
 			Output: N/A
 			Notes: N/A
 			*/
@@ -328,7 +351,7 @@ function Viewmodel() {
 			/*
 			Author: Trenton Nale
 			Description: Removes a specific hub from the NetworkObject
-			Input: hub - the Hub to remove
+			Input: hub - Hub : the Hub to remove
 			Output: N/A
 			Notes: N/A
 			*/
@@ -357,7 +380,7 @@ function Viewmodel() {
 	function replacer(key, value) {
 		/*
 		Author: Trenton Nale
-		Description: Pass as second param of toJSON() to ignore certain elements
+		Description: Pass as second param of ko.toJSON() to ignore certain elements
 		Input: key - the key of a pair to be ignored
 			   value - the value of a pair to be ignored
 		Output: the value if the pair is to be included in the JSON, otherwise undefined
@@ -373,7 +396,8 @@ function Viewmodel() {
 		Contributors: Trenton Nale
 		Description: Force directed graph adapted from Tim Roth's example at
 					https://bl.ocks.org/puzzler10/4438752bb93f45dc5ad5214efaa12e4a
-		Input: N/A
+		Input: nodesInput - list : the list of nodes (JS objects with several properties) to display
+			   linksInput - list : the list of links (JS objects with several properties) to display
 		Output: N/A
 		Notes: Builds a set of variables that depend on the Map View being active
 		*/
@@ -381,13 +405,10 @@ function Viewmodel() {
 		var width = +svg.attr("width");
 		var height = +svg.attr("height");
 
-		var radius = 15;
+		var radius = 15; //radius of node circles
 
-		var nodes_data = nodesInput;
-		var links_data = linksInput;
-
-		var simulation = d3.forceSimulation().nodes(nodes_data);
-		var link_force = d3.forceLink(links_data).id(function(d) {return d.name;});
+		var simulation = d3.forceSimulation().nodes(nodesInput);
+		var link_force = d3.forceLink(linksInput).id(function(d) {return d.name;});
 		var charge_force = d3.forceManyBody().strength(-1400);
 		var center_force = d3.forceCenter(width / 2, height / 2);
 		simulation
@@ -395,27 +416,28 @@ function Viewmodel() {
 			.force("center_force", center_force)
 			.force("link", link_force);
 
-		var div = d3.select("body").append("div")
+		var div = d3.select("body").append("div") //prep map area
 		    .attr("class", "tooltip")
 		    .style("opacity", 0);
 
 		//add tick instructions:
 		simulation.on("tick", tickActions );
 
-		//add encompassing group for the zoom
+		//add node groups so zoom can affect nodes and labels together
 		var g = svg.append("g")
 			.attr("class", "everything");
 
 		//draw lines for the links
 		var links = g.selectAll("links")
-			.data(links_data)
+			.data(linksInput)
 			.enter()
 			.append("line")
 			.attr("stroke-width", 2)
 			.style("stroke", linkColour);
 
+		//add nodes to node groups
 		var gnodes = g.selectAll("gnode")
-		    .data(nodes_data)
+		    .data(nodesInput)
 		    .enter()
 		    .append("g")
 		    .classed("gnode", true);
@@ -432,6 +454,7 @@ function Viewmodel() {
 				}
         	});
 
+        //add labels on nodes
 		var label = gnodes.append("text")
             .attr("class", "label")
             .attr("fill", "black")
@@ -555,23 +578,28 @@ function Viewmodel() {
 				alert("No file found to load.")
 			}
 		}
+		//only proceed if the NDF is in the correct format
 		if(ndf["Network Info"]) {
+			//reset list of hubs and set new network info
 			self.networkObject.Hubs([]);
-			//move through the JSON representation and copy all of its data into the networkObject
 			self.networkObject.network_ID(ndf["Network Info"]["Network-ID"]);
 			self.networkObject.network_config["PES_Mode"](ndf["Network Info"]["PES_Mode"]);
 			self.networkObject.network_config["PE_Algorithm"](ndf["Network Info"]["PE_Algorithm"]);
 
+			//for each hub...
 			for(var hubKey in ndf["Hubs"]) {
+				//...create new hub in the list of hubs and fill in its info
 				self.networkObject.Hubs.push(new Hub(self.networkObject));
 				var hub = self.networkObject.Hubs.slice(-1)[0];
 				hub.id(hubKey);
 				hub.hub_config["import"](ndf["Hubs"][hubKey]["Hub Info"]["Imports"]);
 				hub.hub_config["phrase"](ndf["Hubs"][hubKey]["Hub Info"]["Phrase-relatedness"]);
-				if(ndf["Hubs"][hubKey]["Hub Info"]["STATUS"])
+				if(ndf["Hubs"][hubKey]["Hub Info"]["STATUS"]) //only set the status if one was received
 					hub.hub_config["status"](ndf["Hubs"][hubKey]["Hub Info"]["STATUS"]);
 
+				//...for each ACU in the hub...
 				for(var acuKey in ndf["Hubs"][hubKey]["ACUs"]) {
+					//...create the new ACU and fill in its info
 					hub.ACUs.push(new ACU(hub));
 					var acu = hub.ACUs.slice(-1)[0];
 					acu.id(acuKey);
@@ -580,6 +608,7 @@ function Viewmodel() {
 					acu.guid(ndf["Hubs"][hubKey]["ACUs"][acuKey]["GUID"]);
 					acu.get(ndf["Hubs"][hubKey]["ACUs"][acuKey]["GET"]);
 					acu.interpreter_type(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Interpreter Type"]);
+					//for lists in the ACU, fill in their contents
 					if(typeof(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Raw States"]) === "object") {
 						for(var listKey in ndf["Hubs"][hubKey]["ACUs"][acuKey]["Raw States"])
 							acu.raw_states.push(ndf["Hubs"][hubKey]["ACUs"][acuKey]["Raw States"][listKey]);
@@ -625,10 +654,10 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		if(self.temp[index]() !== "") {
-			if(list.indexOf(self.temp[index]()) === -1) {
-				list.push(self.temp[index]());
-				self.temp[index]("");
+		if(self.ACUListInputs[index]() !== "") {
+			if(list.indexOf(self.ACUListInputs[index]()) === -1) {
+				list.push(self.ACUListInputs[index]());
+				self.ACUListInputs[index]("");
 				}
 			else {alert("State already exists.");}
 		}
@@ -644,10 +673,10 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		if(self.temp[index]() !== "") {
-			if(list.indexOf(self.temp[index]()) !== -1) {
-				list.remove(self.temp[index]());
-				self.temp[index]("");
+		if(self.ACUListInputs[index]() !== "") {
+			if(list.indexOf(self.ACUListInputs[index]()) !== -1) {
+				list.remove(self.ACUListInputs[index]());
+				self.ACUListInputs[index]("");
 			}
 			else {alert("State does not exist.");}
 		}
@@ -663,7 +692,7 @@ function Viewmodel() {
 		Output: Boolean response
 		Notes: N/A
 		*/
-		self.temp[i](selected);
+		self.ACUListInputs[i](selected);
 	};
 
 	//==================================== Front-End ========================================
@@ -676,8 +705,6 @@ function Viewmodel() {
 		Notes: This function is needed so a single function can be bound to the click event even though
 			   each screen has its own handler.
 		*/
-
-		//$("#network_hierarchy > li > ol > li:nth-child(2) > #hub").css("background", "red");
 		self.selectedItem(clickedItem);
 		if(self.operation_subscreen() == "map_subscreen")
 			self.mapSidebarClick(clickedItem);
@@ -691,7 +718,7 @@ function Viewmodel() {
 	self.gotoLogin = function() {
 		/*
 		Author: Trenton Nale
-		Description: Transitions to the Login screen and closes any active communication
+		Description: Transitions to the Login screen, end login and any active communication
 					 channels to CoMPES
 		Input: N/A
 		Output: N/A
@@ -706,11 +733,10 @@ function Viewmodel() {
 
 	self.signIn = function() {
 		/*
-		Author: Carey James
-		Contributors: Trenton Nale
-		Description: Validates the user and uses gotoSelection to transition to the
-					 Network Selection screen
-		Input: N/A
+		Author: Trenton Nale
+		Description: If not in offline mode, sends login request to CoMPES
+					 In offline mode, sets loggedIn flag and transitions to Network Definition screen
+		Input: username and password
 		Output: N/A
 		Notes: N/A
 		*/
@@ -725,15 +751,13 @@ function Viewmodel() {
 	self.register = function() {
 		/*
 		Author: Trenton Nale
-		Description: Sends login data with registration flag true
+		Description: If not in offline mode, sends login data with registration flag true
 		Input: N/A
 		Output: N/A
 		Notes: N/A
 		*/
 		if(!self.offlineMode()) {
 			self.sendLogin(self.user(), self.pass(), true);
-			if(self.loggedIn())
-				self.gotoSelection();
 		}
 		else
 			alert("Registration of new users cannot be performed in Offline Mode.");
@@ -760,6 +784,13 @@ function Viewmodel() {
 	};
 	
 	self.connect = function() {
+		/*
+		Author: Trenton Nale
+		Description: Builds a received NDF into the NetworkObject and transitions to the Map screen
+		Input: received NDF
+		Output: filled-in NetworkObject
+		Notes: N/A
+		*/
 		if(self.receivedNDF() != "") {
 			self.creationMode = false;
 			self.loadNetwork(self.receivedNDF());
@@ -770,6 +801,13 @@ function Viewmodel() {
 	};
 
 	self.create = function() {
+		/*
+		Author: Trenton Nale
+		Description: Sets creation mode flag to true and transitions to the Network Definition screen
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
 		self.creationMode = true;
 		self.gotoDefinition();
 	};
@@ -842,31 +880,38 @@ function Viewmodel() {
 		}
 		//for a hub, build all connected ACUs
 		else if(self.selectedItem().constructor.name == "Hub") {
+			//build the hub and its parent
 			nodes_data.push({"name": self.selectedItem().id(), "type": "hub", "data": self.selectedItem});
 			nodes_data.push({"name": self.networkObject.network_ID(), "type": "network", "data": self.networkObject});
 			links_data.push({"source": self.selectedItem().id(), "target": self.networkObject.network_ID(), "type": "architecture"});
+			//for each acu in the hub...
 			self.selectedItem().ACUs().forEach(function(acu) {
+				//build the acu
 				nodes_data.push({"name": acu.id(), "type": "acu", "data": acu});
 				acu_names.push(acu.id());
 				links_data.push({"source": self.selectedItem().id(), "target": acu.id(), "type": "architecture"});
-				if((self.mapMode() == "Semantic") && (acu.semantic_links().length > 0)) {
-					var semLink = [];
-					for(var acuKey in self.selectedItem().ACUs()) {
-						for(var semKey in self.selectedItem().ACUs()[acuKey].semantic_links()) {
-							semLink = self.selectedItem().ACUs()[acuKey].semantic_links()[semKey].split(":");
-							var hubTemp = ko.utils.arrayFirst(self.networkObject.Hubs(), function(hub) {
-								return(hub.id() == semLink[0]);
-							});
-							var semNode = ko.utils.arrayFirst(hubTemp.ACUs(), function(acu) {
-								return(acu.id() == semLink[1]);
-							});
-							if(acu_names.indexOf(semLink[1]) == -1) //prevents duplicate ACU nodes
-								nodes_data.push({"name": semLink[1], "type": "acu", "data": semNode});
-							links_data.push({"source": self.selectedItem().ACUs()[acuKey].id(), "target": semLink[1], "type": "semantic"});
-						}
+			});
+			//if in semantic view...
+			if((self.mapMode() == "Semantic")) {
+				var semLink = [];
+				//for each acu...
+				for(var acuKey in self.selectedItem().ACUs()) {
+					//for each semantic link in the acu...
+					for(var semKey in self.selectedItem().ACUs()[acuKey].semantic_links()) {
+						//locate the hub-acu pair in the link and build into the map
+						semLink = self.selectedItem().ACUs()[acuKey].semantic_links()[semKey].split(":");
+						var hubTemp = ko.utils.arrayFirst(self.networkObject.Hubs(), function(hub) {
+							return(hub.id() == semLink[0]);
+						});
+						var semNode = ko.utils.arrayFirst(hubTemp.ACUs(), function(acu) {
+							return(acu.id() == semLink[1]);
+						});
+						if(acu_names.indexOf(semLink[1]) == -1) //prevents duplicate ACU nodes
+							nodes_data.push({"name": semLink[1], "type": "acu", "data": semNode});
+						links_data.push({"source": self.selectedItem().ACUs()[acuKey].id(), "target": semLink[1], "type": "semantic"});
 					}
 				}
-			});
+			}
 		}
 		//for an ACU, build its parent hub and all of that hub's connected ACUs
 		else if(self.selectedItem().constructor.name == "ACU") {
@@ -885,7 +930,9 @@ function Viewmodel() {
 				links_data.push({"source": self.selectedItem().id(), "target": self.selectedItem().parent.id(), "type": "architecture"});
 				if((self.mapMode() == "Semantic") && (self.selectedItem().semantic_links().length > 0)) {
 					var semLink = [];
+					//for each semantic link...
 					for(var semKey in self.selectedItem().semantic_links()) {
+						//locate the hub-acu pair in the link and build into the map
 						semLink = self.selectedItem().semantic_links()[semKey].split(":");
 						var hubTemp = ko.utils.arrayFirst(self.networkObject.Hubs(), function(hub) {
 							return(hub.id() == semLink[0]);
@@ -901,18 +948,6 @@ function Viewmodel() {
 		}
 		self.mapData = new d3Data(nodes_data, links_data);
 	};
-
-	/*self.setupMap = function() {
-		/*
-		Author: Trenton Nale
-		Description: Configure d3 to display network map
-		Input: N/A
-		Output: N/A
-		Notes: N/A
-		/
-		var graphData = self.makeGraphData();
-		self.mapData = new d3Data(graphData[0], graphData[1]);
-	}*/
 
 	//-------------------------------- Informational View ------------------------
 	self.gotoInformational = function() {
@@ -945,15 +980,15 @@ function Viewmodel() {
 		/*
 		Author: Trenton Nale
 		Description: Transitions to the Network Definition screen
-		Input: networkObject - the currently connected network's details or null if
-			   creating a new network
+		Input: networkObject - NetworkObject : the currently connected network's details
+			   or null if creating a new network
 		Output: N/A
-		Notes: If networkObject is not null, this screen will operate in update mode,
-			   meaning the screen's fields will be populated with the network's details
-			   and submitting the network will instruct CoMPES to update the network.
-			   Otherwise, this screen will operate in create mode, meaning the fields
-			   will start empty and submitting the network will instruct CoMPES to
-			   create a new network.
+		Notes: If creationMode is true, this screen will operate in create mode, meaning
+			   the fields will start empty and submitting the network will instruct CoMPES
+			   to create a new network.
+			   Otherwise, this screen will operate in update mode, meaning the screen's
+			   fields will be populated with the network's details and submitting the
+			   network will instruct CoMPES to update the network.
 		*/
 		if(self.loggedIn() && ((self.creationMode !== null) || self.offlineMode())) {
 			self.current_screen("definition_screen_network");
@@ -967,7 +1002,7 @@ function Viewmodel() {
 		Description: Updates the active data element with clickedItem and changes the Definition
 					 Screen's internal template to the correct type (NetworkObject, Hub, or ACU)
 					 so the data is ready for editting
-		Input: clickedItem - the data element associated with the clicked DOM element
+		Input: clickedItem - NetworkObject, Hub, or ACU associated with the clicked DOM element
 		Output: N/A
 		Notes: N/A
 		*/
@@ -985,10 +1020,24 @@ function Viewmodel() {
 	};
 
 	self.displayHub = function(hub) {
+		/*
+		Author: Trenton Nale
+		Description: Convenience function to see if a Hub is active
+		Input: hub - Hub : selected Hub to check
+		Output: N/A
+		Notes: N/A
+		*/
 		return hub.isActive() ?  "active" : "inactive";
 	};
 
 	self.isEmpty = function(array) {
+		/*
+		Author: Derek Lause
+		Description: Convenience function to get whether array is filled
+		Input: array - list : array to check
+		Output: N/A
+		Notes: N/A
+		*/
 			var isEmpty;
 			if (array.length == 0) {
 				isEmpty = true;
@@ -1030,6 +1079,7 @@ function Viewmodel() {
 				},
 				"ACUs" : {}
 		    };
+		    //for each ACU in the Hub, add it to the hub's ACU list
 			ko.utils.arrayForEach(hub.ACUs(), function(acu) {
 				network["Hubs"][hub.id()]["ACUs"][acu.id()] = {
 		            "Defined States" : self.isEmpty(acu.defined_states()) ? "NA" : acu.defined_states(),
@@ -1056,21 +1106,40 @@ function Viewmodel() {
 	};
 
 	self.submitNetwork = function() {
+		/*
+		Author: Trenton Nale
+		Description: Submits current NetworkObject to CoMPES;
+					 Convenience function for Knockout binding
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
 		var sendingNet = self.buildNDF();
 		self.sendNetwork(sendingNet);
 	}
 	
 	self.loadNetworkFromFile = function() {
+		/*
+		Author: Trenton Nale
+		Description: Loads NDF local file into NetworkObject;
+					 Convenience function for Knockout binding
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
 		self.loadNetwork();
-		self.bonsai();
+		self.bonsai(); //need to update sidebar after loading
 	}
 
-	self.outputNDF = function() {
-		var testnet = self.buildNDF();
-		var test = JSON.stringify(testnet);
-	};
-
 	self.saveNDFToFile = function() {
+		/*
+		Author: Trenton Nale
+		Description: Saves NetworkObject to local file;
+					 Convenience function for Knockout binding
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
 		fs.writeFileSync(self.path, self.buildNDF());
 	};
 
@@ -1088,13 +1157,29 @@ function Viewmodel() {
 	};
 
     self.hubButton = function() {
+		/*
+		Author: Trenton Nale
+		Description: Adds new Hub to the network's list and displays it;
+					 Convenience function for Knockout binding
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
         self.addHub();
         self.current_screen("definition_screen_hub");
     };
 
     self.acuButton = function() {
+		/*
+		Author: Trenton Nale
+		Description: Adds new ACU to the current hub (or current ACU's hub) and displays it;
+					 Convenience function for Knockout binding
+		Input: N/A
+		Output: N/A
+		Notes: N/A
+		*/
         self.networkObject.Hubs().addACU();
-				self.current_screen("definition_screen_acu");
+		self.current_screen("definition_screen_acu");
     };
 
 	//============================Backend============================================
@@ -1120,10 +1205,10 @@ function Viewmodel() {
 		/*
 		Author: Trenton Nale
 		Discription: Sends a message to the backend to be routed to CoMPES
-		Input: routing - a string containing the routing option for the backend
-			   message - a JSON-formatted text string containing the message contents;
-			   successFunc - the function that should be executed upon receiving response from the Mux;
-			   errorFunc - the function that should be executed if the message fails
+		Input: routing - string : a string containing the routing option for the backend
+			   message - string : a JSON-formatted text string containing the message contents;
+			   successFunc - function : the function that should be executed upon receiving response from the Mux;
+			   errorFunc - function : the function that should be executed if the message fails
 		Output: N/A
 		Notes: This function will have to wait on the Mux to pass the message on to CoMPES, get a
 			   response, and send the response back here before continuing
@@ -1173,7 +1258,7 @@ function Viewmodel() {
 		/*
 		Author: Trenton Nale
 		Discription: Sends request to CoMPES for a network's NDF
-		Input: selectedNetwork - the network to request
+		Input: selectedNetwork - string : the network id to request
 		Output: N/A
 		Notes: N/A
 		*/
@@ -1188,7 +1273,7 @@ function Viewmodel() {
 		/*
 		Author: Trenton Nale
 		Discription: Sends request to provision a new network
-		Input: networkDefinitionFile - an associative array containing the network's details
+		Input: networkDefinitionFile - associative array : the network's details
 		Output: N/A
 		Notes: the NDF should be properly formatted and checked for errors before being passed to this
 		*/
@@ -1203,14 +1288,15 @@ function Viewmodel() {
 		/*
 		Author: Trenton Nale
 		Discription: Sends request to remove a network from CoMPES
-		Input: networkID - identifier of network to remove
+		Input: networkID - string : identifier of network to remove
 		Output: N/A
 		Notes: N/A
 		*/
-		var jsonParam = JSON.stringify({'rest-method':'delete', 'path':paths['networks'], 'data':[networkID]});
-		self.sendMessage(jsonParam,
-						 function() {},
-						 function() {});
+		var message = JSON.stringify('{"User-ID":"' + self.user() + '", "Network-ID":"' + selectedNetwork + '"}');
+		self.sendMessage("deleteNetwork", message,
+			function (response) {alert("Success: " + response);},
+			function(response, stat, disc) {alert("Error: " + disc);}
+		);
 	};
 
 	self.startNodeTracking = function(nodeID) {
