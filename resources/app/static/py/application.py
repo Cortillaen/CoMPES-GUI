@@ -357,7 +357,7 @@ def multiplexer(opt):
 			message = "Disconnected from CoMPES"
 			username = ""
 		except:
-			message = "Error: Failed to connect to CoMPES"
+			message = "Error: Failed to disconnect to CoMPES"
 	
 	#Send the message back to the client
 	return message

@@ -50,6 +50,7 @@
 		</script>
 		<script type="text/html" id="empty">
 		</script>
+		
 <!--
 	Author: Josue Portillo
 	Contributor: Derek Lause
@@ -58,7 +59,6 @@
 	Output: Form with input for a username, password, re-type password
 	Notes: N/A
 			-->
-
 	<div id="myModal" class="modal">
 
   <!-- Modal content -->
@@ -123,8 +123,7 @@ window.onclick = function(event) {
     </nav>
 
     <div id="screen_holder" data-bind="template: {name: operation_screen}" style="height: -webkit-calc(100% - 52px);">
-      <!-- This div is where each "screen" slots in when selected to display to the user.
-      -->
+      <!-- This div is where each "screen" slots in when selected to display to the user. -->
     </div>
 
   </body>
@@ -139,7 +138,7 @@ window.onclick = function(event) {
 
   <!-- Login Screen 
 	Author: Carey James
-	Contributor: Josue Portillo
+	Contributor: Josue Portillo, Derek Lause
 	Description: Login Form
 	Input: N/A
 	Output: Boolean response
@@ -176,7 +175,7 @@ window.onclick = function(event) {
 
   <!-- Network Selection Screen 
 	Author: Josue Portillo
-	Contributor: 
+	Contributor: Trenton Nale, Derek Lause
 	Description: Network selection form
 	Input: N/A
 	Output: 
@@ -265,7 +264,14 @@ window.onclick = function(event) {
   </script>
   <!-- End of Map Screen -->
 
-  <!-- Informational Screen -->
+  <!-- Informational Screen
+  	Author: Derek Lause
+	Contributor: Trenton Nale
+	Description: Informational Screen 
+	Input: N/A
+	Output: 
+	Notes: N/A -->
+	
   <!--script type="text/html" id="informational_subscreen">
     <div class="container text-center">
       <div class="page-header"><h1>Informational Screen</h1></div>
@@ -301,7 +307,7 @@ window.onclick = function(event) {
       <button class="btn btn-default" data-bind="click: saveNDFToFile">Save to File</button>
       <button class="btn btn-default" data-bind="click: loadNetworkFromFile">Load from File</button>
       <!-- ko ifnot: (offlineMode) -->
-        <button class="btn btn-default" data-bind="click: submitNetwork, text: creationMode ? 'Create Network' : 'Update Network'"></button>
+        <button class="btn btn-default" data-bind="click: submitNetwork, text: creationMode() ? 'Create Network' : 'Update Network'"></button>
         <!--<button class="btn btn-default" data-bind="click: outputNDF">Test network variable</button>-->
       <!-- /ko -->
     </div>

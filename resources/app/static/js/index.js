@@ -66,7 +66,7 @@ function Viewmodel() {
 		else
 			return("empty");
 	}, this);
-	self.creationMode = null;
+	self.creationMode = ko.observable(null);
 	self.offlineMode = ko.observable(false);
 
 	//----------------------------- Login Page Variables ------------------------------------
@@ -459,7 +459,20 @@ function Viewmodel() {
             .attr("class", "label")
             .attr("fill", "black")
             .attr("text-anchor", "middle")
-            .style("font-size", "100%")
+            .style("font-size", function(d) {
+				if(self.selectedItem().constructor.name == "NetworkObject") {
+					if(d.name == self.selectedItem().network_ID())
+						return "150%";
+					else
+						return "100%";
+				}
+				else {
+					if(d.name == self.selectedItem().id())
+						return "150%";
+					else
+						return "100%"
+				}
+			})
     		.text(function(d) { return d.name; });
 
 		/*//add drag capabilities
@@ -718,6 +731,7 @@ function Viewmodel() {
 	self.gotoLogin = function() {
 		/*
 		Author: Trenton Nale
+		Contributor: Derek Lause
 		Description: Transitions to the Login screen, end login and any active communication
 					 channels to CoMPES
 		Input: N/A
@@ -727,7 +741,7 @@ function Viewmodel() {
 		self.current_screen("login_screen");
 		twistedClient.stdout.end();
 		self.bonsaidList = null;
-		self.creationMode = null;
+		self.creationMode(null);
 		self.loggedIn(false);
 	};
 
@@ -767,6 +781,7 @@ function Viewmodel() {
 	self.gotoSelection = function() {
 		/*
 		Author: Trenton Nale
+		Contributor: Derek Lause
 		Description: Transitions to the Network Selection screen
 		Input: N/A
 		Output: N/A
@@ -776,7 +791,12 @@ function Viewmodel() {
 			if(!self.offlineMode()) {
 				self.current_screen("selection_screen");
 				self.bonsaidList = null;
-				self.creationMode = null;
+				self.creationMode(null);
+				
+				self.networkObject.network_ID("Network Name");
+				self.networkObject.network_config["PES_Mode"]("");
+				self.networkObject.network_config["PE_Algorithm"]("");
+				self.networkObject.Hubs([]);
 			}
 			else
 				alert("Remote networks cannot be selected in Offline Mode.");
@@ -792,7 +812,7 @@ function Viewmodel() {
 		Notes: N/A
 		*/
 		if(self.receivedNDF() != "") {
-			self.creationMode = false;
+			self.creationMode(false);
 			self.loadNetwork(self.receivedNDF());
 			self.gotoMap();
 		}
@@ -808,7 +828,7 @@ function Viewmodel() {
 		Output: N/A
 		Notes: N/A
 		*/
-		self.creationMode = true;
+		self.creationMode(true);
 		self.gotoDefinition();
 	};
 
@@ -816,12 +836,13 @@ function Viewmodel() {
 	self.gotoMap = function() {
 		/*
 		Author: Trenton Nale
+		Contributor: Derek Lause
 		Description: Transitions to the Map View screen
 		Input: N/A
 		Output: N/A
 		Notes: N/A
 		*/
-		if(self.loggedIn() && ((self.creationMode === false) || self.offlineMode())) {
+		if(self.loggedIn() && ((self.creationMode() === false) || self.offlineMode())) {
 			self.current_screen("map_screen");
 			self.bonsai();
 			self.selectedItem(self.networkObject);
@@ -864,6 +885,7 @@ function Viewmodel() {
 		var nodes_data = [];
 		var links_data = [];
 		var acu_names = [];
+		var hub_names = [];
 
 		//clear map if it's already drawn
 		if(self.mapData) {
@@ -906,9 +928,18 @@ function Viewmodel() {
 						var semNode = ko.utils.arrayFirst(hubTemp.ACUs(), function(acu) {
 							return(acu.id() == semLink[1]);
 						});
+						//add the semantically-linked acu
 						if(acu_names.indexOf(semLink[1]) == -1) //prevents duplicate ACU nodes
 							nodes_data.push({"name": semLink[1], "type": "acu", "data": semNode});
 						links_data.push({"source": self.selectedItem().ACUs()[acuKey].id(), "target": semLink[1], "type": "semantic"});
+						//if the linked acu is from a different hub, add that hub to the map
+						if(semLink[0] != self.selectedItem().id()) {
+							if(hub_names.indexOf(semLink[0]) == -1) { //prevents duplicate hub nodes
+								nodes_data.push({"name": semLink[0], "type": "hub", "data": hubTemp});
+								hub_names.push(semLink[0]);
+							}
+							links_data.push({"source": semLink[1], "target": semLink[0], "type": "architecture"});
+						}
 					}
 				}
 			}
@@ -942,6 +973,14 @@ function Viewmodel() {
 						});
 						nodes_data.push({"name": semLink[1], "type": "acu", "data": semNode});
 						links_data.push({"source": self.selectedItem().id(), "target": semLink[1], "type": "semantic"});
+						//if the linked acu is from a different hub, add that hub to the map
+						if(semLink[0] != self.selectedItem().parent.id()) {
+							if(hub_names.indexOf(semLink[0]) == -1) { //prevents duplicate hub nodes
+								nodes_data.push({"name": semLink[0], "type": "hub", "data": hubTemp});
+								hub_names.push(semLink[0]);
+							}
+						}
+						links_data.push({"source": semLink[1], "target": semLink[0], "type": "architecture"});
 					}
 				}
 			}
@@ -953,12 +992,13 @@ function Viewmodel() {
 	self.gotoInformational = function() {
 		/*
 		Author: Trenton Nale
+		Contributor: Derek Lause
 		Description: Transitions to the Informational View screen
 		Input: N/A
 		Output: N/A
 		Notes: N/A
 		*/
-		if((self.loggedIn() && self.creationMode === false) || self.offlineMode()) {
+		if((self.loggedIn() && self.creationMode() === false) || self.offlineMode()) {
 			self.current_screen("informational_screen");
 			self.bonsai();
 		}
@@ -979,6 +1019,7 @@ function Viewmodel() {
 	self.gotoDefinition = function(networkObject) {
 		/*
 		Author: Trenton Nale
+		Contributor: Derek Lause
 		Description: Transitions to the Network Definition screen
 		Input: networkObject - NetworkObject : the currently connected network's details
 			   or null if creating a new network
@@ -990,7 +1031,7 @@ function Viewmodel() {
 			   fields will be populated with the network's details and submitting the
 			   network will instruct CoMPES to update the network.
 		*/
-		if(self.loggedIn() && ((self.creationMode !== null) || self.offlineMode())) {
+		if(self.loggedIn() && ((self.creationMode() !== null) || self.offlineMode())) {
 			self.current_screen("definition_screen_network");
 			self.bonsai();
 		}
@@ -1278,8 +1319,8 @@ function Viewmodel() {
 		Notes: the NDF should be properly formatted and checked for errors before being passed to this
 		*/
 		var message = JSON.stringify(networkDefinitionFile);
-		self.sendMessage((self.creationMode ? "createNetwork" : "updateNetwork"), message,
-			function (response) {alert("CoMPES Response: " + response);},
+		self.sendMessage((self.creationMode() ? "createNetwork" : "updateNetwork"), message,
+			function (response) {alert("CoMPES Response: " + response); self.creationMode(false);},
 			function(response, stat, disc) {alert("Error: " + disc);}
 		);
 	};
