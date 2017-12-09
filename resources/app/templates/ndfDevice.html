@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Network Selection</title>
+    <link rel="shortcut icon" type="image/x-icon" href="./images/logoPicE.png" />
+    <script type="text/javascript" src="./javascript/ndf.js"></script>
+    <link rel="stylesheet" href="./css/ndf.css">
+
+</head>
+
+<body>
+    <h1></h1>
+    <div class="deviceCont">
+        <h2> Device Selection </h2>
+
+        <form id="acuForm">
+            <h3> ACU Selection </h3>
+                ACU ID:
+                <input type="text" id="ACUID" value=""> <br>
+                Location (optional): 
+                <input type="radio" name="location" value="manual"> Manual
+                <input type="radio" name="location" value="GPS"> GPS
+                Street Address:
+                <input type="text" id="street" value=""> <br>
+                City:
+                <input type="text" id="city" value=""> <br>
+                Country:
+                <input type="text" id="country" value=""> <br>
+        </form>
+        <form id="interpForm">
+            <div class="interpCont">
+                <h3>Interpreter Selection</h3> Interpreter Type:
+                <input type="radio" name="type" value="push" checked> Push
+                <input type="radio" name="type" value="pull"> Pull
+                <div>
+                    Interpreter State:
+                    <input type="text" id="interpState" value="">
+                    <br> Physical State:
+                    <input type="text" id="phyState" value="">
+
+                </div>
+            </div>
+        </form>
+        <div class="buttons">
+            <br>
+            <button type="button">Save</button> 
+            <button type="button">Edit</button>
+            <button type="button">Delete</button> 
+        </div>
+    </div>
+
+    <div class="image">
+        <img src="./images/logoBigE.png">
+    </div>
+</body>
+
+</html>

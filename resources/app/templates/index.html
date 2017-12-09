@@ -7,18 +7,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="shortcut icon" type="image/x-icon" href="../static/images/logoPicE.png"/>
-    <link rel="stylesheet" href="../static/css/index.css">
+	
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/jquery.bonsai.css">
+	<link rel="stylesheet" href="../static/css/index.css">
 
-
+    <script type="text/javascript">window.$=window.jQuery=require("../static/js/jquery-3.2.1.js"); </script>
+    <script src="../static/js/bootstrap.min.js" type="text/javascript"></script>
     <script src="../static/js/knockout-3.4.2.js" type="text/javascript" ></script>
-	  <script>window.$=window.jQuery=require("../static/js/jquery-3.2.1.js"); </script>
+    <script src="../static/js/jquery.bonsai.js"></script>
     <script src="../static/js/index.js" type="text/javascript" ></script>
-    <script src="../static/js/bootstrap.min.js"></script>
-
-    <!--Internal CSS-->
-    <style>
-    </style>
+    <script src="../static/js/d3.min.js"></script>
 
     <title>CoMPES GUI</title>
 
@@ -33,113 +32,511 @@
         <ul class="nav navbar-nav">
           <li><a data-bind="click: gotoSelection">Network Selection</a></li>
           <li><a data-bind="click: gotoMap">Map Screen</a></li>
-          <li><a data-bind="click: gotoInformational">Informational Screen</a></li>
+          <!--li><a data-bind="click: gotoInformational">Informational Screen</a></li-->
           <li><a data-bind="click: gotoDefinition">Definition Screen</a></li>
+		  
         </ul>
-        <ul class="nav navbar-nav navbar-right" style="padding-right: 15px">
-         <li><button class="btn btn-danger navbar-btn" data-bind="click: gotoLogin">Login</button></li>
+        <!--<ul class="nav navbar-nav navbar-right" style="padding-right: 15px">
+		<li><button id="myBtn" class="btn btn-danger navbar-btn">Register Now!</button></li>
+		</ul>
+		<div class="divider">
+		</div>-->
+		<ul class="nav navbar-nav navbar-right" style="padding-right: 15px">
+		<li data-bind="template: {name: showLogout}"></li>
         </ul>
-      </div>
-    </nav>
+		
+		<script type="text/html" id="logoutButton">
+			<button class='btn btn-danger navbar-btn' data-bind='click: gotoLogin'>Logout</button>
+		</script>
+		<script type="text/html" id="empty">
+		</script>
+		
+<!--
+	Author: Josue Portillo
+	Contributor: Derek Lause
+	Description: Registation Modal
+	Input: N/A
+	Output: Form with input for a username, password, re-type password
+	Notes: N/A
+			-->
+	<div id="myModal" class="modal">
 
-    <div id="screen_holder" data-bind="template: {name: current_screen}">
-      <!-- This div is where each "screen" slots in when selected to display to the user.
-      -->
-    </div>
-
-  </body>
-  <footer class="container-fluid text-center">
-    <p>Footer Text</p>
-  </footer>
-
-  <!-- ===========================================Screen Templates=============================================================
-    Each screen should be built inside its own script tag so that the resources are loaded but not displayed until needed -->
-
-  <!-- Login Screen -->
-  <script type="text/html" id="login_screen">
-    <div class="page-header"><h1> Login to CoMPES </h1></div>
-    <div class="loginCont">
-      <form id="form-group">
+  <!-- Modal content -->
+		<div class="modal-content">
+			<span class="close">&times;</span>
+			<h1> Register </h1>
+			<div class="registerCont">
+				<form id="form-group">
         <div class="form-group">
           <label for="username"> Username: </label>
           <input type="text" id="username" name="usr" value="" class="form-control">
         </div>
         <div class="form-group">
           <label for="password"> Password: </label>
-          <input type="text" id="password" name="pw" value="" class="form-control">
+          <input type="password" id="password" name="pw" value="" class="form-control">
+        </div>
+		  <div class="form-group">
+          <label for="retype-password"> Re-type Password: </label>
+          <input type="password" id="retype-password" name="pw" value="" class="form-control">
+        </div>
+      
+  
+	</form>
+	    <button id ="submit" type="button" class ="btn btn-primary" style="width:100%; background-color:rgba(0, 128, 0, 0.66);">Submit</button> 
+		<div class="divider"> 
+		</div>
+		<button id ="cancel" type="button" class ="btn btn-primary" style="width:100%; background-color:rgba(255, 0, 0, 0.72);">Cancel</button>
+  </div>
+
+  </div>
+
+</div>
+
+<script>/*
+// Get the modal
+var modal = document.getElementById('myModal');
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}*/
+</script>
+      </div>
+    </nav>
+
+    <div id="screen_holder" data-bind="template: {name: operation_screen}" style="height: -webkit-calc(100% - 52px);">
+      <!-- This div is where each "screen" slots in when selected to display to the user. -->
+    </div>
+
+  </body>
+  <!-- hiding this for the moment
+  <footer class="container-fluid text-center">
+    <p>Footer Text</p>
+  </footer>
+  -->
+
+  <!-- ========================================== Screen Templates =========================================================
+    Each screen should be built inside its own script tag so that the resources are loaded but not displayed until needed -->
+
+  <!-- Login Screen 
+	Author: Carey James
+	Contributor: Josue Portillo, Derek Lause
+	Description: Login Form
+	Input: N/A
+	Output: Boolean response
+	Notes: updated with glyphicon and button sizes. Placed Registration button on navigation bar. -Josue Portillo 
+			 -->
+  <script type="text/html" id="login_screen">
+
+    <div class="page-header"><h1> Welcome to the CoMPES GUI! </h1></div>
+	
+    <div class="loginCont">
+      <form id="form-group">
+        <div class="form-group">
+          <span class = "glyphicon glyphicon-user"></span><label>User ID:</label>
+          <input type="text" id="username" name="usr" data-bind="value: user" class="form-control">
+        </div>
+        <div class="form-group">
+          <span class = "glyphicon glyphicon-lock"></span><label>Password:</label>
+          <input type="password" id="password" name="pw" data-bind="value: pass" class="form-control">
         </div>
       </form>
       <div class="btn-group">
-        <button id="register" type="button" class="btn btn-primary">Add new user</button>
-        <button id="login" type="button" data-bind="click: signIn" class ="btn btn-primary">Login to GUI</button>
+        <button id="login" type="submit" data-bind="click: signIn" class ="btn btn-primary">Login</button>
+        <button id="register" type="button" data-bind="click: register" class="btn btn-primary">Add User</button><br/>
+        <input type="checkbox" name="offline" data-bind="checked: offlineMode">Run in Offline Mode
       </div>
-    </div>
+		</div>
     <div>
       <img class="center-block" src="../static/images/logoBigE.png">
     </div>
+  </div>
   </script>
+  <!-- End of Login Screen -->
 
-  <!-- Network Selection Screen -->
+
+  <!-- Network Selection Screen 
+	Author: Josue Portillo
+	Contributor: Trenton Nale, Derek Lause
+	Description: Network selection form
+	Input: N/A
+	Output: 
+	Notes: N/A
+			-->
   <script type="text/html" id="selection_screen">
+  <div class="pagePanel">
     <div class="container text-center">
       <div class="page-header"><h1>Network Selection</h1></div>
-      <h1>Grid</h1>
+
         <div class="row content">
-        <div class="col-sm-6 sidenav">
-          Network Lists
+
+        <div class="col-sm-6 sidenav" style="background-color:rgb(177, 203, 211); border-style:solid;border-radius: 20px;">
+
+			<p> List of Networks: </p>
+      <!-- ko foreach: { data: networkList } -->
+        <p data-bind="text: $data, click: function() {$root.getNetwork($data);}"></p>
+      <!-- /ko -->
+		</div>
+
+
+        <div class="col-sm-6" style="background-color:rgb(177, 203, 211); border-style:solid;border-radius: 20px;">
+
+          	<div class="selectedCont">
+			<p> Selected Network Configurations: </p>
+			<form id="selectionForm">
+				Network Name:<br> <label class="netSelectLabel" data-bind="text: selectionName"></label><br><br>
+				IP Address:<br>  <label class="netSelectLabel">N/A</label> <br><br>
+				Number of Hubs:<br>  <label class="netSelectLabel" data-bind="text: selectionNumHubs"></label> <br><br>
+				Number of ACUs:<br>  <label class="netSelectLabel" data-bind="text: selectionNumACUs"></label> <br><br>
+				Location:<br> <label class="netSelectLabel">N/A</label> <br><br>
+				PES MODE:<br>  <label class="netSelectLabel" data-bind="text: selectionPESMode"></label> <br><br>
+				Algorithm:<br>  <label class="netSelectLabel" data-bind="text: selectionPEAlg"></label><br><br>
+
+			</form>
+			<button id="connect" data-bind="click: connect" id="list" type="button"> CONNECT </button>
+      <button id="connect" data-bind="click: create" id="list" type="button"> CREATE NEW </button>
+		</div>
         </div>
-        <div class="col-sm-6" style="background-color:pink;">
-          Selected Server Details
-        </div>
+    <br>
+    <br>
+    <div class = "images">
+    <img src="../static/images/logoBigE.png">
+    </div>
       </div>
     </div>
+  </div>
   </script>
+  <!-- End of Network Selection Screen -->
 
-  <!-- Map Screen -->
-  <script type="text/html" id="map_screen">
-    <div class="container text-center">
-      <div class="page-header"><h1>Map View</h1></div>
-      <h1>Grid</h1>
-        <div class="row content">
-        <div class="col-sm-3 sidenav">
-          Network Hierarchy List
-        </div>
-        <div class="col-sm-9" style="background-color:pink;">
-          Interactive visualization of currently-selected level
-        </div>
-      </div>
+  <!-- Network Frame
+       Author: Trenton Nale
+       Description: A sidebar displaying the network structure and an area for the main part of each screen.
+  -->
+  <script type="text/html" id="network_frame">
+  <div class="pagePanel" style="height: 100%;">
+    <div class="col-sm-3 sidenav" style="text-align:left;height:-webkit-calc(100% - 52px);position:absolute;float:right;border-style:solid;border-radius:20px">
+      <ol id='network_hierarchy' data-name='test'>
+        <li><span id='network' data-bind="text: networkObject.network_ID, click: function(data, event) {sidebarClick($root.networkObject);}, css: {selected: $root.networkObject.isActive()}"></span>
+          <ol><!-- ko foreach: { data: networkObject.Hubs } -->
+            <li><span id='hub' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span>
+              <ol><!-- ko foreach: { data: $data.ACUs } -->
+                <li><span id='acu' data-bind="text: id, click: function() {$root.sidebarClick($data);}, css: {selected: isActive()}"></span></li>
+              <!-- /ko --></ol>
+            </li>
+          <!-- /ko --></ol>
+        </li>
+      </ol>
+    </div>
+    <div class="col-sm-9" id="network_screen_holder" data-bind="template: {name: operation_subscreen}" style="float:right; height:100%;">
+    </div>
+  </div>
+  </script>
+  <!-- End of Network Frame -->
+
+  <!-- Map Screen
+       Author: Trenton Nale
+       Description: Displays graph representation of selected network
+  -->
+  <script type="text/html" id="map_subscreen">
+    <div class="page-header"><h1>Map View</h1>
+    <div><label id="mapModeLabel">Current mode:&nbsp</label><label id="mapModeLabel" data-bind="text: mapMode"/>&nbsp<button data-bind="click: switchMapMode">Switch map mode</button></div></div>
+    <div class="row content" id="graphArea">
+      <svg class="well" width="1100" height="700"></svg>
     </div>
   </script>
+  <!-- End of Map Screen -->
 
-  <!-- Informational Screen -->
-  <script type="text/html" id="informational_screen">
+  <!-- Informational Screen
+  	Author: Derek Lause
+	Contributor: Trenton Nale
+	Description: Informational Screen 
+	Input: N/A
+	Output: 
+	Notes: N/A -->
+	
+  <!--script type="text/html" id="informational_subscreen">
     <div class="container text-center">
       <div class="page-header"><h1>Informational Screen</h1></div>
       <h1>Grid</h1>
       <div class="row content">
-        <div class="col-sm-3 sidenav">
-          Hub/Device List
+        <div class="col-sm-12" style="background-color:pink;">
+          <input type="text">test</input>
+          <button type="search">Search</button>
         </div>
-          <div class="col-sm-9" style="background-color:pink;">
-            Query Area
-          </div>
-          <div class="col-sm-9" style="background-color:red;">
-            Metrics
-          </div>
-          <div class="col-sm-9" style="background-color:orange;">
-            Graphical Analysis
-          </div>
+        <div class="col-sm-12" style="background-color:red;">
+          Metrics
+        </div>
+        <div class="col-sm-12" style="background-color:orange;">
+          Graphical Analysis
+        </div>
       </div>
+    </div>
+  </script -->
+    <!-- End of Informational Screen -->
+
+  <!-- Network Definition Screen
+		Author: Carey James, Josue Portillo
+		Contributors: Trenton Nale, Derek Lause
+		Description: Add a Network form, Add a Hub form, Add an ACU form
+			  -->
+  <script type="text/html" id="definition_subscreen">
+  <div style="height: 100%;float: right;width: 100%;">
+    <div class="page-header"><h1>Network Definition</h1></div>
+    <div id="config-menu" data-bind="template: {name: 'definition_part', data: selectedItem}" class="well well-lg" style="max-height: none; height: -webkit-calc(100% - 212px); width: 100%;">
+        <!-- The desired configuration will be placed into this template.-->
+    </div>
+    <div>
+      <button class="btn btn-default" data-bind="click: saveNDFToFile">Save to File</button>
+      <button class="btn btn-default" data-bind="click: loadNetworkFromFile">Load from File</button>
+      <!-- ko ifnot: (offlineMode) -->
+        <button class="btn btn-default" data-bind="click: submitNetwork, text: creationMode() ? 'Create Network' : 'Update Network'"></button>
+        <!--<button class="btn btn-default" data-bind="click: outputNDF">Test network variable</button>-->
+      <!-- /ko -->
     </div>
   </script>
 
-  <!-- Network Definition Screen -->
-  <script type="text/html" id="definition_screen">
-      <div class="page-header"><h1>Network Definition</h1></div>
+  <script type="text/html" id="definition_part">
+    <!-- ko if: ($data.constructor.name == "NetworkObject") -->
+<table class="table table-bordered">
+    <tr>
+        <td><strong>Network ID: </strong></td>
+        <td><input type="text" class="form-control" data-bind="value: network_ID" placeholder="<NETWORK ID>"></td>
+    </tr>
+    <tr>
+        <td><strong>PES Mode: </strong></td>
+				<td>
+          <label>ENFORCE</label><input type="radio" name="optr" value="Enforce" data-bind="checked: network_config.PES_Mode" required>
+          <label>MANUAL</label><input type="radio" name="optr" value="Manual" data-bind="checked: network_config.PES_Mode">
+          <label>AUTONOMOUS</label><input type="radio" name="optr" value="Autonomous" data-bind="checked: network_config.PES_Mode">
+				</td>
+    </tr>
+    <tr>
+        <td><strong>PE_Algorithm</strong></td>
+        <td>
+          <label>N/A</label><input type="radio" name="pea" value="NA" data-bind="checked: network_config.PE_Algorithm" required>
+          <label>ALGORITHM 1</label><input type="radio" name="pea" value="Algorithm1" data-bind="checked: network_config.PE_Algorithm">
+          <label>ALGORITHM 2</label><input type="radio" name="pea" value="Algorithm2" data-bind="checked: network_config.PE_Algorithm">
+        </td>
+    </tr>
+  </table>
+  <button class="btn btn-primary" data-bind="click: $data.addHub">Add Hub</button>
+    <!-- /ko -->
+
+    <!-- ko if: ($data.constructor.name == "Hub") -->
+  <table class="table table-bordered">
+    <tbody>
+        <tr>
+            <td><strong>HUB ID: </strong></td>
+            <td><input type="text" class="form-control" data-bind="value: id" placeholder="<HUB ID"></td>
+      </tr>
+        <tr>
+            <td><strong>Status:</strong></td>
+				<td>
+					<span class="label" data-bind="css: hub_config['status']=='Online' ? 'label-success' : 'label-danger', text: hub_config['status']"></span>
+				</td>
+      </tr>
+        <tr>
+			<td><strong>Imports: </strong></td>
+			<td>
+				<div class="well-sm">
+					<ul class="list-inline" data-bind="foreach: hub_config['import']">
+						<li data-bind="text: $data, click: function(data) {$root.fill(data, 5)}"></li>
+					</ul>
+				</div>
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="<Import Statement>" data-bind="value: $root.ACUListInputs[5]">
+					<span class="input-group-btn">
+						<button class="btn btn-primary" data-bind="click: function() {$root.add_item(hub_config['import'], 5);}">Add</button>
+						<button class="btn btn-primary" data-bind="click: function() {$root.remove_item(hub_config['import'], 5);}">Remove</button>
+					</span>
+				</div>
+			</td>
+		</tr>
+        <tr>
+            <td><strong>Phrase-relatedness: </strong></td>
+            <td><input type="text" class="form-control" data-bind="value: hub_config.phrase" placeholder="<PHRASE-RELATEDNESS>"></td>
+      </tr>
+    </tbody>
+    </table>
+    <button class="btn btn-primary" data-bind="click: function() {$data.parent.addHub();}">Add Another Hub</button>
+    <button class="btn btn-primary" data-bind="click: addACU">Add ACU</button>
+    <button class="btn btn-primary" data-bind="click: function() {$data.parent.removeHub($data);}">Delete This Hub</button>
+    <!-- /ko -->
+
+    <!-- ko if: ($data.constructor.name == "ACU") -->	
+      <table class="table table-bordered">
+  			<tbody>
+  				<tr>
+  					<td><strong>ACU ID: </strong></td>
+  					<td><input type="text" class="form-control" data-bind="value: id" placeholder="<ACU ID>"> </td>
+  				</tr>
+  				<tr>
+  					<td><strong>Location: </strong></td>
+  					<td><input type="text" class="form-control" data-bind="value: loc" placeholder="<Location>"> </td>
+					</tr>
+					<tr>
+						<td><strong>GUID: </strong></td>
+						<td><input type="text" class="form-control" data-bind="value: guid" placeholder="<GUID>"> </td>
+					</tr>
+					<tr>
+						<td><strong>Classification: </strong></td>
+						<td><input type="text" class="form-control" data-bind="value: classification" placeholder="<Classification>"> </td>
+					</tr>
+					<tr>
+						<td><strong>GET: </strong></td>
+						<td><input type="text" class="form-control" data-bind="value: get" placeholder="<GET>"> </td>
+					</tr>
+					
+					<tr>
+						<td><strong>Raw States: </strong></td>
+						<td>
+							<div class="well-sm">
+								<ul class="list-inline" data-bind="foreach: raw_states">
+									<li data-bind="text: $data, click: function(data) {$root.fill(data, 0)}"></li>
+								</ul>
+							</div>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.ACUListInputs[0]">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" data-bind="click: function() {$root.add_item(raw_states, 0);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.remove_item(raw_states, 0);}">Remove</button>
+								</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td><strong>Defined States: </strong></td>
+						<td>
+							<div class="well-sm">
+								<ul class="list-inline" data-bind="foreach: defined_states">
+									<li data-bind="text: $data, click: function(selected) {$root.fill(selected, 1);}"></li>
+								</ul>
+							</div>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.ACUListInputs[1]">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" data-bind="click: function() {$root.add_item(defined_states, 1);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.remove_item(defined_states, 1);}">Remove</button>
+								</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td><strong>Actions: </strong></td>
+						<td>
+							<div class="well-sm">
+								<ul class="list-inline" data-bind="foreach: actions">
+									<li data-bind="text: $data, click: function(selected) {$root.fill(selected, 2);}"></li>
+								</ul>
+							</div>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.ACUListInputs[2]">
+								<span class="input-group-btn">
+									
+									<button class="btn btn-primary" data-bind="click: function() {$root.add_item(actions, 2);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.remove_item(actions, 2);}">Remove</button>
+								</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td><strong>EXECUTE: </strong></td>
+						<td>
+							<div class="well-sm">
+								<ul class="list-inline" data-bind="foreach: execute">
+									<li data-bind="text: $data, click: function(selected) {$root.fill(selected, 3);}"></li>
+								</ul>
+							</div>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.ACUListInputs[3]">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" data-bind="click: function() {$root.add_item(execute, 3);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.remove_item(execute, 3);}">Remove</button>
+								</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td><strong>Semantic Links: </strong></td>
+						<td>
+							<div class="well-sm">
+								<ul class="list-inline" data-bind="foreach: semantic_links">
+									<li data-bind="text: $data, click: function(selected) {$root.fill(selected, 4);}"></li>
+								</ul>
+							</div>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.ACUListInputs[4]">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" data-bind="click: function() {$root.add_item(semantic_links, 4);}">Add</button>
+									<button class="btn btn-primary" data-bind="click: function() {$root.remove_item(semantic_links, 4);}">Remove</button>
+								</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td><strong>Associative Rules: </strong></td>
+						<td>
+							<div class="well-sm">
+								<ul class="list-inline" data-bind="foreach: associative_rules">
+									<li data-bind="text: $data, click: function(selected) {$parent.fill_assoc_rule(selected);}"></li>
+								</ul>
+							</div>
+							<div class="input-group">
+								<input type="text" class="form-control" placeholder="<State>" data-bind="value: $root.assocRuleKey">
+								<input type="text" class="form-control" placeholder="<Action>" data-bind="value: $root.assocRuleVal">
+								<span class="input-group-btn">
+									<button class="btn btn-primary" data-bind="click: add_assoc_rule">Add</button>
+									<button class="btn btn-primary" data-bind="click: remove_assoc_rule">Remove</button>
+								</span>
+							</div>
+						</td>
+					</tr>
+					
+					<tr>
+						<td><strong>Interpreter Type:</strong></td>
+						<td>
+              <label>PUSH</label><input type="radio" name="optr" value="PUSH" data-bind="checked: interpreter_type">
+              <label>PULL</label><input type="radio" name="optr" value="PULL" data-bind="checked: interpreter_type">
+  					</td>
+  				</tr>
+  			</tbody>
+  		</table>
+    	<button class="btn btn-primary" data-bind="click: function() {$data.parent.addACU();}">Add Another ACU</button>
+      <button class="btn btn-primary" data-bind="click: function() {$data.parent.removeACU($data);}">Delete This ACU</button>
+      <label>&nbsp&nbsp&nbsp&nbsp</label>
+      <button class="btn btn-primary" data-bind="click: function() {$data.parent.cloneACU();}">Clone This ACU</button>
+      <label>Clones:&nbsp</label><input type="number" id="cloneSpinner" min="1" step="1" value="1" data-bind="value: $root.numClones">
+    <!-- /ko -->
+    </div>
   </script>
 
+  <!-- End of Network Definition Page -->
+
   <script>
-    // You can also require other files to run in this process
+    // Other files required to run in this process
     require('../static/js/renderer.js')
   </script>
 </html>

@@ -1,151 +1,304 @@
-
-		/*html {
-	    	text-align:center;
-	    	background-blend-mode: multiply;
-			background-color: rgba(0, 188, 212, 0);
-	    	background-image: url("../images/background3.png");
-	    	background-size: 100em 80em;
-			background-repeat: no-repeat;
-		}*/
-		body {
-			font-family: 'Effra', "Helvetica Neue",Arial,sans-serif;
-			background-image: url("../images/background3.png");
-			font-size: 1.2em;
-		}
-		h1 {
-			font-family: 'Effra',"Helvetica Neue",Arial,sans-serif;
-			font-weight: 800;
-		    color: black;;
-		    font-style: normal;
-		    font-size: 5em;
-			background-color: rgba(255, 255, 255, 0.68);
-			display: inline-block;
-			border: 2px solid #0a2f4e;
-			border-radius: 12px;
-		}
-		.loginCont {
-			background: rgba(66, 139, 152, 0.27);
-			border: .25em #5e5e5e;
-			border-radius: 1em;
-		    color: black;;
-			padding: 1em;
-			width: 30em;
-		    height: 18.5em;
-		    text-align: center;
-		   	align-content: center;
-		   	margin: auto;
-			background-color: rgba(255, 255, 255, 0.68);
-
-		}
-		.image{
-			padding: 4em;
-		}
-		button {
-			border-radius: .3em;
-			font-size: 2em;
-			font-family: 'Effra', sans-serif;
-			background-color: rgba(255, 255, 255, 0.72);
-			padding: .93em;
-			margin: 1em;
-		}
-		button:hover {
-			background-color: rgb(47, 45, 45)!important;
-		}
-		p {
-			font-family: "Helvetica Neue", Arial, sans-serif;
-			color:#5e5e5e;
-		}
-		h2 {
-			color: #5e5e5e;
-			font-family: 'Effra',sans-serif !important;
-		    font-weight: 1900;
-		}
-		a {
-			color: #5e5e5e;
-			padding: .75em;
-			font-size: 1em;
-			font-weight: 1000;
-		}
-		a:hover {
-			background-color: rgba(66, 139, 152, 0.5);
-			border-radius: 3em;
-
-
-		}
-		.navBar {
-			overflow: hidden;
-			background-color: #9E9E9E;
-			font-family: "Helvetica Neue", sans-serif;
-			border-radius: 2em;
-			width: 40em;
-			display: flex;
-			margin: 0 auto;
-			justify-content: center;
-			text-align: center;
-
-		}
-		.usernameCont {
-
-			border-radius: 2em;
-			display: flex;
-		    justify-content: center;
-		    padding: .5em;
-		    font-size: 2.5em;
-
-		}
-		.passwordCont {
-			border-radius: 2em;
-			display: flex;
-		    justify-content: center;
-		    padding: .5em;
-		    font-size: 2.5em;
-		}
-
-		input {
-			font-size: .5em;
-			padding-left: .5em;
-		}
-		input[type=text] {
-				background-color: rgba(255, 255, 255, 0.68);
-			color: black;
+/*
+Author: Carey James, Josue Portillo
+Contributor: Derek Lause, Trenton Nale
+Notes: N/A
+*/
+body {
+	background-image: url("../images/background3.png");
+	height: 100%;
 }
-		.images {
-			padding-right: .3em;
-		}
-		img {
-			background-color: rgba(255, 255, 255, 0.68);
-			display: inline-block;
-			border: 2px solid #0a2f4e;
-			border-radius: 12px;
-			margin-top: 15px;
-		}
-		/* Remove the navbar's default margin-bottom and rounded borders */
-		.navbar.navbar-default {
-			margin-bottom: 0;
-			border-radius: 0;
-		}
 
-		/* Set height of the grid so .sidenav can be 100% (adjust as needed) */
-		.row.content {height: 440px}
+h1 {
+	font-family: 'Effra',"Helvetica Neue",Arial,sans-serif;
+	font-weight: 800;
+	color: black;
+	font-style: normal;
+	/*font-size: 5em; */
+	background-color: rgba(255, 255, 255, 0.68);
+	border-radius: 8px;
+}
 
-		.sidenav {
-			padding-top: 20px;
-			background-color: yellow;
-			height: 100%;
-		}
+.links line {
+     stroke: #999;
+     stroke-opacity: 0.6;
+}
 
-		footer {
-			background-color: #f1f1f1;
-			color: white;
-			padding: 15px;
-			margin-top: 15px;
-		}
+.nodes circle {
+      stroke: black ;
+      stroke-width: 0px;
+}
 
-		/* On small screens, set height to 'auto' for sidenav and grid */
-		@media screen and (max-width: 767px) {
-			.sidenav {
-				height: auto;
-				padding: 15px;
-			}
-			.row.content {height:auto;}
-		}
+.loginCont {
+	background: rgba(66, 139, 152, 0.27);
+	border: .25em #5e5e5e;
+	border-radius: 1em;
+	color: black;
+	padding: 1em;
+	width: 30em;
+	text-align: center;
+	align-content: center;
+	margin: auto;
+	background-color: rgba(255, 255, 255, 0.68);
+}
+
+.image{
+	padding: 4em;
+}
+
+input {
+	vertical-align: top;
+}
+/*
+button {
+	border-radius: .3em;
+	font-size: 2em;
+	font-family: 'Effra', sans-serif;
+	background-color: rgba(255, 255, 255, 0.72);
+	padding: .93em;
+	margin: 1em;
+}
+*/
+button:hover {
+	background-color: rgb(47, 45, 45)!important;
+}
+
+p {
+	font-family: "Helvetica Neue", Arial, sans-serif;
+	color:#5e5e5e;
+}
+
+h2 {
+	color: #5e5e5e;
+	font-family: 'Effra',sans-serif !important;
+	font-weight: 1900;
+	}
+	
+a {
+	color: #5e5e5e;
+	padding: .75em;
+	font-size: 1em;
+	font-weight: 1000;
+}
+
+a:hover {
+	background-color: rgba(66, 139, 152, 0.5);
+	border-radius: 3em;
+}
+
+.navBar {
+	overflow: hidden;
+	background-color: #9E9E9E;
+	font-family: "Helvetica Neue", sans-serif;
+	border-radius: 2em;
+	width: 40em;
+	display: flex;
+	margin: 0 auto;
+	justify-content: center;
+	text-align: center;
+}
+
+.usernameCont {
+	border-radius: 2em;
+	display: flex;
+	justify-content: center;
+	padding: .5em;
+	font-size: 2.5em;
+}
+
+.passwordCont {
+	border-radius: 2em;
+	display: flex;
+	justify-content: center;
+	padding: .5em;
+	font-size: 2.5em;
+}
+		
+textarea {
+	font-size: .5em;
+	padding-left: .5em;
+}
+
+input[type=text] {
+	background-color: rgba(255, 255, 255, 0.68);
+	color: black;
+}
+
+.images {
+	padding-right: .3em;
+}
+
+img {
+	background-color: rgba(255, 255, 255, 0.68);
+	/*display: inline-block; */
+	/*border: 2px solid #0a2f4e;
+	border-radius: 12px; */
+	margin-top: 15px;
+}
+/* Remove the navbar's default margin-bottom and rounded borders */
+.navbar.navbar-default {
+	margin-bottom: 0;
+	border-radius: 0;
+}
+
+/* Set height of the grid so .sidenav can be 100% (adjust as needed) */
+.row.content {
+	height: 440px;
+	
+}
+
+.sidenav {
+	padding-top: 20px;
+	background-color: #b4c3c7;
+	height: 100%;
+}
+
+footer {
+	background-color: #f1f1f1;
+	color: white;
+	padding: 15px;
+	margin-top: 15px;
+}
+
+/* On small screens, set height to 'auto' for sidenav and grid */
+@media screen and (max-width: 767px) {
+	.sidenav {
+		height: auto;
+		padding: 15px;
+	}
+	.row.content {height:auto;}
+}
+
+div.tooltip {    
+	padding: 4px;             
+	font: 12px sans-serif;        
+	background: lightsteelblue;   
+	border: 1px;      
+	border-radius: 8px;
+	font-size: 200%;
+	color: black;
+	background-color: white;
+}
+		
+.selectedCont {
+	float: left;
+	padding: .5em;
+	text-align: left;
+	margin-right: 7em;
+	clear:both;
+}
+
+.selectedCont input {
+	clear:both;
+	width:100%;
+}
+label{
+	align-content:right;
+	display:inline-block;
+}
+
+#connect{
+	background-color: #51d251;
+    border-radius: 20px;
+}
+.selectedCont label{
+    display: inline-block;
+    float: left;
+    clear: left;
+    width: 250px;
+    text-align: left;
+	font-weight: normal;
+}
+.selectedCont textarea {
+  display: inline-block;
+  float: left;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: blue;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 70%;
+	height:80%;
+	background-image: url("../images/registerbackground.jpg");
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+.divider{
+    width:5px;
+    height:auto;
+    display:inline-block;
+}
+
+.registerCont {
+	border: .25em #5e5e5e;
+	border-radius: 1em;
+	position:relative;
+	color: black;
+	padding: 1em;
+	width: 30em;
+	text-align: center;
+	align-content: center;
+	margin: auto;
+	background-color: rgba(255, 255, 255, 0.68);
+}
+
+ol > li > span {
+	font-size: 120%;
+	padding: 2px 5px 2px 5px;
+}
+
+.selected {
+	border-left-style: solid;
+	border-right-style: solid;
+}
+
+#graphArea {
+	text-align: center;
+}
+
+#cloneSpinner {
+	width: 80px;
+}
+
+.pagePanel {
+	height: -webkit-calc(100% - 50px);
+	background-color: transparent;
+}
+
+html {
+	height: 100%;
+}
+
+#mapModeLabel {
+	color: white;
+}
